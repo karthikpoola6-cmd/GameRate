@@ -23,19 +23,10 @@ interface ActivityItem {
 }
 
 function getActivityText(item: ActivityItem): string {
-  if (item.favorite) {
-    return 'added to favorites'
-  }
   if (item.review) {
     return 'reviewed'
   }
-  if (item.rating) {
-    return 'rated'
-  }
-  if (item.status === 'want_to_play') {
-    return 'wants to play'
-  }
-  return 'logged'
+  return 'rated'
 }
 
 function StarDisplay({ rating }: { rating: number }) {
@@ -72,7 +63,7 @@ export async function ActivityFeed({ userId }: { userId: string }) {
 
   let feedItems: ActivityItem[] | null = null
 
-  // Get activity from people the user follows
+  // Get activity from people the user follows (only ratings)
   if (followingIds.length > 0) {
     const { data: activity } = await supabase
       .from('game_logs')
@@ -81,13 +72,24 @@ export async function ActivityFeed({ userId }: { userId: string }) {
         profiles:user_id (username, display_name, avatar_url)
       `)
       .in('user_id', followingIds)
+      .not('rating', 'is', null)
       .order('updated_at', { ascending: false })
-      .limit(20)
+      .limit(50)
 
-    feedItems = activity as ActivityItem[] | null
+    // Filter to only show the most recent activity per friend
+    if (activity) {
+      const seenUsers = new Set<string>()
+      feedItems = activity.filter((item) => {
+        if (seenUsers.has(item.user_id)) {
+          return false
+        }
+        seenUsers.add(item.user_id)
+        return true
+      }) as ActivityItem[]
+    }
   }
 
-  // If no activity from follows, show recent activity from anyone
+  // If no activity from follows, show recent rated activity from anyone
   if (!feedItems || feedItems.length === 0) {
     const { data: recentActivity } = await supabase
       .from('game_logs')
@@ -96,10 +98,21 @@ export async function ActivityFeed({ userId }: { userId: string }) {
         profiles:user_id (username, display_name, avatar_url)
       `)
       .neq('user_id', userId)
+      .not('rating', 'is', null)
       .order('updated_at', { ascending: false })
-      .limit(15)
+      .limit(50)
 
-    feedItems = recentActivity as ActivityItem[] | null
+    // Filter to only show the most recent activity per user
+    if (recentActivity) {
+      const seenUsers = new Set<string>()
+      feedItems = recentActivity.filter((item) => {
+        if (seenUsers.has(item.user_id)) {
+          return false
+        }
+        seenUsers.add(item.user_id)
+        return true
+      }) as ActivityItem[]
+    }
   }
 
   if (!feedItems || feedItems.length === 0) {

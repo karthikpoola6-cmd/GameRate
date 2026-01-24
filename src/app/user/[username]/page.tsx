@@ -173,11 +173,69 @@ export default async function ProfilePage({ params }: PageProps) {
       {/* Content */}
       <div className="max-w-4xl mx-auto px-4 py-8 space-y-12">
         {/* Top 5 Favorites */}
-        {favoriteGames && favoriteGames.length > 0 && (
+        {(isOwnProfile || (favoriteGames && favoriteGames.length > 0)) && (
           <FavoriteGames
-            favorites={favoriteGames as GameLog[]}
+            favorites={(favoriteGames as GameLog[]) || []}
             isOwnProfile={isOwnProfile}
           />
+        )}
+
+        {/* Lists */}
+        {userLists && userLists.length > 0 && (
+          <section>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-bold">Lists</h2>
+              {(listsCount || 0) > userLists.length && (
+                <Link
+                  href={`/user/${username}/lists`}
+                  className="text-purple hover:text-purple-light text-sm transition-colors"
+                >
+                  View all →
+                </Link>
+              )}
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {userLists.map((list: { id: string; name: string; description: string | null; list_items: { game_cover_id: string | null }[] }) => (
+                <Link
+                  key={list.id}
+                  href={`/list/${list.id}`}
+                  className="block bg-background-card border border-purple/10 rounded-lg p-4 hover:border-purple/30 transition-colors"
+                >
+                  {/* Cover preview */}
+                  <div className="flex gap-1 mb-3 h-12 overflow-hidden rounded">
+                    {list.list_items.slice(0, 4).map((item: { game_cover_id: string | null }, i: number) => (
+                      <div key={i} className="flex-1 bg-background-secondary">
+                        {item.game_cover_id && (
+                          <Image
+                            src={getCoverUrl(item.game_cover_id, 'cover_small')}
+                            alt=""
+                            width={35}
+                            height={48}
+                            className="w-full h-full object-cover"
+                          />
+                        )}
+                      </div>
+                    ))}
+                    {list.list_items.length < 4 &&
+                      [...Array(4 - list.list_items.length)].map((_, i: number) => (
+                        <div key={`empty-${i}`} className="flex-1 bg-background-secondary" />
+                      ))}
+                  </div>
+
+                  <h3 className="font-semibold truncate">{list.name}</h3>
+                  {list.description && (
+                    <p className="text-sm text-foreground-muted truncate mt-1">
+                      {list.description}
+                    </p>
+                  )}
+                  <p className="text-xs text-foreground-muted mt-2">
+                    {list.list_items.length} games
+                  </p>
+                </Link>
+              ))}
+            </div>
+          </section>
         )}
 
         {/* Recent Games */}
@@ -262,64 +320,6 @@ export default async function ProfilePage({ params }: PageProps) {
             </div>
           )}
         </section>
-
-        {/* Lists */}
-        {userLists && userLists.length > 0 && (
-          <section>
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold">Lists</h2>
-              {(listsCount || 0) > userLists.length && (
-                <Link
-                  href={`/user/${username}/lists`}
-                  className="text-purple hover:text-purple-light text-sm transition-colors"
-                >
-                  View all →
-                </Link>
-              )}
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {userLists.map((list: { id: string; name: string; description: string | null; list_items: { game_cover_id: string | null }[] }) => (
-                <Link
-                  key={list.id}
-                  href={`/list/${list.id}`}
-                  className="block bg-background-card border border-purple/10 rounded-lg p-4 hover:border-purple/30 transition-colors"
-                >
-                  {/* Cover preview */}
-                  <div className="flex gap-1 mb-3 h-12 overflow-hidden rounded">
-                    {list.list_items.slice(0, 4).map((item: { game_cover_id: string | null }, i: number) => (
-                      <div key={i} className="flex-1 bg-background-secondary">
-                        {item.game_cover_id && (
-                          <Image
-                            src={getCoverUrl(item.game_cover_id, 'cover_small')}
-                            alt=""
-                            width={35}
-                            height={48}
-                            className="w-full h-full object-cover"
-                          />
-                        )}
-                      </div>
-                    ))}
-                    {list.list_items.length < 4 &&
-                      [...Array(4 - list.list_items.length)].map((_, i: number) => (
-                        <div key={`empty-${i}`} className="flex-1 bg-background-secondary" />
-                      ))}
-                  </div>
-
-                  <h3 className="font-semibold truncate">{list.name}</h3>
-                  {list.description && (
-                    <p className="text-sm text-foreground-muted truncate mt-1">
-                      {list.description}
-                    </p>
-                  )}
-                  <p className="text-xs text-foreground-muted mt-2">
-                    {list.list_items.length} games
-                  </p>
-                </Link>
-              ))}
-            </div>
-          </section>
-        )}
       </div>
 
       {/* Footer */}

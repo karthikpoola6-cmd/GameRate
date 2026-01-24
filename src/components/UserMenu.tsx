@@ -2,15 +2,17 @@
 
 import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 
 interface UserMenuProps {
   email: string
   username: string | null
+  avatarUrl: string | null
 }
 
-export function UserMenu({ email, username }: UserMenuProps) {
+export function UserMenu({ email, username, avatarUrl }: UserMenuProps) {
   const [isOpen, setIsOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
@@ -41,9 +43,19 @@ export function UserMenu({ email, username }: UserMenuProps) {
     <div className="relative" ref={menuRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-10 h-10 bg-purple/20 hover:bg-purple/30 rounded-full flex items-center justify-center text-purple font-medium transition-colors"
+        className="w-10 h-10 bg-purple/20 hover:bg-purple/30 rounded-full flex items-center justify-center text-purple font-medium transition-colors overflow-hidden"
       >
-        {initials}
+        {avatarUrl ? (
+          <Image
+            src={avatarUrl}
+            alt="Profile"
+            width={40}
+            height={40}
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          initials
+        )}
       </button>
 
       {isOpen && (
@@ -62,11 +74,11 @@ export function UserMenu({ email, username }: UserMenuProps) {
               Your Profile
             </Link>
             <Link
-              href={username ? `/user/${username}/games` : '/setup-username'}
+              href={username ? `/user/${username}/want-to-play` : '/setup-username'}
               className="block px-4 py-2 text-sm text-foreground-muted hover:text-foreground hover:bg-background-secondary transition-colors"
               onClick={() => setIsOpen(false)}
             >
-              Your Games
+              Want to Play
             </Link>
             <Link
               href={username ? `/user/${username}/lists` : '/setup-username'}

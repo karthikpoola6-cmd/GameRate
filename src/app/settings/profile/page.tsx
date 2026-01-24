@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { createClient } from '@/lib/supabase/client'
 import type { Profile } from '@/lib/types'
 
@@ -11,11 +12,20 @@ export default function EditProfilePage() {
   const [username, setUsername] = useState('')
   const [displayName, setDisplayName] = useState('')
   const [bio, setBio] = useState('')
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
+  const [avatarFile, setAvatarFile] = useState<File | null>(null)
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
+  const [uploadingAvatar, setUploadingAvatar] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
   const [loading, setLoading] = useState(false)
   const [checkingUsername, setCheckingUsername] = useState(false)
   const [usernameAvailable, setUsernameAvailable] = useState<boolean | null>(null)
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [deleteConfirmation, setDeleteConfirmation] = useState('')
+  const [deleting, setDeleting] = useState(false)
+  const [deleteError, setDeleteError] = useState<string | null>(null)
   const router = useRouter()
   const supabase = createClient()
 
@@ -39,10 +49,60 @@ export default function EditProfilePage() {
         setUsername(data.username)
         setDisplayName(data.display_name || '')
         setBio(data.bio || '')
+        setAvatarUrl(data.avatar_url || null)
       }
     }
     loadProfile()
   }, [supabase, router])
+
+  // Handle avatar file selection
+  function handleAvatarChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      setError('Please select an image file')
+      return
+    }
+
+    // Validate file size (max 2MB)
+    if (file.size > 2 * 1024 * 1024) {
+      setError('Image must be less than 2MB')
+      return
+    }
+
+    setAvatarFile(file)
+    setAvatarPreview(URL.createObjectURL(file))
+    setError(null)
+  }
+
+  // Upload avatar to Supabase Storage
+  async function uploadAvatar(userId: string): Promise<string | null> {
+    if (!avatarFile) return avatarUrl
+
+    setUploadingAvatar(true)
+
+    const fileExt = avatarFile.name.split('.').pop()
+    const fileName = `${userId}-${Date.now()}.${fileExt}`
+
+    const { error: uploadError } = await supabase.storage
+      .from('Avatars')
+      .upload(fileName, avatarFile, { upsert: true })
+
+    if (uploadError) {
+      console.error('Upload error:', uploadError)
+      setUploadingAvatar(false)
+      throw new Error('Failed to upload avatar')
+    }
+
+    const { data: { publicUrl } } = supabase.storage
+      .from('Avatars')
+      .getPublicUrl(fileName)
+
+    setUploadingAvatar(false)
+    return publicUrl
+  }
 
   // Check username availability
   useEffect(() => {
@@ -92,12 +152,25 @@ export default function EditProfilePage() {
       return
     }
 
+    // Upload avatar if changed
+    let newAvatarUrl = avatarUrl
+    if (avatarFile) {
+      try {
+        newAvatarUrl = await uploadAvatar(user.id)
+      } catch {
+        setError('Failed to upload avatar. Please try again.')
+        setLoading(false)
+        return
+      }
+    }
+
     const { error: updateError } = await supabase
       .from('profiles')
       .update({
         username: cleanUsername,
         display_name: displayName.trim() || null,
         bio: bio.trim() || null,
+        avatar_url: newAvatarUrl,
       })
       .eq('id', user.id)
 
@@ -110,6 +183,11 @@ export default function EditProfilePage() {
       setLoading(false)
       return
     }
+
+    // Update local state
+    setAvatarUrl(newAvatarUrl)
+    setAvatarFile(null)
+    setAvatarPreview(null)
 
     setSuccess(true)
     setLoading(false)
@@ -165,6 +243,79 @@ export default function EditProfilePage() {
               Profile updated successfully!
             </div>
           )}
+
+          {/* Avatar */}
+          <div>
+            <label className="block text-sm font-medium mb-2">
+              Profile Picture
+            </label>
+            <div className="flex items-center gap-4">
+              <div className="relative flex-shrink-0">
+                <div className="w-24 h-24 rounded-full overflow-hidden bg-purple/20 flex items-center justify-center border-2 border-purple/30">
+                  {avatarPreview ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={avatarPreview}
+                      alt="Avatar preview"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : avatarUrl ? (
+                    <Image
+                      src={avatarUrl}
+                      alt="Avatar"
+                      fill
+                      className="object-cover"
+                    />
+                  ) : (
+                    <span className="text-3xl font-bold text-purple">
+                      {username.slice(0, 2).toUpperCase()}
+                    </span>
+                  )}
+                  {uploadingAvatar && (
+                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center rounded-full">
+                      <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    </div>
+                  )}
+                </div>
+                {/* Pencil edit button */}
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleAvatarChange}
+                  className="hidden"
+                />
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="absolute bottom-0 left-0 w-8 h-8 bg-purple hover:bg-purple-dark rounded-full flex items-center justify-center transition-colors shadow-lg border-2 border-background"
+                  title="Change photo"
+                >
+                  <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                  </svg>
+                </button>
+              </div>
+              <div className="flex-1">
+                <p className="text-xs text-foreground-muted">
+                  JPG, PNG or GIF. Max 2MB.
+                </p>
+                {(avatarUrl || avatarPreview) && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setAvatarFile(null)
+                      setAvatarPreview(null)
+                      setAvatarUrl(null)
+                    }}
+                    className="mt-2 text-red-400 hover:text-red-300 text-sm transition-colors"
+                  >
+                    Remove photo
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
 
           {/* Username */}
           <div>
@@ -242,7 +393,103 @@ export default function EditProfilePage() {
             {loading ? 'Saving...' : 'Save Changes'}
           </button>
         </form>
+
+        {/* Danger Zone */}
+        <div className="mt-16 pt-8 border-t border-red-500/20">
+          <h2 className="text-lg font-bold text-red-400 mb-4">Danger Zone</h2>
+          <div className="bg-red-500/5 border border-red-500/20 rounded-lg p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="font-medium text-red-400">Delete Account</h3>
+                <p className="text-sm text-foreground-muted mt-1">
+                  Permanently delete your account and all data. This cannot be undone.
+                </p>
+              </div>
+              <button
+                onClick={() => setShowDeleteModal(true)}
+                className="bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-white px-4 py-2 rounded-lg font-medium transition-colors border border-red-500/30"
+              >
+                Delete Account
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+          <div className="bg-background-card border border-red-500/20 rounded-xl max-w-md w-full p-6">
+            <h2 className="text-xl font-bold text-red-400 mb-4">Delete Account</h2>
+            <p className="text-foreground-muted mb-4">
+              This will permanently delete your account, including all your game logs, lists, ratings, and reviews. This action cannot be undone.
+            </p>
+
+            <p className="text-sm text-foreground-muted mb-2">
+              Type <span className="text-red-400 font-mono">delete my account</span> to confirm:
+            </p>
+            <input
+              type="text"
+              value={deleteConfirmation}
+              onChange={(e) => setDeleteConfirmation(e.target.value)}
+              className="w-full bg-background-secondary border border-red-500/20 rounded-lg py-2 px-4 text-foreground focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20 transition-all mb-4"
+              placeholder="delete my account"
+            />
+
+            {deleteError && (
+              <div className="bg-red-500/10 border border-red-500/20 text-red-400 px-4 py-2 rounded-lg text-sm mb-4">
+                {deleteError}
+              </div>
+            )}
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => {
+                  setShowDeleteModal(false)
+                  setDeleteConfirmation('')
+                  setDeleteError(null)
+                }}
+                className="flex-1 bg-background-secondary hover:bg-background text-foreground py-2 rounded-lg font-medium transition-colors border border-purple/20"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={async () => {
+                  if (deleteConfirmation !== 'delete my account') {
+                    setDeleteError('Please type the confirmation phrase exactly')
+                    return
+                  }
+
+                  setDeleting(true)
+                  setDeleteError(null)
+
+                  try {
+                    const res = await fetch('/api/account/delete', { method: 'DELETE' })
+                    const data = await res.json()
+
+                    if (!res.ok) {
+                      setDeleteError(data.error || 'Failed to delete account')
+                      setDeleting(false)
+                      return
+                    }
+
+                    // Sign out and redirect
+                    await supabase.auth.signOut()
+                    router.push('/')
+                  } catch {
+                    setDeleteError('Something went wrong. Please try again.')
+                    setDeleting(false)
+                  }
+                }}
+                disabled={deleting || deleteConfirmation !== 'delete my account'}
+                className="flex-1 bg-red-500 hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed text-white py-2 rounded-lg font-medium transition-colors"
+              >
+                {deleting ? 'Deleting...' : 'Delete Forever'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

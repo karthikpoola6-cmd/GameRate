@@ -7,15 +7,17 @@ export async function Navigation() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
-  // Get username if logged in
+  // Get username and avatar if logged in
   let username: string | null = null
+  let avatarUrl: string | null = null
   if (user) {
     const { data: profile } = await supabase
       .from('profiles')
-      .select('username')
+      .select('username, avatar_url')
       .eq('id', user.id)
       .single()
     username = profile?.username || null
+    avatarUrl = profile?.avatar_url || null
   }
 
   return (
@@ -56,7 +58,7 @@ export async function Navigation() {
         </div>
 
         {user ? (
-          <UserMenu email={user.email || ''} username={username} />
+          <UserMenu email={user.email || ''} username={username} avatarUrl={avatarUrl} />
         ) : (
           <div className="flex items-center gap-3">
             <Link

@@ -204,6 +204,19 @@ export function FavoriteGames({ favorites: initialFavorites, isOwnProfile }: Fav
                 </p>
                 {renderRating(game.rating)}
               </div>
+            ) : isOwnProfile ? (
+              <Link href="/" className="w-28 sm:w-36 group">
+                <div className={`aspect-[3/4] bg-background-card/50 rounded-lg border-2 border-dashed border-purple/20 hover:border-purple/50 flex flex-col items-center justify-center gap-2 transition-colors ${
+                  dragOverIndex === index ? 'border-purple border-solid' : ''
+                }`}>
+                  <div className="w-10 h-10 rounded-full bg-purple/20 group-hover:bg-purple/30 flex items-center justify-center transition-colors">
+                    <svg className="w-6 h-6 text-purple/60 group-hover:text-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                    </svg>
+                  </div>
+                  <span className="text-foreground-muted/50 text-xs">Add game</span>
+                </div>
+              </Link>
             ) : (
               <div className="w-28 sm:w-36">
                 <div className={`aspect-[3/4] bg-background-card/50 rounded-lg border-2 border-dashed border-purple/20 flex items-center justify-center ${
