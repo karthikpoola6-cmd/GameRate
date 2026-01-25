@@ -18,7 +18,6 @@ export function GameLogButtons({ gameId, gameSlug, gameName, gameCoverId }: Game
   const [gameLog, setGameLog] = useState<GameLog | null>(null)
   const [showReviewForm, setShowReviewForm] = useState(false)
   const [review, setReview] = useState('')
-  const [hoverRating, setHoverRating] = useState(0)
   const [saving, setSaving] = useState(false)
   const [favoriteCount, setFavoriteCount] = useState(0)
   const router = useRouter()
@@ -148,7 +147,6 @@ export function GameLogButtons({ gameId, gameSlug, gameName, gameCoverId }: Game
           .eq('id', gameLog.id)
         setGameLog(null)
       }
-      setHoverRating(0)
       setSaving(false)
       return
     }
@@ -190,7 +188,6 @@ export function GameLogButtons({ gameId, gameSlug, gameName, gameCoverId }: Game
         setGameLog(data as GameLog)
       }
     }
-    setHoverRating(0)
     setSaving(false)
   }
 
@@ -327,7 +324,7 @@ export function GameLogButtons({ gameId, gameSlug, gameName, gameCoverId }: Game
   }
 
   // Calculate display rating
-  const displayRating = hoverRating || gameLog?.rating || 0
+  const displayRating = gameLog?.rating || 0
 
   if (loading) {
     return (
@@ -423,11 +420,10 @@ export function GameLogButtons({ gameId, gameSlug, gameName, gameCoverId }: Game
         <div className="flex items-center gap-1">
           {[1, 2, 3, 4, 5].map((starNum) => {
             const currentRating = gameLog?.rating || 0
-            const previewRating = hoverRating || currentRating
 
             // Determine star fill state for display
-            const isFull = previewRating >= starNum
-            const isHalf = !isFull && previewRating >= starNum - 0.5
+            const isFull = currentRating >= starNum
+            const isHalf = !isFull && currentRating >= starNum - 0.5
 
             // Click logic: full -> half -> clear
             const handleStarClick = () => {
@@ -455,8 +451,6 @@ export function GameLogButtons({ gameId, gameSlug, gameName, gameCoverId }: Game
                 type="button"
                 disabled={saving}
                 onClick={handleStarClick}
-                onMouseEnter={() => setHoverRating(starNum)}
-                onMouseLeave={() => setHoverRating(0)}
                 className="relative h-8 w-8 hover:scale-110 transition-transform"
                 aria-label={`Rate ${starNum} stars`}
               >
@@ -493,9 +487,9 @@ export function GameLogButtons({ gameId, gameSlug, gameName, gameCoverId }: Game
             )
           })}
         </div>
-        {(hoverRating || (gameLog?.rating ?? 0) > 0) && (
+        {(gameLog?.rating ?? 0) > 0 && (
           <span className="text-sm font-medium text-gold min-w-[2rem]">
-            {hoverRating || gameLog?.rating}
+            {gameLog?.rating}
           </span>
         )}
       </div>
