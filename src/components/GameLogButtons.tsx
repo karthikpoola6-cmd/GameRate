@@ -440,7 +440,7 @@ export function GameLogButtons({ gameId, gameSlug, gameName, gameCoverId }: Game
 
             return (
               <button
-                key={starNum}
+                key={`${starNum}-${currentRating}`}
                 type="button"
                 disabled={saving}
                 onClick={handleStarClick}
