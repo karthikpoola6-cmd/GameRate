@@ -55,11 +55,11 @@ export default function SetupUsernamePage() {
       const { data } = await supabase
         .from('profiles')
         .select('username')
-        .eq('username', username.toLowerCase())
+        .ilike('username', username)
         .single()
 
-      // Available if no data found OR it's the current user's username
-      setAvailable(!data || data.username === currentUsername)
+      // Available if no data found OR it's the current user's username (case-insensitive)
+      setAvailable(!data || data.username.toLowerCase() === currentUsername?.toLowerCase())
       setChecking(false)
     }, 500)
 
@@ -70,10 +70,10 @@ export default function SetupUsernamePage() {
     e.preventDefault()
     setError(null)
 
-    const cleanUsername = username.toLowerCase().trim()
+    const cleanUsername = username.trim()
 
     // Validate format
-    if (!/^[a-z0-9_]{3,20}$/.test(cleanUsername)) {
+    if (!/^[a-zA-Z0-9_]{3,20}$/.test(cleanUsername)) {
       setError('Username must be 3-20 characters, only letters, numbers, and underscores')
       return
     }
@@ -158,11 +158,11 @@ export default function SetupUsernamePage() {
                     id="username"
                     type="text"
                     value={username}
-                    onChange={(e) => setUsername(e.target.value.toLowerCase())}
+                    onChange={(e) => setUsername(e.target.value.replace(/[^a-zA-Z0-9_]/g, ''))}
                     required
                     maxLength={20}
                     className="w-full bg-background-secondary border border-purple/20 rounded-lg py-3 px-4 pl-8 text-foreground placeholder:text-foreground-muted/50 focus:outline-none focus:border-purple focus:ring-2 focus:ring-purple/20 transition-all"
-                    placeholder="your_username"
+                    placeholder="YourUsername"
                   />
                   {username.length >= 3 && (
                     <span className="absolute right-4 top-1/2 -translate-y-1/2">
@@ -177,7 +177,7 @@ export default function SetupUsernamePage() {
                   )}
                 </div>
                 <p className="text-xs text-foreground-muted mt-2">
-                  3-20 characters. Letters, numbers, and underscores only.
+                  3-20 characters. Letters (A-Z), numbers, and underscores.
                 </p>
               </div>
 

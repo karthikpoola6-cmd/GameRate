@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { createClient } from '@/lib/supabase/client'
@@ -21,17 +21,26 @@ interface ListItem {
 interface ListViewClientProps {
   listId: string
   items: ListItem[]
-  isOwner: boolean
+  listOwnerId: string  // The user ID of the list owner
   initialIsRanked: boolean
 }
 
-export function ListViewClient({ listId, items: initialItems, isOwner, initialIsRanked }: ListViewClientProps) {
+export function ListViewClient({ listId, items: initialItems, listOwnerId, initialIsRanked }: ListViewClientProps) {
   const [items, setItems] = useState(initialItems)
-  const [draggedIndex, setDraggedIndex] = useState<number | null>(null)
-  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null)
   const [saving, setSaving] = useState(false)
   const [isRanked, setIsRanked] = useState(initialIsRanked)
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null)
   const supabase = createClient()
+
+  // Verify current user on mount
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setCurrentUserId(user?.id || null)
+    })
+  }, [supabase])
+
+  // Only allow editing if current user is the list owner
+  const isOwner = currentUserId === listOwnerId
 
   async function handleToggleRanked() {
     const newValue = !isRanked
@@ -51,8 +60,9 @@ export function ListViewClient({ listId, items: initialItems, isOwner, initialIs
     await supabase.from('list_items').delete().eq('id', itemId)
   }
 
-  async function handleDragEnd(fromIndex: number, toIndex: number) {
+  async function handleReorder(fromIndex: number, toIndex: number) {
     if (fromIndex === toIndex) return
+    if (toIndex < 0 || toIndex >= items.length) return
 
     const newItems = [...items]
     const [movedItem] = newItems.splice(fromIndex, 1)
@@ -69,27 +79,12 @@ export function ListViewClient({ listId, items: initialItems, isOwner, initialIs
     setSaving(false)
   }
 
-  function handleDragStart(e: React.DragEvent, index: number) {
-    setDraggedIndex(index)
-    e.dataTransfer.effectAllowed = 'move'
+  function handleMoveUp(index: number) {
+    handleReorder(index, index - 1)
   }
 
-  function handleDragOver(e: React.DragEvent, index: number) {
-    e.preventDefault()
-    setDragOverIndex(index)
-  }
-
-  function handleDragLeave() {
-    setDragOverIndex(null)
-  }
-
-  function handleDrop(e: React.DragEvent, toIndex: number) {
-    e.preventDefault()
-    if (draggedIndex !== null && draggedIndex !== toIndex) {
-      handleDragEnd(draggedIndex, toIndex)
-    }
-    setDraggedIndex(null)
-    setDragOverIndex(null)
+  function handleMoveDown(index: number) {
+    handleReorder(index, index + 1)
   }
 
   return (
@@ -99,7 +94,7 @@ export function ListViewClient({ listId, items: initialItems, isOwner, initialIs
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-4">
             <p className="text-sm text-foreground-muted">
-              {saving ? 'Saving...' : items.length > 0 ? 'Drag to reorder' : ''}
+              {saving ? 'Saving...' : ''}
             </p>
             {/* Ranked toggle */}
             <button
@@ -136,22 +131,12 @@ export function ListViewClient({ listId, items: initialItems, isOwner, initialIs
           {items.map((item, index) => (
             <div
               key={item.id}
-              className={`group relative flex items-center gap-4 p-3 bg-background-card border border-purple/10 rounded-lg transition-all ${
-                isOwner ? 'cursor-grab active:cursor-grabbing' : ''
-              } ${draggedIndex === index ? 'opacity-50' : ''} ${
-                dragOverIndex === index ? 'border-purple ring-2 ring-purple/20' : 'hover:border-purple/30'
-              }`}
-              draggable={isOwner}
-              onDragStart={(e) => handleDragStart(e, index)}
-              onDragOver={(e) => handleDragOver(e, index)}
-              onDragLeave={handleDragLeave}
-              onDrop={(e) => handleDrop(e, index)}
+              className={`group relative flex items-center gap-3 p-3 bg-background-card border border-purple/10 rounded-lg transition-all hover:border-purple/30`}
             >
               <div className="relative flex-shrink-0">
                 <Link
                   href={`/game/${item.game_slug}`}
                   className="block w-12 h-16 bg-background-secondary rounded overflow-hidden"
-                  onClick={(e) => draggedIndex !== null && e.preventDefault()}
                 >
                   {item.game_cover_id ? (
                     <Image
@@ -160,7 +145,6 @@ export function ListViewClient({ listId, items: initialItems, isOwner, initialIs
                       width={48}
                       height={64}
                       className="w-full h-full object-cover"
-                      draggable={false}
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-2xl">
@@ -179,7 +163,6 @@ export function ListViewClient({ listId, items: initialItems, isOwner, initialIs
               <Link
                 href={`/game/${item.game_slug}`}
                 className="flex-1 min-w-0"
-                onClick={(e) => draggedIndex !== null && e.preventDefault()}
               >
                 <div className="flex items-center gap-2">
                   <h3 className="font-medium truncate hover:text-purple transition-colors">
@@ -187,21 +170,44 @@ export function ListViewClient({ listId, items: initialItems, isOwner, initialIs
                   </h3>
                   {/* Star rating */}
                   {item.rating && (
-                    <div className="flex items-center gap-0.5 flex-shrink-0">
-                      {[...Array(5)].map((_, i) => (
-                        <svg
-                          key={i}
-                          className={`w-3.5 h-3.5 ${
-                            i < item.rating! ? 'text-gold fill-gold' : 'text-foreground-muted/30'
-                          }`}
-                          viewBox="0 0 24 24"
-                          fill={i < item.rating! ? 'currentColor' : 'none'}
-                          stroke="currentColor"
-                          strokeWidth={2}
-                        >
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
-                        </svg>
-                      ))}
+                    <div className="flex items-center flex-shrink-0">
+                      {[1, 2, 3, 4, 5].map((starNum) => {
+                        const isFull = item.rating! >= starNum
+                        const isHalf = !isFull && item.rating! >= starNum - 0.5
+                        return (
+                          <div key={starNum} className="relative w-3.5 h-3.5">
+                            {/* Empty star background */}
+                            <svg
+                              className="absolute w-3.5 h-3.5 text-foreground-muted/30"
+                              viewBox="0 0 24 24"
+                              fill="currentColor"
+                            >
+                              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                            </svg>
+                            {/* Half star */}
+                            {isHalf && (
+                              <svg
+                                className="absolute w-3.5 h-3.5 text-gold"
+                                viewBox="0 0 24 24"
+                                fill="currentColor"
+                                style={{ clipPath: 'inset(0 50% 0 0)' }}
+                              >
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                              </svg>
+                            )}
+                            {/* Full star */}
+                            {isFull && (
+                              <svg
+                                className="absolute w-3.5 h-3.5 text-gold"
+                                viewBox="0 0 24 24"
+                                fill="currentColor"
+                              >
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                              </svg>
+                            )}
+                          </div>
+                        )
+                      })}
                     </div>
                   )}
                 </div>
@@ -213,15 +219,48 @@ export function ListViewClient({ listId, items: initialItems, isOwner, initialIs
               </Link>
 
               {isOwner && (
-                <button
-                  onClick={() => handleRemoveItem(item.id)}
-                  className="w-8 h-8 bg-black/60 hover:bg-red-500 text-white/80 hover:text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all"
-                  title="Remove from list"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
+                <div className="flex items-center gap-2">
+                  {/* Reorder arrows */}
+                  <button
+                    onClick={() => handleMoveUp(index)}
+                    disabled={index === 0 || saving}
+                    className={`w-8 h-8 flex items-center justify-center rounded-lg transition-all ${
+                      index === 0
+                        ? 'text-foreground-muted/20 cursor-not-allowed'
+                        : 'text-foreground-muted hover:text-purple hover:bg-purple/10 active:bg-purple/20'
+                    }`}
+                    title="Move up"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                    </svg>
+                  </button>
+                  <button
+                    onClick={() => handleMoveDown(index)}
+                    disabled={index === items.length - 1 || saving}
+                    className={`w-8 h-8 flex items-center justify-center rounded-lg transition-all ${
+                      index === items.length - 1
+                        ? 'text-foreground-muted/20 cursor-not-allowed'
+                        : 'text-foreground-muted hover:text-purple hover:bg-purple/10 active:bg-purple/20'
+                    }`}
+                    title="Move down"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                  {/* Remove button */}
+                  <button
+                    onClick={() => handleRemoveItem(item.id)}
+                    disabled={saving}
+                    className="w-8 h-8 flex items-center justify-center rounded-lg text-foreground-muted/50 hover:text-red-400 hover:bg-red-500/10 active:bg-red-500/20 transition-all"
+                    title="Remove from list"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
               )}
             </div>
           ))}

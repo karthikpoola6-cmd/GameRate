@@ -16,10 +16,10 @@ create table public.profiles (
   updated_at timestamptz default now() not null
 );
 
--- Username must be 3-20 chars, lowercase letters, numbers, underscores only
+-- Username must be 3-20 chars, letters, numbers, underscores only
 alter table public.profiles
   add constraint username_format
-  check (username ~ '^[a-z0-9_]{3,20}$');
+  check (username ~ '^[a-zA-Z0-9_]{3,20}$');
 
 -- ============================================
 -- 2. GAME LOGS TABLE
@@ -42,7 +42,7 @@ create table public.game_logs (
   game_name text not null,               -- Display name
   game_cover_id text,                    -- IGDB cover image ID
   status public.game_status not null,
-  rating integer check (rating >= 1 and rating <= 5),  -- 1-5 stars
+  rating numeric(2,1) check (rating >= 0.5 and rating <= 5),  -- 0.5-5 stars (half-star increments)
   review text,
   started_at date,
   finished_at date,
@@ -260,12 +260,25 @@ create policy "Users can unfollow"
 
 create or replace function public.handle_new_user()
 returns trigger as $$
+declare
+  email_prefix text;
+  clean_username text;
 begin
+  -- Get email prefix (before @)
+  email_prefix := split_part(new.email, '@', 1);
+  -- Remove any characters that aren't lowercase letters, numbers, or underscores
+  clean_username := regexp_replace(lower(email_prefix), '[^a-z0-9_]', '', 'g');
+  -- Ensure minimum length of 3 characters
+  if length(clean_username) < 3 then
+    clean_username := 'user';
+  end if;
+  -- Truncate if too long (max 15 chars to leave room for suffix)
+  clean_username := left(clean_username, 15);
+
   insert into public.profiles (id, username)
   values (
     new.id,
-    -- Generate temporary username from email prefix
-    lower(split_part(new.email, '@', 1)) || '_' || substr(new.id::text, 1, 4)
+    clean_username || '_' || substr(new.id::text, 1, 4)
   );
   return new;
 end;

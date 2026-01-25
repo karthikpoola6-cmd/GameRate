@@ -17,6 +17,12 @@ export const metadata: Metadata = {
   description: "Your personal video game diary. Track games you've played, rate them, create lists, and discover new favorites.",
 };
 
+export const viewport = {
+  width: 430,
+  initialScale: 1,
+  maximumScale: 1,
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -25,7 +31,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased pb-20 lg:pb-0`}
       >
         {children}
       </body>

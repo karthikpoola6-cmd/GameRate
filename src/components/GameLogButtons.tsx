@@ -139,13 +139,16 @@ export function GameLogButtons({ gameId, gameSlug, gameName, gameCoverId }: Game
       return
     }
 
+    // Handle clearing rating (rating = 0)
+    const ratingValue = rating === 0 ? null : rating
+
     if (gameLog) {
       // Update existing log
       const { data, error } = await supabase
         .from('game_logs')
         .update({
           status: 'played',
-          rating: rating,
+          rating: ratingValue,
         })
         .eq('id', gameLog.id)
         .select()
@@ -154,8 +157,8 @@ export function GameLogButtons({ gameId, gameSlug, gameName, gameCoverId }: Game
       if (!error && data) {
         setGameLog(data as GameLog)
       }
-    } else {
-      // Create new log with rating
+    } else if (ratingValue !== null) {
+      // Only create new log if actually rating (not clearing)
       const { data, error } = await supabase
         .from('game_logs')
         .insert({
@@ -165,7 +168,7 @@ export function GameLogButtons({ gameId, gameSlug, gameName, gameCoverId }: Game
           game_name: gameName,
           game_cover_id: gameCoverId,
           status: 'played',
-          rating: rating,
+          rating: ratingValue,
           review: null,
           favorite: false,
         })
@@ -406,48 +409,83 @@ export function GameLogButtons({ gameId, gameSlug, gameName, gameCoverId }: Game
       {/* Star Rating Row */}
       <div className="flex items-center gap-3">
         <span className="text-sm text-foreground-muted">Your rating:</span>
-        <div className="flex items-center">
-          {[0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5].map((rating) => {
-            const starNum = Math.ceil(rating)
-            const isHalf = rating % 1 === 0.5
-            const isFilled = displayRating >= rating
+        <div className="flex items-center gap-1">
+          {[1, 2, 3, 4, 5].map((starNum) => {
+            const currentRating = gameLog?.rating || 0
+            const previewRating = hoverRating || currentRating
+
+            // Determine star fill state for display
+            const isFull = previewRating >= starNum
+            const isHalf = !isFull && previewRating >= starNum - 0.5
+
+            // Click logic: full -> half -> clear
+            const handleStarClick = () => {
+              // Find which star is currently "active" (the rightmost filled/half star)
+              const activeStar = currentRating > 0 ? Math.ceil(currentRating) : 0
+
+              if (starNum === activeStar) {
+                // Clicking the active star - cycle through: full -> half -> clear
+                if (currentRating === starNum) {
+                  // Currently full -> make it half
+                  handleRating(starNum - 0.5)
+                } else {
+                  // Currently half -> clear entirely
+                  handleRating(0)
+                }
+              } else {
+                // Clicking a different star -> set to that full star
+                handleRating(starNum)
+              }
+            }
 
             return (
               <button
-                key={rating}
+                key={starNum}
                 type="button"
                 disabled={saving}
-                onClick={() => handleRating(rating)}
-                onMouseEnter={() => setHoverRating(rating)}
+                onClick={handleStarClick}
+                onMouseEnter={() => setHoverRating(starNum)}
                 onMouseLeave={() => setHoverRating(0)}
-                className={`relative h-8 ${isHalf ? 'w-4' : 'w-4'} hover:scale-110 transition-transform`}
-                aria-label={`Rate ${rating} stars`}
+                className="relative h-8 w-8 hover:scale-110 transition-transform"
+                aria-label={`Rate ${starNum} stars`}
               >
+                {/* Empty star (background) */}
                 <svg
-                  className={`absolute top-0 h-8 w-8 ${isFilled ? 'text-gold' : 'text-foreground-muted/30'}`}
-                  style={{
-                    left: isHalf ? '0' : '-1rem',
-                    clipPath: isHalf ? 'inset(0 50% 0 0)' : 'inset(0 0 0 50%)',
-                  }}
+                  className="absolute top-0 left-0 h-8 w-8 text-foreground-muted/30"
                   fill="currentColor"
                   viewBox="0 0 24 24"
                 >
                   <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
                 </svg>
+                {/* Half star */}
+                {isHalf && (
+                  <svg
+                    className="absolute top-0 left-0 h-8 w-8 text-gold"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                    style={{ clipPath: 'inset(0 50% 0 0)' }}
+                  >
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                  </svg>
+                )}
+                {/* Full star */}
+                {isFull && (
+                  <svg
+                    className="absolute top-0 left-0 h-8 w-8 text-gold"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                  </svg>
+                )}
               </button>
             )
           })}
         </div>
-        {displayRating > 0 && (
-          <span className="text-sm font-medium text-gold">{displayRating}</span>
-        )}
-        {gameLog?.rating && (
-          <button
-            onClick={() => handleRating(0)}
-            className="text-xs text-foreground-muted hover:text-red-400 transition-colors ml-2"
-          >
-            Clear
-          </button>
+        {(hoverRating || (gameLog?.rating ?? 0) > 0) && (
+          <span className="text-sm font-medium text-gold min-w-[2rem]">
+            {hoverRating || gameLog?.rating}
+          </span>
         )}
       </div>
 

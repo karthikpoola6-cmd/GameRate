@@ -1,11 +1,52 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
+import Cropper, { Area } from 'react-easy-crop'
 import { createClient } from '@/lib/supabase/client'
 import type { Profile } from '@/lib/types'
+
+// Helper to create a cropped and compressed image
+async function getCroppedImg(
+  imageSrc: string,
+  pixelCrop: Area,
+  maxSize: number = 400
+): Promise<Blob> {
+  const image = new window.Image()
+  image.src = imageSrc
+  await new Promise((resolve) => (image.onload = resolve))
+
+  const canvas = document.createElement('canvas')
+  const ctx = canvas.getContext('2d')!
+
+  // Set canvas to desired output size
+  canvas.width = maxSize
+  canvas.height = maxSize
+
+  // Draw the cropped area scaled to fit
+  ctx.drawImage(
+    image,
+    pixelCrop.x,
+    pixelCrop.y,
+    pixelCrop.width,
+    pixelCrop.height,
+    0,
+    0,
+    maxSize,
+    maxSize
+  )
+
+  // Convert to blob with compression
+  return new Promise((resolve) => {
+    canvas.toBlob(
+      (blob) => resolve(blob!),
+      'image/jpeg',
+      0.85 // 85% quality
+    )
+  })
+}
 
 export default function EditProfilePage() {
   const [profile, setProfile] = useState<Profile | null>(null)
@@ -26,8 +67,18 @@ export default function EditProfilePage() {
   const [deleteConfirmation, setDeleteConfirmation] = useState('')
   const [deleting, setDeleting] = useState(false)
   const [deleteError, setDeleteError] = useState<string | null>(null)
+  // Cropper state
+  const [showCropper, setShowCropper] = useState(false)
+  const [cropImage, setCropImage] = useState<string | null>(null)
+  const [crop, setCrop] = useState({ x: 0, y: 0 })
+  const [zoom, setZoom] = useState(1)
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null)
   const router = useRouter()
   const supabase = createClient()
+
+  const onCropComplete = useCallback((_: Area, croppedAreaPixels: Area) => {
+    setCroppedAreaPixels(croppedAreaPixels)
+  }, [])
 
   // Load profile on mount
   useEffect(() => {
@@ -55,7 +106,7 @@ export default function EditProfilePage() {
     loadProfile()
   }, [supabase, router])
 
-  // Handle avatar file selection
+  // Handle avatar file selection - opens cropper
   function handleAvatarChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     if (!file) return
@@ -66,15 +117,39 @@ export default function EditProfilePage() {
       return
     }
 
-    // Validate file size (max 2MB)
-    if (file.size > 2 * 1024 * 1024) {
-      setError('Image must be less than 2MB')
-      return
-    }
-
-    setAvatarFile(file)
-    setAvatarPreview(URL.createObjectURL(file))
+    // No file size limit now - we'll compress it after cropping
     setError(null)
+    setCropImage(URL.createObjectURL(file))
+    setCrop({ x: 0, y: 0 })
+    setZoom(1)
+    setShowCropper(true)
+  }
+
+  // Handle crop confirmation
+  async function handleCropConfirm() {
+    if (!cropImage || !croppedAreaPixels) return
+
+    try {
+      const croppedBlob = await getCroppedImg(cropImage, croppedAreaPixels, 400)
+      const croppedFile = new File([croppedBlob], 'avatar.jpg', { type: 'image/jpeg' })
+
+      setAvatarFile(croppedFile)
+      setAvatarPreview(URL.createObjectURL(croppedBlob))
+      setShowCropper(false)
+      setCropImage(null)
+    } catch (err) {
+      console.error('Crop error:', err)
+      setError('Failed to crop image. Please try again.')
+    }
+  }
+
+  // Handle crop cancel
+  function handleCropCancel() {
+    setShowCropper(false)
+    setCropImage(null)
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+    }
   }
 
   // Upload avatar to Supabase Storage
@@ -106,8 +181,8 @@ export default function EditProfilePage() {
 
   // Check username availability
   useEffect(() => {
-    if (!username || username.length < 3 || username === profile?.username) {
-      setUsernameAvailable(username === profile?.username ? true : null)
+    if (!username || username.length < 3 || username.toLowerCase() === profile?.username?.toLowerCase()) {
+      setUsernameAvailable(username.toLowerCase() === profile?.username?.toLowerCase() ? true : null)
       return
     }
 
@@ -116,10 +191,11 @@ export default function EditProfilePage() {
       const { data } = await supabase
         .from('profiles')
         .select('username')
-        .eq('username', username.toLowerCase())
+        .ilike('username', username)
         .single()
 
-      setUsernameAvailable(!data)
+      // Available if no match, or if it's the current user's username (case-insensitive)
+      setUsernameAvailable(!data || data.username.toLowerCase() === profile?.username?.toLowerCase())
       setCheckingUsername(false)
     }, 500)
 
@@ -131,14 +207,14 @@ export default function EditProfilePage() {
     setError(null)
     setSuccess(false)
 
-    const cleanUsername = username.toLowerCase().trim()
+    const cleanUsername = username.trim()
 
-    if (!/^[a-z0-9_]{3,20}$/.test(cleanUsername)) {
+    if (!/^[a-zA-Z0-9_]{3,20}$/.test(cleanUsername)) {
       setError('Username must be 3-20 characters, only letters, numbers, and underscores')
       return
     }
 
-    if (!usernameAvailable && cleanUsername !== profile?.username) {
+    if (!usernameAvailable && cleanUsername.toLowerCase() !== profile?.username?.toLowerCase()) {
       setError('Username is not available')
       return
     }
@@ -193,7 +269,7 @@ export default function EditProfilePage() {
     setLoading(false)
 
     // If username changed, redirect to new profile
-    if (cleanUsername !== profile?.username) {
+    if (cleanUsername.toLowerCase() !== profile?.username?.toLowerCase()) {
       setTimeout(() => {
         router.push(`/user/${cleanUsername}`)
       }, 1000)
@@ -298,7 +374,7 @@ export default function EditProfilePage() {
               </div>
               <div className="flex-1">
                 <p className="text-xs text-foreground-muted">
-                  JPG, PNG or GIF. Max 2MB.
+                  JPG, PNG or GIF. Any size - we&apos;ll optimize it.
                 </p>
                 {(avatarUrl || avatarPreview) && (
                   <button
@@ -328,12 +404,12 @@ export default function EditProfilePage() {
                 id="username"
                 type="text"
                 value={username}
-                onChange={(e) => setUsername(e.target.value.toLowerCase())}
+                onChange={(e) => setUsername(e.target.value.replace(/[^a-zA-Z0-9_]/g, ''))}
                 required
                 maxLength={20}
                 className="w-full bg-background-secondary border border-purple/20 rounded-lg py-3 px-4 pl-8 text-foreground focus:outline-none focus:border-purple focus:ring-2 focus:ring-purple/20 transition-all"
               />
-              {username.length >= 3 && username !== profile.username && (
+              {username.length >= 3 && username.toLowerCase() !== profile.username?.toLowerCase() && (
                 <span className="absolute right-4 top-1/2 -translate-y-1/2">
                   {checkingUsername ? (
                     <span className="text-foreground-muted">...</span>
@@ -387,7 +463,7 @@ export default function EditProfilePage() {
 
           <button
             type="submit"
-            disabled={loading || (username !== profile.username && !usernameAvailable)}
+            disabled={loading || (username.toLowerCase() !== profile.username?.toLowerCase() && !usernameAvailable)}
             className="w-full bg-purple hover:bg-purple-dark disabled:opacity-50 disabled:cursor-not-allowed text-white py-3 rounded-lg font-medium transition-colors"
           >
             {loading ? 'Saving...' : 'Save Changes'}
@@ -415,6 +491,64 @@ export default function EditProfilePage() {
           </div>
         </div>
       </div>
+
+      {/* Image Cropper Modal */}
+      {showCropper && cropImage && (
+        <div className="fixed inset-0 bg-black/90 flex flex-col z-50">
+          {/* Cropper area */}
+          <div className="flex-1 relative">
+            <Cropper
+              image={cropImage}
+              crop={crop}
+              zoom={zoom}
+              aspect={1}
+              cropShape="round"
+              showGrid={false}
+              onCropChange={setCrop}
+              onZoomChange={setZoom}
+              onCropComplete={onCropComplete}
+            />
+          </div>
+
+          {/* Controls */}
+          <div className="bg-background-card border-t border-purple/20 p-4">
+            {/* Zoom slider */}
+            <div className="flex items-center gap-4 mb-4 max-w-md mx-auto">
+              <svg className="w-4 h-4 text-foreground-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10H7" />
+              </svg>
+              <input
+                type="range"
+                min={1}
+                max={3}
+                step={0.1}
+                value={zoom}
+                onChange={(e) => setZoom(Number(e.target.value))}
+                className="flex-1 accent-purple"
+              />
+              <svg className="w-5 h-5 text-foreground-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7" />
+              </svg>
+            </div>
+
+            {/* Buttons */}
+            <div className="flex gap-3 max-w-md mx-auto">
+              <button
+                onClick={handleCropCancel}
+                className="flex-1 bg-background-secondary hover:bg-background text-foreground py-3 rounded-lg font-medium transition-colors border border-purple/20"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleCropConfirm}
+                className="flex-1 bg-purple hover:bg-purple-dark text-white py-3 rounded-lg font-medium transition-colors"
+              >
+                Apply
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (

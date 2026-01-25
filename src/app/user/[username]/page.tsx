@@ -15,11 +15,6 @@ interface PageProps {
   params: Promise<{ username: string }>
 }
 
-const STATUS_LABELS: Record<string, string> = {
-  want_to_play: 'Want to Play',
-  played: 'Played',
-}
-
 export default async function ProfilePage({ params }: PageProps) {
   const { username } = await params
   const supabase = await createClient()
@@ -56,6 +51,7 @@ export default async function ProfilePage({ params }: PageProps) {
       .from('game_logs')
       .select('*')
       .eq('user_id', profile.id)
+      .not('rating', 'is', null)
       .order('updated_at', { ascending: false })
       .limit(8),
     supabase
@@ -238,10 +234,10 @@ export default async function ProfilePage({ params }: PageProps) {
           </section>
         )}
 
-        {/* Recent Games */}
+        {/* Recent Ratings */}
         <section>
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold">Recent Games</h2>
+            <h2 className="text-xl font-bold">Recent Ratings</h2>
             {(gamesCount || 0) > 0 && (
               <Link
                 href={`/user/${username}/games`}
@@ -269,12 +265,6 @@ export default async function ProfilePage({ params }: PageProps) {
                         <span className="text-3xl">🎮</span>
                       </div>
                     )}
-                    {/* Status Badge */}
-                    <div className="absolute bottom-2 left-2 right-2">
-                      <span className="inline-block px-2 py-1 bg-background/90 rounded text-xs">
-                        {STATUS_LABELS[game.status]}
-                      </span>
-                    </div>
                   </div>
                   <p className="mt-2 text-sm truncate group-hover:text-purple transition-colors">
                     {game.game_name}
@@ -322,19 +312,6 @@ export default async function ProfilePage({ params }: PageProps) {
         </section>
       </div>
 
-      {/* Footer */}
-      <footer className="py-8 px-4 border-t border-purple/10 mt-12">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-          <span className="text-foreground-muted text-sm">
-            © 2025 SavePoint. Built for gamers.
-          </span>
-          <div className="flex items-center gap-6 text-sm text-foreground-muted">
-            <Link href="/about" className="hover:text-foreground transition-colors">About</Link>
-            <Link href="/privacy" className="hover:text-foreground transition-colors">Privacy</Link>
-            <Link href="/terms" className="hover:text-foreground transition-colors">Terms</Link>
-          </div>
-        </div>
-      </footer>
     </div>
   )
 }

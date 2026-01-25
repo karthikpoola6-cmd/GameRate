@@ -54,7 +54,7 @@ export default async function Home() {
       <div className="min-h-screen bg-background">
         <Navigation />
 
-        <main className="pt-24 pb-16 px-4">
+        <main className="pt-4 lg:pt-24 pb-16 px-4">
           <div className="max-w-4xl mx-auto">
             {/* Activity Feed */}
             <section className="mb-12">
@@ -200,15 +200,10 @@ export default async function Home() {
 
       {/* Footer */}
       <footer className="py-8 px-4 border-t border-purple/10">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="max-w-6xl mx-auto text-center">
           <span className="text-foreground-muted text-sm">
             © 2025 SavePoint. Built for gamers.
           </span>
-          <div className="flex items-center gap-6 text-sm text-foreground-muted">
-            <Link href="/about" className="hover:text-foreground transition-colors">About</Link>
-            <Link href="/privacy" className="hover:text-foreground transition-colors">Privacy</Link>
-            <Link href="/terms" className="hover:text-foreground transition-colors">Terms</Link>
-          </div>
         </div>
       </footer>
     </div>

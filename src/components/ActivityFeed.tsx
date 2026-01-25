@@ -89,32 +89,6 @@ export async function ActivityFeed({ userId }: { userId: string }) {
     }
   }
 
-  // If no activity from follows, show recent rated activity from anyone
-  if (!feedItems || feedItems.length === 0) {
-    const { data: recentActivity } = await supabase
-      .from('game_logs')
-      .select(`
-        *,
-        profiles:user_id (username, display_name, avatar_url)
-      `)
-      .neq('user_id', userId)
-      .not('rating', 'is', null)
-      .order('updated_at', { ascending: false })
-      .limit(50)
-
-    // Filter to only show the most recent activity per user
-    if (recentActivity) {
-      const seenUsers = new Set<string>()
-      feedItems = recentActivity.filter((item) => {
-        if (seenUsers.has(item.user_id)) {
-          return false
-        }
-        seenUsers.add(item.user_id)
-        return true
-      }) as ActivityItem[]
-    }
-  }
-
   if (!feedItems || feedItems.length === 0) {
     return (
       <div className="text-center py-12">

@@ -6,27 +6,6 @@ import { Navigation } from "@/components/Navigation";
 import { GameLogButtons } from "@/components/GameLogButtons";
 import { AddToListButton } from "@/components/AddToListButton";
 
-// Website category mapping from IGDB
-const WEBSITE_CATEGORIES: Record<number, { name: string; icon: string }> = {
-  1: { name: "Official", icon: "🌐" },
-  2: { name: "Wikia", icon: "📖" },
-  3: { name: "Wikipedia", icon: "📚" },
-  4: { name: "Facebook", icon: "📘" },
-  5: { name: "Twitter", icon: "🐦" },
-  6: { name: "Twitch", icon: "📺" },
-  8: { name: "Instagram", icon: "📷" },
-  9: { name: "YouTube", icon: "▶️" },
-  10: { name: "iPhone", icon: "📱" },
-  11: { name: "iPad", icon: "📱" },
-  12: { name: "Android", icon: "🤖" },
-  13: { name: "Steam", icon: "🎮" },
-  14: { name: "Reddit", icon: "🔴" },
-  15: { name: "Itch", icon: "🎯" },
-  16: { name: "Epic Games", icon: "🎮" },
-  17: { name: "GOG", icon: "🎮" },
-  18: { name: "Discord", icon: "💬" },
-};
-
 function StarRating({ rating, size = "default" }: { rating: number; size?: "default" | "large" }) {
   const normalizedRating = rating / 20;
   const fullStars = Math.floor(normalizedRating);
@@ -303,60 +282,16 @@ export default async function GamePage({ params }: PageProps) {
               </dl>
             </div>
 
-            {/* Links */}
-            {game.websites && game.websites.length > 0 && (
-              <div className="bg-background-card rounded-xl p-6 border border-purple/10">
-                <h3 className="text-lg font-semibold mb-4">Links</h3>
-                <div className="space-y-2">
-                  {game.websites.slice(0, 6).map((website) => {
-                    const categoryInfo = WEBSITE_CATEGORIES[website.category] || {
-                      name: "Link",
-                      icon: "🔗",
-                    };
-                    return (
-                      <a
-                        key={website.id}
-                        href={website.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-3 text-foreground-muted hover:text-purple-light transition-colors py-2"
-                      >
-                        <span>{categoryInfo.icon}</span>
-                        <span>{categoryInfo.name}</span>
-                        <svg
-                          className="w-4 h-4 ml-auto opacity-50"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                          />
-                        </svg>
-                      </a>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
           </div>
         </div>
       </div>
 
       {/* Footer */}
       <footer className="py-8 px-4 border-t border-purple/10 mt-12">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="max-w-6xl mx-auto text-center">
           <span className="text-foreground-muted text-sm">
             © 2025 SavePoint. Built for gamers.
           </span>
-          <div className="flex items-center gap-6 text-sm text-foreground-muted">
-            <Link href="/about" className="hover:text-foreground transition-colors">About</Link>
-            <Link href="/privacy" className="hover:text-foreground transition-colors">Privacy</Link>
-            <Link href="/terms" className="hover:text-foreground transition-colors">Terms</Link>
-          </div>
         </div>
       </footer>
     </div>
