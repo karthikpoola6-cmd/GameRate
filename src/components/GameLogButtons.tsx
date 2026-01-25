@@ -148,6 +148,7 @@ export function GameLogButtons({ gameId, gameSlug, gameName, gameCoverId }: Game
           .eq('id', gameLog.id)
         setGameLog(null)
       }
+      setHoverRating(0)
       setSaving(false)
       return
     }
@@ -189,6 +190,7 @@ export function GameLogButtons({ gameId, gameSlug, gameName, gameCoverId }: Game
         setGameLog(data as GameLog)
       }
     }
+    setHoverRating(0)
     setSaving(false)
   }
 
