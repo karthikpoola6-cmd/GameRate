@@ -178,7 +178,7 @@ export function GameLogButtons({ gameId, gameSlug, gameName, gameCoverId }: Game
           game_name: gameName,
           game_cover_id: gameCoverId,
           status: 'played',
-          rating: ratingValue,
+          rating: rating,
           review: null,
           favorite: false,
         })
