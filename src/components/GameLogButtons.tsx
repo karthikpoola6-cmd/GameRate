@@ -180,7 +180,6 @@ export function GameLogButtons({ gameId, gameSlug, gameName, gameCoverId }: Game
       }
     }
     setSaving(false)
-    router.refresh()
   }
 
   async function handleFavorite() {
