@@ -139,8 +139,18 @@ export function GameLogButtons({ gameId, gameSlug, gameName, gameCoverId }: Game
       return
     }
 
-    // Handle clearing rating (rating = 0)
-    const ratingValue = rating === 0 ? null : rating
+    // Handle clearing rating (rating = 0) - delete the log entirely
+    if (rating === 0) {
+      if (gameLog) {
+        await supabase
+          .from('game_logs')
+          .delete()
+          .eq('id', gameLog.id)
+        setGameLog(null)
+      }
+      setSaving(false)
+      return
+    }
 
     if (gameLog) {
       // Update existing log
@@ -148,7 +158,7 @@ export function GameLogButtons({ gameId, gameSlug, gameName, gameCoverId }: Game
         .from('game_logs')
         .update({
           status: 'played',
-          rating: ratingValue,
+          rating: rating,
         })
         .eq('id', gameLog.id)
         .select()
@@ -157,7 +167,7 @@ export function GameLogButtons({ gameId, gameSlug, gameName, gameCoverId }: Game
       if (!error && data) {
         setGameLog(data as GameLog)
       }
-    } else if (ratingValue !== null) {
+    } else {
       // Only create new log if actually rating (not clearing)
       const { data, error } = await supabase
         .from('game_logs')
