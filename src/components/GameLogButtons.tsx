@@ -440,7 +440,7 @@ export function GameLogButtons({ gameId, gameSlug, gameName, gameCoverId }: Game
 
             return (
               <button
-                key={`${starNum}-${currentRating}`}
+                key={starNum}
                 type="button"
                 disabled={saving}
                 onClick={handleStarClick}
@@ -457,31 +457,23 @@ export function GameLogButtons({ gameId, gameSlug, gameName, gameCoverId }: Game
                 >
                   <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
                 </svg>
-                {/* Half star - using overflow hidden instead of clipPath for mobile Safari */}
-                {isHalf && (
-                  <div
-                    className="absolute top-0 left-0 h-8 overflow-hidden"
-                    style={{ width: '50%' }}
-                  >
-                    <svg
-                      className="h-8 w-8 text-gold"
-                      fill="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                    </svg>
-                  </div>
-                )}
-                {/* Full star */}
-                {isFull && (
-                  <svg
-                    className="absolute top-0 left-0 h-8 w-8 text-gold"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                  </svg>
-                )}
+                {/* Half star - always rendered, opacity toggled */}
+                <svg
+                  className={`absolute top-0 left-0 h-8 w-8 text-gold transition-opacity duration-75 ${isHalf ? 'opacity-100' : 'opacity-0'}`}
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                  style={{ clipPath: 'inset(0 50% 0 0)' }}
+                >
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                </svg>
+                {/* Full star - always rendered, opacity toggled */}
+                <svg
+                  className={`absolute top-0 left-0 h-8 w-8 text-gold transition-opacity duration-75 ${isFull ? 'opacity-100' : 'opacity-0'}`}
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                </svg>
               </button>
             )
           })}
