@@ -33,6 +33,7 @@ export function FavoriteGames({ favorites: initialFavorites, isOwnProfile }: Fav
   const slots = Array(5).fill(null).map((_, i) => sortedFavorites[i] || null)
 
   async function handleRemoveFavorite(gameId: string) {
+    if (!isOwnProfile) return
     // Optimistically update UI
     setFavorites(favorites.filter(f => f.id !== gameId))
 
@@ -44,6 +45,7 @@ export function FavoriteGames({ favorites: initialFavorites, isOwnProfile }: Fav
   }
 
   async function handleDragEnd(fromIndex: number, toIndex: number) {
+    if (!isOwnProfile) return
     if (fromIndex === toIndex) return
 
     const newSlots = [...slots]
@@ -78,11 +80,13 @@ export function FavoriteGames({ favorites: initialFavorites, isOwnProfile }: Fav
   }
 
   function handleDragStart(e: React.DragEvent, index: number) {
+    if (!isOwnProfile) return
     setDraggedIndex(index)
     e.dataTransfer.effectAllowed = 'move'
   }
 
   function handleDragOver(e: React.DragEvent, index: number) {
+    if (!isOwnProfile) return
     e.preventDefault()
     setDragOverIndex(index)
   }
@@ -92,6 +96,7 @@ export function FavoriteGames({ favorites: initialFavorites, isOwnProfile }: Fav
   }
 
   function handleDrop(e: React.DragEvent, toIndex: number) {
+    if (!isOwnProfile) return
     e.preventDefault()
     if (draggedIndex !== null && draggedIndex !== toIndex) {
       handleDragEnd(draggedIndex, toIndex)
