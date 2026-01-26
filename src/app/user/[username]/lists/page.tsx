@@ -54,29 +54,29 @@ export default async function UserListsPage({
   const typedLists = (lists || []) as ListWithItems[]
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background overflow-x-hidden">
       <Navigation />
 
       <main className="pt-24 pb-16 px-4">
-        <div className="max-w-4xl mx-auto">
-          <div className="flex items-center justify-between mb-8">
+        <div className="max-w-4xl mx-auto overflow-hidden">
+          <div className="flex items-center justify-between mb-6">
             <div>
               <Link
                 href={`/user/${username}`}
-                className="text-purple hover:text-purple-light transition-colors text-sm"
+                className="text-purple text-sm"
               >
                 ← Back to profile
               </Link>
-              <h1 className="text-2xl font-bold mt-4">
+              <h1 className="text-2xl font-bold mt-3">
                 {isOwnProfile ? 'Your Lists' : `${profile.display_name || profile.username}'s Lists`}
               </h1>
-              <p className="text-foreground-muted">{typedLists.length} lists</p>
+              <p className="text-foreground-muted text-sm">{typedLists.length} lists</p>
             </div>
 
             {isOwnProfile && (
               <Link
                 href="/lists/new"
-                className="bg-purple hover:bg-purple-dark text-white px-4 py-2 rounded-lg font-medium transition-colors"
+                className="bg-purple text-white px-4 py-2 rounded-lg font-medium text-sm"
               >
                 Create List
               </Link>
@@ -91,70 +91,54 @@ export default async function UserListsPage({
               {isOwnProfile && (
                 <Link
                   href="/lists/new"
-                  className="text-purple hover:text-purple-light transition-colors"
+                  className="text-purple"
                 >
                   Create your first list →
                 </Link>
               )}
             </div>
           ) : (
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-6">
               {typedLists.map((list) => (
                 <Link
                   key={list.id}
                   href={`/list/${list.id}`}
-                  className="block bg-background-card border border-purple/10 rounded-lg p-4 hover:border-purple/30 transition-colors"
+                  className="block"
                 >
-                  {/* Cover preview - sorted by position */}
-                  <div className="flex gap-1 mb-3 h-16 overflow-hidden rounded">
+                  {/* List header */}
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="font-semibold text-foreground">{list.name}</h3>
+                    <span className="text-sm text-foreground-muted">
+                      {list.list_items.length} games
+                    </span>
+                  </div>
+
+                  {/* Game posters row */}
+                  <div className="flex gap-1">
                     {[...list.list_items]
                       .sort((a, b) => a.position - b.position)
-                      .slice(0, 4)
+                      .slice(0, 6)
                       .map((item, i) => (
-                        <div key={i} className="flex-1 bg-background-secondary">
+                        <div key={i} className="w-12 h-16 bg-background-card rounded overflow-hidden flex-shrink-0">
                           {item.game_cover_id && (
                             <Image
                               src={getCoverUrl(item.game_cover_id, 'cover_small')}
                               alt=""
-                              width={45}
+                              width={48}
                               height={64}
                               className="w-full h-full object-cover"
                             />
                           )}
                         </div>
                       ))}
-                    {list.list_items.length < 4 &&
-                      [...Array(4 - list.list_items.length)].map((_, i) => (
-                        <div key={`empty-${i}`} className="flex-1 bg-background-secondary" />
-                      ))}
                   </div>
 
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold truncate">{list.name}</h3>
-                      {list.description && (
-                        <p className="text-sm text-foreground-muted truncate mt-1">
-                          {list.description}
-                        </p>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-1 flex-shrink-0">
-                      {list.is_ranked && (
-                        <span className="px-2 py-0.5 bg-gold/20 text-gold text-xs rounded">
-                          Ranked
-                        </span>
-                      )}
-                      {!list.is_public && (
-                        <span className="px-2 py-0.5 bg-purple/20 text-purple text-xs rounded">
-                          Private
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
-                  <p className="text-xs text-foreground-muted mt-2">
-                    {list.list_items.length} games
-                  </p>
+                  {/* Description */}
+                  {list.description && (
+                    <p className="text-xs text-foreground-muted mt-2 line-clamp-1">
+                      {list.description}
+                    </p>
+                  )}
                 </Link>
               ))}
             </div>

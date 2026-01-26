@@ -3,6 +3,7 @@ import Image from "next/image";
 import { getPopularGames, getCoverUrl, type IGDBGame } from "@/lib/igdb";
 import { Navigation } from "@/components/Navigation";
 import { ActivityFeed } from "@/components/ActivityFeed";
+import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = 'force-dynamic'
@@ -14,8 +15,8 @@ function GameCard({ game }: { game: IGDBGame }) {
   const rating = game.rating ? (game.rating / 20).toFixed(1) : null;
 
   return (
-    <Link href={`/game/${game.slug}`} className="group">
-      <div className="relative aspect-[3/4] bg-background-card rounded-md sm:rounded-lg overflow-hidden transition-transform duration-200 group-hover:scale-105 group-hover:ring-2 group-hover:ring-purple">
+    <Link href={`/game/${game.slug}`}>
+      <div className="relative aspect-[3/4] bg-background-card rounded-md sm:rounded-lg overflow-hidden">
         {game.cover?.image_id ? (
           <Image
             src={getCoverUrl(game.cover.image_id)}
@@ -31,7 +32,7 @@ function GameCard({ game }: { game: IGDBGame }) {
         )}
       </div>
       <div className="mt-1 sm:mt-2">
-        <h3 className="text-xs sm:text-sm font-medium text-foreground truncate group-hover:text-purple-light transition-colors">
+        <h3 className="text-xs sm:text-sm font-medium text-foreground truncate">
           {game.name}
         </h3>
         <div className="flex items-center justify-between mt-0.5 sm:mt-1">
@@ -113,12 +114,9 @@ export default async function Home() {
             The social network for gamers. Rate and review games, create lists, follow friends, and discover your next favorite game.
           </p>
 
-          <Link
-            href="/signup"
-            className="inline-block bg-gradient-to-r from-purple to-purple-dark hover:from-purple-dark hover:to-purple text-white px-8 py-3 rounded-full font-medium transition-all hover:shadow-lg hover:shadow-purple/25"
-          >
-            Get started — it&apos;s free
-          </Link>
+          <Button size="lg" asChild>
+            <Link href="/signup">Get started — it&apos;s free</Link>
+          </Button>
         </div>
       </section>
 
@@ -201,12 +199,9 @@ export default async function Home() {
           <p className="text-foreground-muted mb-8">
             Join thousands of gamers who use SavePoint to track their gaming journey.
           </p>
-          <Link
-            href="/signup"
-            className="inline-block bg-gradient-to-r from-purple to-purple-dark hover:from-purple-dark hover:to-purple text-white px-8 py-3 rounded-full font-medium transition-all hover:shadow-lg hover:shadow-purple/25"
-          >
-            Get started — it&apos;s free
-          </Link>
+          <Button size="lg" asChild>
+            <Link href="/signup">Get started — it&apos;s free</Link>
+          </Button>
         </div>
       </section>
 

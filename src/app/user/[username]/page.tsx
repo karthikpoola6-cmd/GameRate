@@ -4,6 +4,7 @@ import Image from 'next/image'
 import { createClient } from '@/lib/supabase/server'
 import { Navigation } from '@/components/Navigation'
 import { FavoriteGames } from '@/components/FavoriteGames'
+import { Button } from '@/components/ui/button'
 import { getCoverUrl } from '@/lib/igdb'
 import { FollowButtonClient } from './FollowButton'
 import type { Profile, GameLog } from '@/lib/types'
@@ -33,13 +34,17 @@ export default async function ProfilePage({ params }: PageProps) {
     notFound()
   }
 
-  // Get stats and games
+  // Get stats, games, lists, and reviews
+  const isOwnProfileCheck = currentUser?.id === profile.id
+
   const [
     { count: gamesCount },
     { count: followersCount },
     { count: followingCount },
     { data: recentGames },
     { data: favoriteGames },
+    { data: userLists, count: listsCount },
+    { data: userReviews, count: reviewsCount },
   ] = await Promise.all([
     supabase.from('game_logs').select('*', { count: 'exact', head: true }).eq('user_id', profile.id),
     supabase.from('follows').select('*', { count: 'exact', head: true }).eq('following_id', profile.id),
@@ -58,6 +63,29 @@ export default async function ProfilePage({ params }: PageProps) {
       .eq('favorite', true)
       .order('updated_at', { ascending: false })
       .limit(5),
+    // Get user's lists (public only if not own profile) - just 1 most recent
+    (async () => {
+      let query = supabase
+        .from('lists')
+        .select('id, name, list_items(game_cover_id, position)', { count: 'exact' })
+        .eq('user_id', profile.id)
+        .order('created_at', { ascending: false })
+        .limit(1)
+
+      if (!isOwnProfileCheck) {
+        query = query.eq('is_public', true)
+      }
+
+      return query
+    })(),
+    // Get user's most recent review
+    supabase
+      .from('game_logs')
+      .select('id, game_slug, game_name, game_cover_id, rating, review, updated_at', { count: 'exact' })
+      .eq('user_id', profile.id)
+      .not('review', 'is', null)
+      .order('updated_at', { ascending: false })
+      .limit(1),
   ])
 
   // Check if current user follows this profile
@@ -126,26 +154,20 @@ export default async function ProfilePage({ params }: PageProps) {
             </div>
 
             {/* Actions */}
-            <div className="flex gap-3">
+            <div className="flex gap-2">
               {isOwnProfile ? (
-                <Link
-                  href="/settings/profile"
-                  className="bg-background-card hover:bg-background-secondary text-foreground px-6 py-2 rounded-lg font-medium transition-colors border border-purple/20"
-                >
-                  Edit Profile
-                </Link>
+                <Button variant="outline" size="sm" asChild>
+                  <Link href="/settings/profile">Edit Profile</Link>
+                </Button>
               ) : currentUser ? (
                 <FollowButtonClient
                   profileId={profile.id}
                   initialFollowing={isFollowing}
                 />
               ) : (
-                <Link
-                  href="/login"
-                  className="bg-purple hover:bg-purple-dark text-white px-6 py-2 rounded-lg font-medium transition-colors"
-                >
-                  Sign in to follow
-                </Link>
+                <Button size="sm" asChild>
+                  <Link href="/login">Sign in to follow</Link>
+                </Button>
               )}
             </div>
           </div>
@@ -185,14 +207,14 @@ export default async function ProfilePage({ params }: PageProps) {
               }}
             >
               {recentGames.map((game: GameLog) => (
-                <Link key={game.id} href={`/game/${game.game_slug}`} className="group">
+                <Link key={game.id} href={`/game/${game.game_slug}`}>
                   <div className="relative aspect-[3/4] bg-background-card rounded-md sm:rounded-lg overflow-hidden">
                     {game.game_cover_id ? (
                       <Image
                         src={getCoverUrl(game.game_cover_id)}
                         alt={game.game_name}
                         fill
-                        className="object-cover group-hover:scale-105 transition-transform"
+                        className="object-cover"
                       />
                     ) : (
                       <div className="absolute inset-0 bg-purple/20 flex items-center justify-center">
@@ -200,27 +222,15 @@ export default async function ProfilePage({ params }: PageProps) {
                       </div>
                     )}
                   </div>
-                  <p className="mt-1 sm:mt-2 text-xs sm:text-sm truncate group-hover:text-purple transition-colors">
+                  <p className="mt-1 sm:mt-2 text-xs sm:text-sm truncate">
                     {game.game_name}
                   </p>
                   {game.rating && (
-                    <div className="flex gap-0.5 mt-0.5 sm:mt-1">
-                      {[1, 2, 3, 4, 5].map((star) => {
-                        const fill = Math.min(1, Math.max(0, game.rating! - star + 1))
-                        return (
-                          <span key={star} className="relative w-2 h-2 sm:w-3 sm:h-3">
-                            <span className="absolute text-foreground-muted/30 text-[10px] sm:text-xs">★</span>
-                            {fill > 0 && (
-                              <span
-                                className="absolute text-gold text-[10px] sm:text-xs overflow-hidden"
-                                style={{ width: `${fill * 100}%` }}
-                              >
-                                ★
-                              </span>
-                            )}
-                          </span>
-                        )
-                      })}
+                    <div className="flex mt-0.5">
+                      <span className="text-gold text-[10px] sm:text-xs">
+                        {'★'.repeat(Math.floor(game.rating))}
+                        {game.rating % 1 >= 0.5 && '½'}
+                      </span>
                     </div>
                   )}
                 </Link>
@@ -244,6 +254,105 @@ export default async function ProfilePage({ params }: PageProps) {
             </div>
           )}
         </section>
+
+        {/* Reviews Section */}
+        {(reviewsCount || 0) > 0 && (
+          <section>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-bold">Reviews</h2>
+              <Link
+                href={`/user/${username}/reviews`}
+                className="text-foreground-muted text-sm"
+              >
+                {reviewsCount} →
+              </Link>
+            </div>
+            <div>
+              {userReviews?.map((review: { id: string; game_slug: string; game_name: string; game_cover_id: string | null; rating: number | null; review: string; updated_at: string }) => (
+                <Link
+                  key={review.id}
+                  href={`/game/${review.game_slug}`}
+                  className="flex gap-3 group"
+                >
+                  <div className="w-12 h-16 bg-background-card rounded overflow-hidden flex-shrink-0">
+                    {review.game_cover_id ? (
+                      <Image
+                        src={getCoverUrl(review.game_cover_id, 'cover_small')}
+                        alt={review.game_name}
+                        width={48}
+                        height={64}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-purple/20">
+                        <span className="text-lg">🎮</span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <p className="font-medium text-sm truncate">{review.game_name}</p>
+                      {review.rating && (
+                        <span className="text-gold text-xs flex-shrink-0">
+                          {'★'.repeat(Math.floor(review.rating))}
+                          {review.rating % 1 >= 0.5 && '½'}
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-xs text-foreground-muted line-clamp-2 mt-1">{review.review}</p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Lists Section */}
+        {(listsCount || 0) > 0 && (
+          <section>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-bold">Lists</h2>
+              <Link
+                href={`/user/${username}/lists`}
+                className="text-foreground-muted text-sm"
+              >
+                {listsCount} →
+              </Link>
+            </div>
+            <div className="space-y-3">
+              {userLists?.map((list: { id: string; name: string; list_items: { game_cover_id: string | null; position: number }[] }) => (
+                <Link
+                  key={list.id}
+                  href={`/list/${list.id}`}
+                  className="flex items-center gap-3"
+                >
+                  <div className="flex gap-0.5 flex-shrink-0">
+                    {[...list.list_items]
+                      .sort((a, b) => a.position - b.position)
+                      .slice(0, 4)
+                      .map((item, i) => (
+                        <div key={i} className="w-8 h-10 bg-background-card rounded overflow-hidden">
+                          {item.game_cover_id && (
+                            <Image
+                              src={getCoverUrl(item.game_cover_id, 'cover_small')}
+                              alt=""
+                              width={32}
+                              height={40}
+                              className="w-full h-full object-cover"
+                            />
+                          )}
+                        </div>
+                      ))}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-sm truncate">{list.name}</p>
+                    <p className="text-xs text-foreground-muted">{list.list_items.length} games</p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
       </div>
 
     </div>

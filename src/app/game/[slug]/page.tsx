@@ -5,37 +5,9 @@ import { getGameBySlug, getCoverUrl, getScreenshotUrl, type IGDBGame } from "@/l
 import { Navigation } from "@/components/Navigation";
 import { GameLogButtons } from "@/components/GameLogButtons";
 import { AddToListButton } from "@/components/AddToListButton";
+import { createClient } from "@/lib/supabase/server";
 
-function StarRating({ rating, size = "default" }: { rating: number; size?: "default" | "large" }) {
-  const normalizedRating = rating / 20;
-  const fullStars = Math.floor(normalizedRating);
-  const hasHalf = normalizedRating % 1 >= 0.5;
-  const starSize = size === "large" ? "w-6 h-6" : "w-4 h-4";
-
-  return (
-    <div className="flex items-center gap-1">
-      {[...Array(5)].map((_, i) => (
-        <svg
-          key={i}
-          className={`${starSize} ${
-            i < fullStars
-              ? "text-gold"
-              : i === fullStars && hasHalf
-              ? "text-gold"
-              : "text-foreground-muted/30"
-          }`}
-          fill="currentColor"
-          viewBox="0 0 20 20"
-        >
-          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-        </svg>
-      ))}
-      <span className={`ml-2 ${size === "large" ? "text-xl font-semibold" : "text-sm"} text-foreground-muted`}>
-        {normalizedRating.toFixed(1)}
-      </span>
-    </div>
-  );
-}
+export const dynamic = 'force-dynamic'
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -49,47 +21,116 @@ export default async function GamePage({ params }: PageProps) {
     notFound();
   }
 
+  const supabase = await createClient();
+  const { data: { user: currentUser } } = await supabase.auth.getUser();
+
+  // Get friends who played this game
+  let playedByFriends: { id: string; username: string; display_name: string | null; avatar_url: string | null; rating: number | null }[] = [];
+
+  if (currentUser) {
+    // Get who the current user follows
+    const { data: followingData } = await supabase
+      .from('follows')
+      .select('following_id')
+      .eq('follower_id', currentUser.id);
+
+    const followingIds = followingData?.map(f => f.following_id) || [];
+
+    if (followingIds.length > 0) {
+      // Get friends who have logged this game
+      const { data: friendLogs } = await supabase
+        .from('game_logs')
+        .select('user_id, rating, profiles:user_id(id, username, display_name, avatar_url)')
+        .eq('game_id', game.id)
+        .in('user_id', followingIds)
+        .limit(10);
+
+      if (friendLogs) {
+        playedByFriends = friendLogs.map(log => ({
+          id: (log.profiles as any).id,
+          username: (log.profiles as any).username,
+          display_name: (log.profiles as any).display_name,
+          avatar_url: (log.profiles as any).avatar_url,
+          rating: log.rating,
+        }));
+      }
+    }
+  }
+
   const releaseYear = game.first_release_date
     ? new Date(game.first_release_date * 1000).getFullYear()
     : null;
 
-  const releaseDate = game.first_release_date
-    ? new Date(game.first_release_date * 1000).toLocaleDateString("en-US", {
-        month: "long",
-        day: "numeric",
-        year: "numeric",
-      })
-    : null;
-
   const developers = game.involved_companies?.filter((c) => c.developer) || [];
-  const publishers = game.involved_companies?.filter((c) => c.publisher) || [];
 
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
 
-      {/* Hero Section with Screenshot Background */}
-      <div className="relative pt-16">
-        {/* Background Screenshot */}
-        {game.screenshots && game.screenshots.length > 0 && (
-          <div className="absolute inset-0 h-[450px] overflow-hidden">
+      {/* Backdrop Screenshot - Letterboxd style */}
+      <div className="relative w-full h-[45vh] min-h-[300px]">
+        {game.screenshots && game.screenshots.length > 0 ? (
+          <>
             <Image
               src={getScreenshotUrl(game.screenshots[0].image_id, "1080p")}
               alt=""
               fill
-              className="object-cover opacity-50"
+              className="object-cover opacity-60"
               priority
             />
-            <div className="absolute inset-0 bg-gradient-to-b from-background/30 via-background/60 to-background" />
-          </div>
+            <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-background/30" />
+          </>
+        ) : (
+          <div className="absolute inset-0 bg-gradient-to-b from-purple/20 to-background" />
         )}
 
-        {/* Game Info */}
-        <div className="relative max-w-6xl mx-auto px-4 pt-12 pb-8">
-          <div className="flex flex-col md:flex-row gap-8">
-            {/* Cover Art */}
+        {/* Back button */}
+        <Link
+          href="/"
+          className="absolute top-20 left-4 z-10 w-10 h-10 flex items-center justify-center bg-black/40 rounded-full"
+        >
+          <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+        </Link>
+      </div>
+
+      {/* Main Content - Title left, Poster right */}
+      <div className="px-4 -mt-20 relative z-10">
+        <div className="max-w-4xl mx-auto">
+          <div className="flex gap-4">
+            {/* Left side - Title and info */}
+            <div className="flex-1 min-w-0 pt-4">
+              <h1 className="text-2xl sm:text-3xl font-bold leading-tight">{game.name}</h1>
+
+              <div className="flex items-center gap-2 mt-2 text-sm text-foreground-muted">
+                {releaseYear && <span>{releaseYear}</span>}
+                {developers.length > 0 && (
+                  <>
+                    <span>•</span>
+                    <span>{developers[0].company.name}</span>
+                  </>
+                )}
+              </div>
+
+              {/* Genres */}
+              {game.genres && game.genres.length > 0 && (
+                <div className="flex flex-wrap gap-1.5 mt-3">
+                  {game.genres.slice(0, 3).map((genre) => (
+                    <span
+                      key={genre.id}
+                      className="px-2 py-0.5 bg-purple/20 text-purple-light rounded text-xs"
+                    >
+                      {genre.name}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Right side - Poster */}
             <div className="flex-shrink-0">
-              <div className="relative w-64 aspect-[3/4] bg-background-card rounded-lg overflow-hidden shadow-2xl ring-1 ring-purple/20">
+              <div className="relative w-28 sm:w-32 aspect-[3/4] bg-background-card rounded-lg overflow-hidden shadow-xl ring-1 ring-white/10">
                 {game.cover?.image_id ? (
                   <Image
                     src={getCoverUrl(game.cover.image_id)}
@@ -100,200 +141,160 @@ export default async function GamePage({ params }: PageProps) {
                   />
                 ) : (
                   <div className="absolute inset-0 bg-gradient-to-br from-purple/20 to-purple-dark/40 flex items-center justify-center">
-                    <span className="text-6xl">🎮</span>
+                    <span className="text-3xl">🎮</span>
                   </div>
                 )}
               </div>
             </div>
-
-            {/* Game Details */}
-            <div className="flex-1 min-w-0">
-              <div className="flex items-start gap-4 flex-wrap">
-                <h1 className="text-4xl md:text-5xl font-bold">{game.name}</h1>
-                {releaseYear && (
-                  <span className="text-2xl text-foreground-muted font-light mt-2">
-                    ({releaseYear})
-                  </span>
-                )}
-              </div>
-
-              {/* Genres */}
-              {game.genres && game.genres.length > 0 && (
-                <div className="flex flex-wrap gap-2 mt-4">
-                  {game.genres.map((genre) => (
-                    <span
-                      key={genre.id}
-                      className="px-3 py-1 bg-purple/20 text-purple-light rounded-full text-sm"
-                    >
-                      {genre.name}
-                    </span>
-                  ))}
-                </div>
-              )}
-
-              {/* Rating */}
-              {game.rating && (
-                <div className="mt-6">
-                  <StarRating rating={game.rating} size="large" />
-                  {game.rating_count && (
-                    <p className="text-sm text-foreground-muted mt-1">
-                      Based on {game.rating_count.toLocaleString()} ratings
-                    </p>
-                  )}
-                </div>
-              )}
-
-              {/* Game Logging Actions */}
-              <GameLogButtons
-                gameId={game.id}
-                gameSlug={slug}
-                gameName={game.name}
-                gameCoverId={game.cover?.image_id || null}
-              />
-
-              {/* Add to List */}
-              <div className="mt-4">
-                <AddToListButton
-                  game={{
-                    id: game.id,
-                    slug: slug,
-                    name: game.name,
-                    cover_id: game.cover?.image_id,
-                  }}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Main Content */}
-      <div className="max-w-6xl mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left Column - Main Content */}
-          <div className="lg:col-span-2 space-y-8">
-            {/* Summary */}
-            {game.summary && (
-              <section>
-                <h2 className="text-xl font-semibold mb-4">About</h2>
-                <p className="text-foreground-muted leading-relaxed">{game.summary}</p>
-              </section>
-            )}
-
-            {/* Storyline */}
-            {game.storyline && (
-              <section>
-                <h2 className="text-xl font-semibold mb-4">Storyline</h2>
-                <p className="text-foreground-muted leading-relaxed">{game.storyline}</p>
-              </section>
-            )}
-
-            {/* Screenshots */}
-            {game.screenshots && game.screenshots.length > 1 && (
-              <section>
-                <h2 className="text-xl font-semibold mb-4">Screenshots</h2>
-                <div className="grid grid-cols-2 gap-4">
-                  {game.screenshots.slice(1, 5).map((screenshot) => (
-                    <div
-                      key={screenshot.id}
-                      className="relative aspect-video bg-background-card rounded-lg overflow-hidden"
-                    >
-                      <Image
-                        src={getScreenshotUrl(screenshot.image_id, "screenshot_big")}
-                        alt={`${game.name} screenshot`}
-                        fill
-                        className="object-cover hover:scale-105 transition-transform duration-300"
-                      />
-                    </div>
-                  ))}
-                </div>
-              </section>
-            )}
           </div>
 
-          {/* Right Column - Sidebar */}
-          <div className="space-y-6">
-            {/* Game Info Card */}
-            <div className="bg-background-card rounded-xl p-6 border border-purple/10">
-              <h3 className="text-lg font-semibold mb-4">Game Info</h3>
-
-              <dl className="space-y-4">
-                {releaseDate && (
-                  <div>
-                    <dt className="text-sm text-foreground-muted">Release Date</dt>
-                    <dd className="text-foreground mt-1">{releaseDate}</dd>
-                  </div>
-                )}
-
-                {developers.length > 0 && (
-                  <div>
-                    <dt className="text-sm text-foreground-muted">
-                      {developers.length > 1 ? "Developers" : "Developer"}
-                    </dt>
-                    <dd className="text-foreground mt-1">
-                      {developers.map((c) => c.company.name).join(", ")}
-                    </dd>
-                  </div>
-                )}
-
-                {publishers.length > 0 && (
-                  <div>
-                    <dt className="text-sm text-foreground-muted">
-                      {publishers.length > 1 ? "Publishers" : "Publisher"}
-                    </dt>
-                    <dd className="text-foreground mt-1">
-                      {publishers.map((c) => c.company.name).join(", ")}
-                    </dd>
-                  </div>
-                )}
-
-                {game.platforms && game.platforms.length > 0 && (
-                  <div>
-                    <dt className="text-sm text-foreground-muted">Platforms</dt>
-                    <dd className="flex flex-wrap gap-2 mt-2">
-                      {game.platforms.map((platform) => (
+          {/* Rating display */}
+          {game.rating && (
+            <div className="mt-4 flex items-center gap-2">
+              <div className="flex gap-0.5">
+                {[1, 2, 3, 4, 5].map((star) => {
+                  const normalizedRating = game.rating! / 20;
+                  const fill = Math.min(1, Math.max(0, normalizedRating - star + 1));
+                  return (
+                    <span key={star} className="relative w-4 h-4">
+                      <span className="absolute text-foreground-muted/30 text-base">★</span>
+                      {fill > 0 && (
                         <span
-                          key={platform.id}
-                          className="px-2 py-1 bg-background-secondary text-foreground-muted rounded text-xs"
+                          className="absolute text-gold text-base overflow-hidden"
+                          style={{ width: `${fill * 100}%` }}
                         >
-                          {platform.abbreviation || platform.name}
-                        </span>
-                      ))}
-                    </dd>
-                  </div>
-                )}
-
-                {game.aggregated_rating && (
-                  <div>
-                    <dt className="text-sm text-foreground-muted">Critics Score</dt>
-                    <dd className="text-foreground mt-1">
-                      <span className="text-2xl font-bold text-gold">
-                        {Math.round(game.aggregated_rating)}
-                      </span>
-                      <span className="text-foreground-muted text-sm ml-1">/ 100</span>
-                      {game.aggregated_rating_count && (
-                        <span className="text-foreground-muted text-xs block">
-                          {game.aggregated_rating_count} reviews
+                          ★
                         </span>
                       )}
-                    </dd>
-                  </div>
-                )}
-              </dl>
+                    </span>
+                  );
+                })}
+              </div>
+              <span className="text-foreground-muted text-sm">
+                {(game.rating / 20).toFixed(1)}
+              </span>
+              {game.rating_count && (
+                <span className="text-foreground-muted/60 text-xs">
+                  ({game.rating_count.toLocaleString()})
+                </span>
+              )}
             </div>
+          )}
 
+          {/* Game Actions */}
+          <GameLogButtons
+            gameId={game.id}
+            gameSlug={slug}
+            gameName={game.name}
+            gameCoverId={game.cover?.image_id || null}
+          />
+
+          {/* Add to List */}
+          <div className="mt-4">
+            <AddToListButton
+              game={{
+                id: game.id,
+                slug: slug,
+                name: game.name,
+                cover_id: game.cover?.image_id,
+              }}
+            />
+          </div>
+
+          {/* Summary */}
+          {game.summary && (
+            <div className="mt-6">
+              <p className="text-foreground-muted text-sm leading-relaxed line-clamp-4">
+                {game.summary}
+              </p>
+            </div>
+          )}
+
+          {/* Played By Friends */}
+          {playedByFriends.length > 0 && (
+            <div className="mt-8 pt-6 border-t border-purple/10">
+              <h3 className="text-xs uppercase tracking-wider text-foreground-muted mb-3">Played by</h3>
+              <div className="flex gap-3">
+                {playedByFriends.map((friend) => (
+                  <Link key={friend.id} href={`/user/${friend.username}`} className="flex flex-col items-center">
+                    <div className="relative">
+                      <div className="w-10 h-10 rounded-full bg-background-secondary overflow-hidden">
+                        {friend.avatar_url ? (
+                          <Image
+                            src={friend.avatar_url}
+                            alt={friend.username}
+                            width={40}
+                            height={40}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-sm bg-gradient-to-br from-purple/30 to-purple-dark/30">
+                            {friend.username[0].toUpperCase()}
+                          </div>
+                        )}
+                      </div>
+                      {friend.rating && (
+                        <div className="absolute -bottom-1 -right-1 bg-background-card px-1 rounded text-[10px] text-gold border border-purple/20">
+                          {friend.rating}★
+                        </div>
+                      )}
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Screenshots */}
+          {game.screenshots && game.screenshots.length > 1 && (
+            <div className="mt-8">
+              <h3 className="text-xs uppercase tracking-wider text-foreground-muted mb-3">Screenshots</h3>
+              <div className="grid grid-cols-2 gap-2">
+                {game.screenshots.slice(1, 5).map((screenshot) => (
+                  <div
+                    key={screenshot.id}
+                    className="relative aspect-video bg-background-card rounded-lg overflow-hidden"
+                  >
+                    <Image
+                      src={getScreenshotUrl(screenshot.image_id, "screenshot_big")}
+                      alt={`${game.name} screenshot`}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Game Details */}
+          <div className="mt-8 pb-8">
+            <h3 className="text-xs uppercase tracking-wider text-foreground-muted mb-3">Details</h3>
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              {developers.length > 0 && (
+                <div>
+                  <span className="text-foreground-muted">Developer</span>
+                  <p className="text-foreground">{developers.map(d => d.company.name).join(', ')}</p>
+                </div>
+              )}
+              {game.platforms && game.platforms.length > 0 && (
+                <div>
+                  <span className="text-foreground-muted">Platforms</span>
+                  <p className="text-foreground">
+                    {game.platforms.slice(0, 4).map(p => p.abbreviation || p.name).join(', ')}
+                  </p>
+                </div>
+              )}
+              {game.aggregated_rating && (
+                <div>
+                  <span className="text-foreground-muted">Critics</span>
+                  <p className="text-foreground">{Math.round(game.aggregated_rating)}/100</p>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
-
-      {/* Footer */}
-      <footer className="py-8 px-4 border-t border-purple/10 mt-12">
-        <div className="max-w-6xl mx-auto text-center">
-          <span className="text-foreground-muted text-sm">
-            © 2025 SavePoint. Built for gamers.
-          </span>
-        </div>
-      </footer>
     </div>
   );
 }

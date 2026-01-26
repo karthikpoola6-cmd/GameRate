@@ -14,7 +14,7 @@
  * - 1080p: 1920x1080
  */
 
-export type ImageSize =
+type ImageSize =
   | 'cover_small'
   | 'cover_big'
   | 'screenshot_med'
@@ -26,7 +26,7 @@ export type ImageSize =
   | '720p'
   | '1080p'
 
-export function getImageUrl(imageId: string, size: ImageSize = 'cover_big'): string {
+function getImageUrl(imageId: string, size: ImageSize = 'cover_big'): string {
   return `https://images.igdb.com/igdb/image/upload/t_${size}/${imageId}.jpg`
 }
 

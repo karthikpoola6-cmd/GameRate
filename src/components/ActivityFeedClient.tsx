@@ -89,7 +89,7 @@ export function ActivityFeedClient({ items }: { items: ActivityItem[] }) {
       {canScrollLeft && (
         <button
           onClick={() => scroll('left')}
-          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 bg-background-card/90 border border-purple/30 rounded-full flex items-center justify-center text-foreground hover:bg-purple/20 transition-colors shadow-lg"
+          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 bg-background-card border border-purple/30 rounded-full flex items-center justify-center text-foreground active:scale-95"
           aria-label="Scroll left"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -102,7 +102,7 @@ export function ActivityFeedClient({ items }: { items: ActivityItem[] }) {
       {canScrollRight && (
         <button
           onClick={() => scroll('right')}
-          className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 bg-background-card/90 border border-purple/30 rounded-full flex items-center justify-center text-foreground hover:bg-purple/20 transition-colors shadow-lg"
+          className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 bg-background-card border border-purple/30 rounded-full flex items-center justify-center text-foreground active:scale-95"
           aria-label="Scroll right"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -121,7 +121,7 @@ export function ActivityFeedClient({ items }: { items: ActivityItem[] }) {
           <div key={item.id} className="flex-none w-24">
             {/* Game cover */}
             <Link href={`/game/${item.game_slug}`} className="block">
-              <div className="w-24 h-32 bg-background-card rounded-lg overflow-hidden transition-transform hover:scale-105">
+              <div className="w-24 h-32 bg-background-card rounded-lg overflow-hidden">
                 {item.game_cover_id ? (
                   <Image
                     src={getCoverUrl(item.game_cover_id)}
@@ -162,7 +162,7 @@ export function ActivityFeedClient({ items }: { items: ActivityItem[] }) {
               {/* Name */}
               <Link
                 href={`/user/${item.profiles.username}`}
-                className="text-xs text-foreground-muted hover:text-purple transition-colors mt-1 truncate max-w-full text-center"
+                className="text-xs text-foreground-muted mt-1 truncate max-w-full text-center"
               >
                 {item.profiles.display_name || item.profiles.username}
               </Link>

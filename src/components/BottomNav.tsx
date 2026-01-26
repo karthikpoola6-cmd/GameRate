@@ -80,14 +80,14 @@ export function BottomNav({ username, avatarUrl }: BottomNavProps) {
           <Link
             key={item.href}
             href={item.href}
-            className={`flex flex-col items-center justify-center flex-1 h-full transition-colors ${
+            className={`flex flex-col items-center justify-center flex-1 h-full ${
               isActive(item.href)
                 ? 'text-purple'
-                : 'text-foreground-muted hover:text-foreground'
+                : 'text-foreground-muted'
             }`}
           >
             {item.icon}
-            <span className="text-xs mt-1">{item.label}</span>
+            <span className="text-[10px] mt-1 font-medium">{item.label}</span>
           </Link>
         ))}
       </div>

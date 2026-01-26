@@ -111,14 +111,14 @@ export function GamesGridClient({ games }: GamesGridClientProps) {
           }}
         >
           {filteredGames.map((game) => (
-            <Link key={game.id} href={`/game/${game.game_slug}`} className="group">
+            <Link key={game.id} href={`/game/${game.game_slug}`}>
               <div className="relative aspect-[3/4] bg-background-card rounded-md sm:rounded-lg overflow-hidden">
                 {game.game_cover_id ? (
                   <Image
                     src={getCoverUrl(game.game_cover_id)}
                     alt={game.game_name}
                     fill
-                    className="object-cover group-hover:scale-105 transition-transform"
+                    className="object-cover"
                   />
                 ) : (
                   <div className="absolute inset-0 bg-purple/20 flex items-center justify-center">
@@ -126,7 +126,7 @@ export function GamesGridClient({ games }: GamesGridClientProps) {
                   </div>
                 )}
               </div>
-              <p className="mt-1 sm:mt-2 text-xs sm:text-sm truncate group-hover:text-purple transition-colors">
+              <p className="mt-1 sm:mt-2 text-xs sm:text-sm truncate">
                 {game.game_name}
               </p>
               {game.rating && (

@@ -1,7 +1,7 @@
 import Link from 'next/link'
-import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import { Navigation } from '@/components/Navigation'
+import { UserListItem } from '@/components/UserListItem'
 import { createClient } from '@/lib/supabase/server'
 
 export const dynamic = 'force-dynamic'
@@ -20,6 +20,9 @@ export default async function FollowingPage({
 }) {
   const { username } = await params
   const supabase = await createClient()
+
+  // Get current user
+  const { data: { user: currentUser } } = await supabase.auth.getUser()
 
   // Get profile
   const { data: profile } = await supabase
@@ -50,6 +53,17 @@ export default async function FollowingPage({
     following = data || []
   }
 
+  // Get who the current user is following (to show/hide follow buttons)
+  let currentUserFollowingIds: string[] = []
+  if (currentUser) {
+    const { data: currentUserFollows } = await supabase
+      .from('follows')
+      .select('following_id')
+      .eq('follower_id', currentUser.id)
+
+    currentUserFollowingIds = currentUserFollows?.map(f => f.following_id) || []
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
@@ -74,31 +88,12 @@ export default async function FollowingPage({
           ) : (
             <div className="space-y-3">
               {following.map((user) => (
-                <Link
+                <UserListItem
                   key={user.id}
-                  href={`/user/${user.username}`}
-                  className="flex items-center gap-4 p-4 bg-background-card border border-purple/10 rounded-lg hover:border-purple/30 transition-colors"
-                >
-                  <div className="w-12 h-12 rounded-full bg-background-secondary overflow-hidden flex-shrink-0">
-                    {user.avatar_url ? (
-                      <Image
-                        src={user.avatar_url}
-                        alt={user.username}
-                        width={48}
-                        height={48}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-xl bg-gradient-to-br from-purple/30 to-purple-dark/30">
-                        {user.username[0].toUpperCase()}
-                      </div>
-                    )}
-                  </div>
-                  <div>
-                    <h3 className="font-semibold">{user.display_name || user.username}</h3>
-                    <p className="text-sm text-foreground-muted">@{user.username}</p>
-                  </div>
-                </Link>
+                  user={user}
+                  currentUserId={currentUser?.id || null}
+                  initialFollowing={currentUserFollowingIds.includes(user.id)}
+                />
               ))}
             </div>
           )}

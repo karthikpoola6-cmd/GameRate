@@ -3,6 +3,9 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { toast } from 'sonner'
 import type { GameLog } from '@/lib/types'
 
 interface GameLogButtonsProps {
@@ -83,6 +86,7 @@ export function GameLogButtons({ gameId, gameSlug, gameName, gameCoverId }: Game
         .delete()
         .eq('id', gameLog.id)
       setGameLog(null)
+      toast.success('Removed from Want to Play')
     } else if (gameLog) {
       // Update existing to want to play (clears rating)
       const { data, error } = await supabase
@@ -97,6 +101,7 @@ export function GameLogButtons({ gameId, gameSlug, gameName, gameCoverId }: Game
 
       if (!error && data) {
         setGameLog(data as GameLog)
+        toast.success('Added to Want to Play')
       }
     } else {
       // Add new want to play
@@ -118,6 +123,7 @@ export function GameLogButtons({ gameId, gameSlug, gameName, gameCoverId }: Game
 
       if (!error && data) {
         setGameLog(data as GameLog)
+        toast.success('Added to Want to Play')
       }
     }
     setSaving(false)
@@ -146,6 +152,7 @@ export function GameLogButtons({ gameId, gameSlug, gameName, gameCoverId }: Game
           .delete()
           .eq('id', gameLog.id)
         setGameLog(null)
+        toast.success('Rating cleared')
       }
       setSaving(false)
       return
@@ -225,6 +232,7 @@ export function GameLogButtons({ gameId, gameSlug, gameName, gameCoverId }: Game
         setGameLog(data as GameLog)
         // Update count
         setFavoriteCount(prev => data.favorite ? prev + 1 : prev - 1)
+        toast.success(data.favorite ? 'Added to favorites' : 'Removed from favorites')
       }
     } else {
       // Create new log marked as favorite (implies played)
@@ -247,6 +255,7 @@ export function GameLogButtons({ gameId, gameSlug, gameName, gameCoverId }: Game
       if (!error && data) {
         setGameLog(data as GameLog)
         setFavoriteCount(prev => prev + 1)
+        toast.success('Added to favorites')
       }
     }
     setSaving(false)
@@ -279,6 +288,7 @@ export function GameLogButtons({ gameId, gameSlug, gameName, gameCoverId }: Game
       if (!error && data) {
         setGameLog(data as GameLog)
         setShowReviewForm(false)
+        toast.success('Review saved')
       }
     } else {
       // Create new log with review (implies played)
@@ -301,6 +311,7 @@ export function GameLogButtons({ gameId, gameSlug, gameName, gameCoverId }: Game
       if (!error && data) {
         setGameLog(data as GameLog)
         setShowReviewForm(false)
+        toast.success('Review saved')
       }
     }
     setSaving(false)
@@ -320,17 +331,16 @@ export function GameLogButtons({ gameId, gameSlug, gameName, gameCoverId }: Game
     setReview('')
     setShowReviewForm(false)
     setSaving(false)
+    toast.success('Removed from library')
     router.refresh()
   }
-
-  // Calculate display rating
-  const displayRating = gameLog?.rating || 0
 
   if (loading) {
     return (
       <div className="flex flex-wrap gap-3 mt-6">
-        <div className="h-12 w-32 bg-background-card rounded-lg animate-pulse" />
-        <div className="h-12 w-48 bg-background-card rounded-lg animate-pulse" />
+        <div className="h-10 w-36 bg-background-card rounded-lg animate-pulse" />
+        <div className="h-10 w-28 bg-background-card rounded-lg animate-pulse" />
+        <div className="h-10 w-24 bg-background-card rounded-lg animate-pulse" />
       </div>
     )
   }
@@ -342,43 +352,36 @@ export function GameLogButtons({ gameId, gameSlug, gameName, gameCoverId }: Game
   return (
     <div className="space-y-4 mt-6">
       {/* Main Actions Row */}
-      <div className="flex flex-wrap items-center gap-3">
+      <div className="flex flex-wrap items-center gap-2">
         {/* Want to Play Button */}
-        <button
+        <Button
           onClick={handleWantToPlay}
           disabled={saving}
-          className={`px-5 py-2.5 rounded-lg font-medium transition-colors flex items-center gap-2 ${
-            isWantToPlay
-              ? 'bg-purple text-white'
-              : 'bg-background-card hover:bg-background-secondary text-foreground border border-purple/20'
-          }`}
+          variant={isWantToPlay ? 'default' : 'outline'}
+          size="sm"
         >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
               d={isWantToPlay ? "M5 13l4 4L19 7" : "M12 4v16m8-8H4"}
             />
           </svg>
-          Want to Play
-        </button>
+          {isWantToPlay ? 'Want to Play' : 'Want to Play'}
+        </Button>
 
         {/* Favorite Button */}
         {(() => {
           const isFull = favoriteCount >= 5 && !isFavorite
           return (
-            <button
+            <Button
               onClick={handleFavorite}
               disabled={saving || isFull}
-              className={`px-5 py-2.5 rounded-lg font-medium transition-colors flex items-center gap-2 border ${
-                isFavorite
-                  ? 'bg-red-500/20 border-red-500/40 text-red-400'
-                  : isFull
-                  ? 'bg-background-card border-purple/10 text-foreground-muted/50 cursor-not-allowed'
-                  : 'bg-background-card border-purple/20 text-foreground hover:text-red-400'
-              }`}
+              variant="outline"
+              size="sm"
+              className={isFavorite ? 'border-red-500/40 text-red-400 hover:text-red-300' : ''}
               title={isFull ? 'Remove a favorite from another game first' : ''}
             >
               <svg
-                className="w-5 h-5"
+                className="w-4 h-4"
                 fill={isFavorite ? 'currentColor' : 'none'}
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -390,28 +393,25 @@ export function GameLogButtons({ gameId, gameSlug, gameName, gameCoverId }: Game
                   d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
                 />
               </svg>
-              {isFavorite ? 'Favorited' : isFull ? 'Favorites Full' : 'Favorite'}
-            </button>
+              {isFavorite ? 'Favorited' : isFull ? 'Full (5/5)' : 'Favorite'}
+            </Button>
           )
         })()}
 
         {/* Review Button */}
-        <button
+        <Button
           onClick={() => setShowReviewForm(!showReviewForm)}
           disabled={saving}
-          className={`px-5 py-2.5 rounded-lg font-medium transition-colors flex items-center gap-2 border ${
-            gameLog?.review
-              ? 'bg-purple/20 border-purple/40 text-purple-light'
-              : 'bg-background-card border-purple/20 text-foreground hover:text-purple'
-          }`}
+          variant={gameLog?.review ? 'default' : 'outline'}
+          size="sm"
         >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
               d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
             />
           </svg>
-          {gameLog?.review ? 'Edit Review' : 'Review'}
-        </button>
+          {gameLog?.review ? 'Edit' : 'Review'}
+        </Button>
       </div>
 
       {/* Star Rating Row */}
@@ -497,24 +497,24 @@ export function GameLogButtons({ gameId, gameSlug, gameName, gameCoverId }: Game
       {/* Status Display */}
       {gameLog && (
         <div className="flex items-center gap-3 text-sm">
-          <span className={`px-3 py-1 rounded-full ${
-            isPlayed ? 'bg-green-500/20 text-green-400' : 'bg-purple/20 text-purple-light'
-          }`}>
+          <Badge variant={isPlayed ? 'default' : 'secondary'} className={isPlayed ? 'bg-green-500/20 text-green-400 border-green-500/30' : ''}>
             {isPlayed
               ? gameLog.rating
-                ? `Played - ${gameLog.rating} star${gameLog.rating === 1 ? '' : 's'}`
+                ? `Played - ${gameLog.rating}★`
                 : 'Played'
               : 'Want to Play'
             }
-          </span>
+          </Badge>
 
-          <button
+          <Button
+            variant="ghost"
+            size="xs"
             onClick={handleRemoveLog}
             disabled={saving}
-            className="text-foreground-muted hover:text-red-500 transition-colors"
+            className="text-foreground-muted hover:text-red-500"
           >
-            Remove from library
-          </button>
+            Remove
+          </Button>
         </div>
       )}
 
@@ -528,23 +528,24 @@ export function GameLogButtons({ gameId, gameSlug, gameName, gameCoverId }: Game
             className="w-full bg-background-secondary border border-purple/20 rounded-lg p-3 text-foreground placeholder:text-foreground-muted/50 focus:outline-none focus:border-purple focus:ring-2 focus:ring-purple/20 transition-all resize-none"
             rows={4}
           />
-          <div className="flex justify-end gap-3 mt-3">
-            <button
+          <div className="flex justify-end gap-2 mt-3">
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={() => {
                 setReview(gameLog?.review || '')
                 setShowReviewForm(false)
               }}
-              className="px-4 py-2 text-foreground-muted hover:text-foreground transition-colors"
             >
               Cancel
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={handleSaveReview}
               disabled={saving || !review.trim()}
-              className="px-4 py-2 bg-purple hover:bg-purple-dark disabled:opacity-50 text-white rounded-lg transition-colors"
+              size="sm"
             >
               {saving ? 'Saving...' : 'Save Review'}
-            </button>
+            </Button>
           </div>
         </div>
       )}

@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { UserMenu } from './UserMenu'
 import { SearchBar } from './SearchBar'
 import { BottomNav } from './BottomNav'
+import { Button } from '@/components/ui/button'
 
 export async function Navigation() {
   const supabase = await createClient()
@@ -52,19 +53,13 @@ export async function Navigation() {
           {user ? (
             <UserMenu email={user.email || ''} username={username} avatarUrl={avatarUrl} />
           ) : (
-            <div className="flex items-center gap-3">
-              <Link
-                href="/login"
-                className="text-foreground-muted hover:text-foreground transition-colors text-sm"
-              >
-                Sign in
-              </Link>
-              <Link
-                href="/signup"
-                className="bg-purple hover:bg-purple-dark text-white px-4 py-2 rounded-full text-sm font-medium transition-colors"
-              >
-                Create account
-              </Link>
+            <div className="flex items-center gap-2">
+              <Button variant="ghost" size="sm" asChild>
+                <Link href="/login">Sign in</Link>
+              </Button>
+              <Button size="sm" asChild>
+                <Link href="/signup">Create account</Link>
+              </Button>
             </div>
           )}
         </div>

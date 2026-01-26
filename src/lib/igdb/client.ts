@@ -80,21 +80,6 @@ export async function searchGames(query: string, limit = 10): Promise<IGDBSearch
   return igdbFetch<IGDBSearchResult[]>('games', body)
 }
 
-export async function getGameById(id: number): Promise<IGDBGame | null> {
-  const body = `
-    fields name, slug, summary, storyline, rating, rating_count,
-           aggregated_rating, aggregated_rating_count, first_release_date,
-           cover.image_id, screenshots.image_id,
-           genres.name, genres.slug,
-           platforms.name, platforms.slug, platforms.abbreviation,
-           involved_companies.company.name, involved_companies.developer, involved_companies.publisher,
-           similar_games, websites.url, websites.category;
-    where id = ${id};
-  `
-  const results = await igdbFetch<IGDBGame[]>('games', body)
-  return results[0] || null
-}
-
 export async function getGameBySlug(slug: string): Promise<IGDBGame | null> {
   const body = `
     fields name, slug, summary, storyline, rating, rating_count,
@@ -128,16 +113,6 @@ export async function getRecentGames(limit = 20): Promise<IGDBGame[]> {
            aggregated_rating, genres.name;
     where first_release_date < ${now} & first_release_date > ${now - 31536000} & cover != null;
     sort first_release_date desc;
-    limit ${limit};
-  `
-  return igdbFetch<IGDBGame[]>('games', body)
-}
-
-export async function getGamesByGenre(genreId: number, limit = 20): Promise<IGDBGame[]> {
-  const body = `
-    fields name, slug, cover.image_id, first_release_date, rating, genres.name;
-    where genres = (${genreId}) & cover != null & rating_count > 10;
-    sort rating desc;
     limit ${limit};
   `
   return igdbFetch<IGDBGame[]>('games', body)

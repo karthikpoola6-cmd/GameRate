@@ -166,7 +166,7 @@ export function FavoriteGames({ favorites: initialFavorites, isOwnProfile }: Fav
             {game ? (
               <div className="group relative">
                 <Link href={`/game/${game.game_slug}`} onClick={(e) => draggedIndex !== null && e.preventDefault()}>
-                  <div className={`relative w-28 sm:w-36 aspect-[3/4] bg-background-card rounded-lg overflow-hidden ring-2 ring-gold/50 shadow-lg shadow-gold/10 ${
+                  <div className={`relative w-28 sm:w-36 aspect-[3/4] bg-background-card rounded-lg overflow-hidden ring-2 ring-gold/50 ${
                     draggedIndex === index ? 'opacity-50' : ''
                   } ${dragOverIndex === index ? 'ring-purple ring-4' : ''}`}>
                     {game.game_cover_id ? (
@@ -174,7 +174,7 @@ export function FavoriteGames({ favorites: initialFavorites, isOwnProfile }: Fav
                         src={getCoverUrl(game.game_cover_id)}
                         alt={game.game_name}
                         fill
-                        className="object-cover group-hover:scale-105 transition-transform"
+                        className="object-cover"
                         draggable={false}
                       />
                     ) : (
@@ -186,7 +186,7 @@ export function FavoriteGames({ favorites: initialFavorites, isOwnProfile }: Fav
                     <div className="absolute top-2 left-2 w-6 h-6 bg-gold text-background rounded-full flex items-center justify-center text-sm font-bold">
                       {index + 1}
                     </div>
-                    {/* Remove button */}
+                    {/* Remove button - always visible on mobile */}
                     {isOwnProfile && (
                       <button
                         onClick={(e) => {
@@ -194,7 +194,7 @@ export function FavoriteGames({ favorites: initialFavorites, isOwnProfile }: Fav
                           e.stopPropagation()
                           handleRemoveFavorite(game.id)
                         }}
-                        className="absolute top-2 right-2 w-7 h-7 bg-black/60 hover:bg-red-500 text-white/80 hover:text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all backdrop-blur-sm"
+                        className="absolute top-2 right-2 w-7 h-7 bg-black/60 text-white rounded-full flex items-center justify-center active:bg-red-500"
                         title="Remove from favorites"
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -204,18 +204,18 @@ export function FavoriteGames({ favorites: initialFavorites, isOwnProfile }: Fav
                     )}
                   </div>
                 </Link>
-                <p className="mt-2 text-sm text-center truncate max-w-28 sm:max-w-36 group-hover:text-purple transition-colors">
+                <p className="mt-2 text-sm text-center truncate max-w-28 sm:max-w-36">
                   {game.game_name}
                 </p>
                 {renderRating(game.rating)}
               </div>
             ) : isOwnProfile ? (
-              <Link href="/" className="w-28 sm:w-36 group">
-                <div className={`aspect-[3/4] bg-background-card/50 rounded-lg border-2 border-dashed border-purple/20 hover:border-purple/50 flex flex-col items-center justify-center gap-2 transition-colors ${
+              <Link href="/" className="w-28 sm:w-36">
+                <div className={`aspect-[3/4] bg-background-card/50 rounded-lg border-2 border-dashed border-purple/20 flex flex-col items-center justify-center gap-2 ${
                   dragOverIndex === index ? 'border-purple border-solid' : ''
                 }`}>
-                  <div className="w-10 h-10 rounded-full bg-purple/20 group-hover:bg-purple/30 flex items-center justify-center transition-colors">
-                    <svg className="w-6 h-6 text-purple/60 group-hover:text-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="w-10 h-10 rounded-full bg-purple/20 flex items-center justify-center">
+                    <svg className="w-6 h-6 text-purple/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                     </svg>
                   </div>

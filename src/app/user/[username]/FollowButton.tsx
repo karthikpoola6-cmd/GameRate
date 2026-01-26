@@ -3,6 +3,8 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { Button } from '@/components/ui/button'
+import { toast } from 'sonner'
 
 interface FollowButtonClientProps {
   profileId: string
@@ -33,6 +35,7 @@ export function FollowButtonClient({ profileId, initialFollowing }: FollowButton
         .eq('following_id', profileId)
 
       setIsFollowing(false)
+      toast.success('Unfollowed')
     } else {
       // Follow
       await supabase
@@ -43,6 +46,7 @@ export function FollowButtonClient({ profileId, initialFollowing }: FollowButton
         })
 
       setIsFollowing(true)
+      toast.success('Following')
     }
 
     setLoading(false)
@@ -50,16 +54,13 @@ export function FollowButtonClient({ profileId, initialFollowing }: FollowButton
   }
 
   return (
-    <button
+    <Button
       onClick={handleClick}
       disabled={loading}
-      className={`px-6 py-2 rounded-lg font-medium transition-colors ${
-        isFollowing
-          ? 'bg-background-card hover:bg-red-500/20 hover:text-red-400 text-foreground border border-purple/20'
-          : 'bg-purple hover:bg-purple-dark text-white'
-      }`}
+      variant={isFollowing ? 'outline' : 'default'}
+      size="sm"
     >
       {loading ? '...' : isFollowing ? 'Following' : 'Follow'}
-    </button>
+    </Button>
   )
 }
