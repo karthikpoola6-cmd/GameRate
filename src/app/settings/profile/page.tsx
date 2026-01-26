@@ -289,7 +289,8 @@ export default function EditProfilePage() {
       {/* Navigation */}
       <nav className="bg-background/80 backdrop-blur-md border-b border-purple/10">
         <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
+          <Link href="/" className="flex items-center gap-1.5">
+            <Image src="/GameRate.png" alt="GameRate" width={36} height={36} className="w-9 h-9" />
             <span className="text-2xl font-bold bg-gradient-to-r from-purple to-gold bg-clip-text text-transparent">
               GameRate
             </span>

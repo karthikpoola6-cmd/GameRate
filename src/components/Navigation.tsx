@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { createClient } from '@/lib/supabase/server'
 import { SearchBar } from './SearchBar'
 import { BottomNav } from './BottomNav'
@@ -26,7 +27,14 @@ export async function Navigation() {
       {/* Top Navigation - scrolls with page on mobile, fixed on desktop */}
       <nav className="lg:fixed lg:top-0 lg:left-0 lg:right-0 z-50 bg-background border-b border-purple/10">
         <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
-          <Link href="/" className="flex items-center gap-2 flex-shrink-0">
+          <Link href="/" className="flex items-center gap-1.5 flex-shrink-0">
+            <Image
+              src="/GameRate.png"
+              alt="GameRate"
+              width={36}
+              height={36}
+              className="w-9 h-9"
+            />
             <span className="text-2xl font-bold bg-gradient-to-r from-purple to-gold bg-clip-text text-transparent">
               GameRate
             </span>

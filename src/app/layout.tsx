@@ -16,6 +16,10 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "GameRate - Track, Rate & Discover Games",
   description: "Your personal video game diary. Track games you've played, rate them, create lists, and discover new favorites.",
+  icons: {
+    icon: "/GameRate.png",
+    apple: "/GameRate.png",
+  },
 };
 
 export const viewport = {
