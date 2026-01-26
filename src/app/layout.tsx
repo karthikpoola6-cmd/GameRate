@@ -16,9 +16,18 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "GameRate - Track, Rate & Discover Games",
   description: "Your personal video game diary. Track games you've played, rate them, create lists, and discover new favorites.",
+  manifest: "/manifest.json",
   icons: {
     icon: "/GameRate.png",
     apple: "/GameRate.png",
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "GameRate",
+  },
+  other: {
+    "mobile-web-app-capable": "yes",
   },
 };
 
@@ -26,6 +35,7 @@ export const viewport = {
   width: 430,
   initialScale: 1,
   maximumScale: 1,
+  themeColor: "#8b5cf6",
 };
 
 export default function RootLayout({
@@ -35,10 +45,24 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <meta name="theme-color" content="#8b5cf6" />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased pb-20 lg:pb-0`}
       >
         {children}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => {
+                  navigator.serviceWorker.register('/sw.js');
+                });
+              }
+            `,
+          }}
+        />
         <Toaster
           position="top-center"
           toastOptions={{
