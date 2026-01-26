@@ -36,15 +36,12 @@ export default async function ProfilePage({ params }: PageProps) {
   // Get stats and games
   const [
     { count: gamesCount },
-    { count: listsCount },
     { count: followersCount },
     { count: followingCount },
     { data: recentGames },
     { data: favoriteGames },
-    { data: userLists },
   ] = await Promise.all([
     supabase.from('game_logs').select('*', { count: 'exact', head: true }).eq('user_id', profile.id),
-    supabase.from('lists').select('*', { count: 'exact', head: true }).eq('user_id', profile.id),
     supabase.from('follows').select('*', { count: 'exact', head: true }).eq('following_id', profile.id),
     supabase.from('follows').select('*', { count: 'exact', head: true }).eq('follower_id', profile.id),
     supabase
@@ -61,13 +58,6 @@ export default async function ProfilePage({ params }: PageProps) {
       .eq('favorite', true)
       .order('updated_at', { ascending: false })
       .limit(5),
-    supabase
-      .from('lists')
-      .select('*, list_items(game_cover_id)')
-      .eq('user_id', profile.id)
-      .eq('is_public', true)
-      .order('created_at', { ascending: false })
-      .limit(4),
   ])
 
   // Check if current user follows this profile
@@ -124,10 +114,6 @@ export default async function ProfilePage({ params }: PageProps) {
                   <div className="text-xl font-bold">{gamesCount || 0}</div>
                   <div className="text-sm text-foreground-muted">Games</div>
                 </div>
-                <div className="text-center">
-                  <div className="text-xl font-bold">{listsCount || 0}</div>
-                  <div className="text-sm text-foreground-muted">Lists</div>
-                </div>
                 <Link href={`/user/${username}/followers`} className="text-center hover:text-purple transition-colors">
                   <div className="text-xl font-bold">{followersCount || 0}</div>
                   <div className="text-sm text-foreground-muted">Followers</div>
@@ -174,64 +160,6 @@ export default async function ProfilePage({ params }: PageProps) {
             favorites={(favoriteGames as GameLog[]) || []}
             isOwnProfile={isOwnProfile}
           />
-        )}
-
-        {/* Lists */}
-        {userLists && userLists.length > 0 && (
-          <section>
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold">Lists</h2>
-              {(listsCount || 0) > userLists.length && (
-                <Link
-                  href={`/user/${username}/lists`}
-                  className="text-purple hover:text-purple-light text-sm transition-colors"
-                >
-                  View all →
-                </Link>
-              )}
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {userLists.map((list: { id: string; name: string; description: string | null; list_items: { game_cover_id: string | null }[] }) => (
-                <Link
-                  key={list.id}
-                  href={`/list/${list.id}`}
-                  className="block bg-background-card border border-purple/10 rounded-lg p-4 hover:border-purple/30 transition-colors"
-                >
-                  {/* Cover preview */}
-                  <div className="flex gap-1 mb-3 h-12 overflow-hidden rounded">
-                    {list.list_items.slice(0, 4).map((item: { game_cover_id: string | null }, i: number) => (
-                      <div key={i} className="flex-1 bg-background-secondary">
-                        {item.game_cover_id && (
-                          <Image
-                            src={getCoverUrl(item.game_cover_id, 'cover_small')}
-                            alt=""
-                            width={35}
-                            height={48}
-                            className="w-full h-full object-cover"
-                          />
-                        )}
-                      </div>
-                    ))}
-                    {list.list_items.length < 4 &&
-                      [...Array(4 - list.list_items.length)].map((_, i: number) => (
-                        <div key={`empty-${i}`} className="flex-1 bg-background-secondary" />
-                      ))}
-                  </div>
-
-                  <h3 className="font-semibold truncate">{list.name}</h3>
-                  {list.description && (
-                    <p className="text-sm text-foreground-muted truncate mt-1">
-                      {list.description}
-                    </p>
-                  )}
-                  <p className="text-xs text-foreground-muted mt-2">
-                    {list.list_items.length} games
-                  </p>
-                </Link>
-              ))}
-            </div>
-          </section>
         )}
 
         {/* Recent Ratings */}

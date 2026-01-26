@@ -52,21 +52,30 @@ body {
   background: var(--purple);
 }
 
-/* Star rating styles */
-.star-rating {
-  display: flex;
-  gap: 2px;
+/* Hide scrollbar but allow scrolling */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
 }
 
-.star {
-  color: var(--foreground-muted);
-  transition: color 0.15s ease;
+/* Thin horizontal scrollbar for activity feed */
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: var(--purple-dark) transparent;
 }
-
-.star.filled {
-  color: var(--gold);
+.scrollbar-thin::-webkit-scrollbar {
+  height: 6px;
 }
-
-.star:hover {
-  color: var(--gold-light);
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: var(--purple-dark);
+  border-radius: 3px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: var(--purple);
 }

@@ -1,7 +1,6 @@
 import Link from 'next/link'
-import Image from 'next/image'
 import { createClient } from '@/lib/supabase/server'
-import { getCoverUrl } from '@/lib/igdb'
+import { ActivityFeedClient } from './ActivityFeedClient'
 
 interface ActivityItem {
   id: string
@@ -20,34 +19,6 @@ interface ActivityItem {
     display_name: string | null
     avatar_url: string | null
   }
-}
-
-function getActivityText(item: ActivityItem): string {
-  if (item.review) {
-    return 'reviewed'
-  }
-  return 'rated'
-}
-
-function StarDisplay({ rating }: { rating: number }) {
-  return (
-    <span className="text-gold ml-1">
-      {'★'.repeat(Math.floor(rating))}
-      {rating % 1 >= 0.5 && '½'}
-    </span>
-  )
-}
-
-function timeAgo(dateString: string): string {
-  const now = new Date()
-  const date = new Date(dateString)
-  const seconds = Math.floor((now.getTime() - date.getTime()) / 1000)
-
-  if (seconds < 60) return 'just now'
-  if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`
-  if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`
-  if (seconds < 604800) return `${Math.floor(seconds / 86400)}d ago`
-  return date.toLocaleDateString()
 }
 
 export async function ActivityFeed({ userId }: { userId: string }) {
@@ -85,7 +56,7 @@ export async function ActivityFeed({ userId }: { userId: string }) {
         }
         seenUsers.add(item.user_id)
         return true
-      }) as ActivityItem[]
+      }).slice(0, 10) as ActivityItem[]
     }
   }
 
@@ -106,85 +77,5 @@ export async function ActivityFeed({ userId }: { userId: string }) {
     )
   }
 
-  return (
-    <div className="space-y-4">
-      {feedItems.map((item) => (
-        <div
-          key={item.id}
-          className="flex gap-4 p-4 bg-background-card border border-purple/10 rounded-lg"
-        >
-          {/* Avatar */}
-          <Link href={`/user/${item.profiles.username}`} className="flex-shrink-0">
-            <div className="w-10 h-10 rounded-full bg-background-secondary overflow-hidden">
-              {item.profiles.avatar_url ? (
-                <Image
-                  src={item.profiles.avatar_url}
-                  alt={item.profiles.username}
-                  width={40}
-                  height={40}
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center text-sm bg-gradient-to-br from-purple/30 to-purple-dark/30">
-                  {item.profiles.username[0].toUpperCase()}
-                </div>
-              )}
-            </div>
-          </Link>
-
-          {/* Content */}
-          <div className="flex-1 min-w-0">
-            <p className="text-sm">
-              <Link
-                href={`/user/${item.profiles.username}`}
-                className="font-semibold hover:text-purple transition-colors"
-              >
-                {item.profiles.display_name || item.profiles.username}
-              </Link>
-              {' '}
-              <span className="text-foreground-muted">{getActivityText(item)}</span>
-              {' '}
-              <Link
-                href={`/game/${item.game_slug}`}
-                className="font-medium hover:text-purple transition-colors"
-              >
-                {item.game_name}
-              </Link>
-              {item.rating && <StarDisplay rating={item.rating} />}
-            </p>
-
-            {/* Review snippet */}
-            {item.review && (
-              <p className="text-sm text-foreground-muted mt-1 line-clamp-2">
-                &quot;{item.review}&quot;
-              </p>
-            )}
-
-            <p className="text-xs text-foreground-muted mt-2">
-              {timeAgo(item.updated_at)}
-            </p>
-          </div>
-
-          {/* Game cover */}
-          <Link href={`/game/${item.game_slug}`} className="flex-shrink-0">
-            <div className="w-12 h-16 bg-background-secondary rounded overflow-hidden">
-              {item.game_cover_id ? (
-                <Image
-                  src={getCoverUrl(item.game_cover_id, 'cover_small')}
-                  alt={item.game_name}
-                  width={48}
-                  height={64}
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center text-lg">
-                  🎮
-                </div>
-              )}
-            </div>
-          </Link>
-        </div>
-      ))}
-    </div>
-  )
+  return <ActivityFeedClient items={feedItems} />
 }
