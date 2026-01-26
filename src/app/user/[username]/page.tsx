@@ -370,11 +370,11 @@ export async function generateMetadata({ params }: PageProps) {
     .single()
 
   if (!profile) {
-    return { title: 'User Not Found | SavePoint' }
+    return { title: 'User Not Found | GameRate' }
   }
 
   return {
-    title: `${profile.display_name || profile.username} (@${profile.username}) | SavePoint`,
-    description: profile.bio || `Check out ${profile.username}'s gaming profile on SavePoint`,
+    title: `${profile.display_name || profile.username} (@${profile.username}) | GameRate`,
+    description: profile.bio || `Check out ${profile.username}'s gaming profile on GameRate`,
   }
 }

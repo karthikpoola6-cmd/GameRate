@@ -305,12 +305,12 @@ export async function generateMetadata({ params }: PageProps) {
 
   if (!game) {
     return {
-      title: "Game Not Found | SavePoint",
+      title: "Game Not Found | GameRate",
     };
   }
 
   return {
-    title: `${game.name} | SavePoint`,
-    description: game.summary?.slice(0, 160) || `View details about ${game.name} on SavePoint`,
+    title: `${game.name} | GameRate`,
+    description: game.summary?.slice(0, 160) || `View details about ${game.name} on GameRate`,
   };
 }

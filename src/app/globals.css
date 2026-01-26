@@ -4,7 +4,7 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* SavePoint Purple/Gold Theme */
+  /* GameRate Purple/Gold Theme */
   --background: #0f0a19;
   --background-secondary: #1a1225;
   --background-card: #241832;
@@ -16,7 +16,7 @@
   --gold: #f59e0b;
   --gold-light: #fbbf24;
 
-  /* shadcn variables mapped to SavePoint theme */
+  /* shadcn variables mapped to GameRate theme */
   --radius: 0.625rem;
   --card: #241832;
   --card-foreground: #f5f5f5;
@@ -42,7 +42,7 @@
 }
 
 @theme inline {
-  /* Original SavePoint colors */
+  /* Original GameRate colors */
   --color-background: var(--background);
   --color-background-secondary: var(--background-secondary);
   --color-background-card: var(--background-card);

@@ -126,7 +126,7 @@ export default function SetupUsernamePage() {
         <div className="max-w-6xl mx-auto px-4 h-16 flex items-center">
           <Link href="/" className="flex items-center gap-2">
             <span className="text-2xl font-bold bg-gradient-to-r from-purple to-gold bg-clip-text text-transparent">
-              SavePoint
+              GameRate
             </span>
           </Link>
         </div>

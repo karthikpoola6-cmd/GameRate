@@ -24,40 +24,25 @@ interface ActivityItem {
 export async function ActivityFeed({ userId }: { userId: string }) {
   const supabase = await createClient()
 
-  // First, get the list of users this person follows
-  const { data: followingData } = await supabase
-    .from('follows')
-    .select('following_id')
-    .eq('follower_id', userId)
+  // Use database function to get most recent activity per friend (efficient DISTINCT ON)
+  const { data: activity } = await supabase
+    .rpc('get_friend_activity', { follower_user_id: userId })
 
-  const followingIds = followingData?.map(f => f.following_id) || []
-
+  // Sort by updated_at (DISTINCT ON returns grouped, not sorted by date)
+  // and limit to 10 friends
   let feedItems: ActivityItem[] | null = null
-
-  // Get activity from people the user follows (only ratings)
-  if (followingIds.length > 0) {
-    const { data: activity } = await supabase
-      .from('game_logs')
-      .select(`
-        *,
-        profiles:user_id (username, display_name, avatar_url)
-      `)
-      .in('user_id', followingIds)
-      .not('rating', 'is', null)
-      .order('updated_at', { ascending: false })
-      .limit(50)
-
-    // Filter to only show the most recent activity per friend
-    if (activity) {
-      const seenUsers = new Set<string>()
-      feedItems = activity.filter((item) => {
-        if (seenUsers.has(item.user_id)) {
-          return false
+  if (activity && activity.length > 0) {
+    feedItems = (activity as any[])
+      .sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())
+      .slice(0, 10)
+      .map(item => ({
+        ...item,
+        profiles: {
+          username: item.username,
+          display_name: item.display_name,
+          avatar_url: item.avatar_url
         }
-        seenUsers.add(item.user_id)
-        return true
-      }).slice(0, 10) as ActivityItem[]
-    }
+      })) as ActivityItem[]
   }
 
   if (!feedItems || feedItems.length === 0) {

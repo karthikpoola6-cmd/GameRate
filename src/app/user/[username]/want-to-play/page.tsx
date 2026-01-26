@@ -112,6 +112,6 @@ export async function generateMetadata({ params }: PageProps) {
   const { username } = await params
 
   return {
-    title: `Want to Play | @${username} | SavePoint`,
+    title: `Want to Play | @${username} | GameRate`,
   }
 }

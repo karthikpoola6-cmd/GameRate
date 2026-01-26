@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "SavePoint - Track, Rate & Discover Games",
+  title: "GameRate - Track, Rate & Discover Games",
   description: "Your personal video game diary. Track games you've played, rate them, create lists, and discover new favorites.",
 };
 

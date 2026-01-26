@@ -197,7 +197,7 @@ export default async function Home() {
         <div className="max-w-2xl mx-auto text-center">
           <h2 className="text-3xl font-bold mb-4">Ready to start tracking?</h2>
           <p className="text-foreground-muted mb-8">
-            Join thousands of gamers who use SavePoint to track their gaming journey.
+            Join thousands of gamers who use GameRate to track their gaming journey.
           </p>
           <Button size="lg" asChild>
             <Link href="/signup">Get started — it&apos;s free</Link>
@@ -209,7 +209,7 @@ export default async function Home() {
       <footer className="py-8 px-4 border-t border-purple/10">
         <div className="max-w-6xl mx-auto text-center">
           <span className="text-foreground-muted text-sm">
-            © 2025 SavePoint. Built for gamers.
+            © 2025 GameRate. Built for gamers.
           </span>
         </div>
       </footer>

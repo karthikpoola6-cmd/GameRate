@@ -75,10 +75,10 @@ export async function generateMetadata({ params }: PageProps) {
     .single()
 
   if (!profile) {
-    return { title: 'User Not Found | SavePoint' }
+    return { title: 'User Not Found | GameRate' }
   }
 
   return {
-    title: `${profile.display_name || profile.username}'s Ratings | SavePoint`,
+    title: `${profile.display_name || profile.username}'s Ratings | GameRate`,
   }
 }

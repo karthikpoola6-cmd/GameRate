@@ -40,7 +40,7 @@ export default function LoginPage() {
         <div className="max-w-6xl mx-auto px-4 h-16 flex items-center">
           <Link href="/" className="flex items-center gap-2">
             <span className="text-2xl font-bold bg-gradient-to-r from-purple to-gold bg-clip-text text-transparent">
-              SavePoint
+              GameRate
             </span>
           </Link>
         </div>
@@ -52,7 +52,7 @@ export default function LoginPage() {
           <div className="bg-background-card rounded-xl p-8 border border-purple/10 shadow-xl">
             <h1 className="text-2xl font-bold text-center mb-2">Welcome back</h1>
             <p className="text-foreground-muted text-center mb-8">
-              Sign in to your SavePoint account
+              Sign in to your GameRate account
             </p>
 
             <form onSubmit={handleLogin} className="space-y-4">
