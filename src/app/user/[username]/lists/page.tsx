@@ -57,7 +57,7 @@ export default async function UserListsPage({
     <div className="min-h-screen bg-background overflow-x-hidden">
       <Navigation />
 
-      <main className="pt-24 pb-16 px-4">
+      <main className="pt-4 lg:pt-24 pb-16 px-4">
         <div className="max-w-4xl mx-auto overflow-hidden">
           <div className="flex items-center justify-between mb-6">
             <div>

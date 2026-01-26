@@ -1,9 +1,8 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import Image from 'next/image'
 import { createClient } from '@/lib/supabase/server'
 import { Navigation } from '@/components/Navigation'
-import { getCoverUrl } from '@/lib/igdb'
+import { ReviewsListClient } from './ReviewsListClient'
 
 export const dynamic = 'force-dynamic'
 
@@ -24,6 +23,7 @@ interface Review {
 export default async function UserReviewsPage({ params }: PageProps) {
   const { username } = await params
   const supabase = await createClient()
+  const { data: { user: currentUser } } = await supabase.auth.getUser()
 
   // Get profile
   const { data: profile } = await supabase
@@ -35,6 +35,8 @@ export default async function UserReviewsPage({ params }: PageProps) {
   if (!profile) {
     notFound()
   }
+
+  const isOwnProfile = currentUser?.id === profile.id
 
   // Get all reviews
   const { data: reviews } = await supabase
@@ -50,7 +52,7 @@ export default async function UserReviewsPage({ params }: PageProps) {
     <div className="min-h-screen bg-background">
       <Navigation />
 
-      <main className="pt-24 pb-16 px-4">
+      <main className="pt-4 lg:pt-24 pb-16 px-4">
         <div className="max-w-4xl mx-auto">
           {/* Header */}
           <div className="mb-6">
@@ -61,53 +63,27 @@ export default async function UserReviewsPage({ params }: PageProps) {
               ← Back to profile
             </Link>
             <h1 className="text-2xl font-bold mt-3">
-              {profile.display_name || profile.username}&apos;s Reviews
+              {isOwnProfile ? 'Your Reviews' : `${profile.display_name || profile.username}'s Reviews`}
             </h1>
             <p className="text-foreground-muted text-sm">{typedReviews.length} reviews</p>
           </div>
 
           {/* Reviews List */}
           {typedReviews.length > 0 ? (
-            <div className="space-y-6">
-              {typedReviews.map((review) => (
-                <Link
-                  key={review.id}
-                  href={`/game/${review.game_slug}`}
-                  className="flex gap-4 group"
-                >
-                  <div className="w-16 h-20 bg-background-card rounded-lg overflow-hidden flex-shrink-0">
-                    {review.game_cover_id ? (
-                      <Image
-                        src={getCoverUrl(review.game_cover_id, 'cover_small')}
-                        alt={review.game_name}
-                        width={64}
-                        height={80}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-purple/20">
-                        <span className="text-xl">🎮</span>
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      <p className="font-semibold truncate">{review.game_name}</p>
-                      {review.rating && (
-                        <span className="text-gold text-sm flex-shrink-0">
-                          {'★'.repeat(Math.floor(review.rating))}
-                          {review.rating % 1 >= 0.5 && '½'}
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-sm text-foreground-muted line-clamp-3">{review.review}</p>
-                  </div>
-                </Link>
-              ))}
-            </div>
+            <ReviewsListClient reviews={typedReviews} />
           ) : (
             <div className="text-center py-12">
-              <p className="text-foreground-muted">No reviews yet</p>
+              <p className="text-foreground-muted mb-4">
+                {isOwnProfile ? "You haven't written any reviews yet" : "No reviews yet"}
+              </p>
+              {isOwnProfile && (
+                <Link
+                  href="/"
+                  className="text-purple"
+                >
+                  Find a game to review →
+                </Link>
+              )}
             </div>
           )}
         </div>

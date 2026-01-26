@@ -1,6 +1,5 @@
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
-import { UserMenu } from './UserMenu'
 import { SearchBar } from './SearchBar'
 import { BottomNav } from './BottomNav'
 import { Button } from '@/components/ui/button'
@@ -50,9 +49,7 @@ export async function Navigation() {
             </Link>
           </div>
 
-          {user ? (
-            <UserMenu email={user.email || ''} username={username} avatarUrl={avatarUrl} />
-          ) : (
+          {!user && (
             <div className="flex items-center gap-2">
               <Button variant="ghost" size="sm" asChild>
                 <Link href="/login">Sign in</Link>
