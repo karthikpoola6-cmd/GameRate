@@ -15,28 +15,28 @@ function GameCard({ game }: { game: IGDBGame }) {
 
   return (
     <Link href={`/game/${game.slug}`} className="group">
-      <div className="relative aspect-[3/4] bg-background-card rounded-lg overflow-hidden transition-transform duration-200 group-hover:scale-105 group-hover:ring-2 group-hover:ring-purple">
+      <div className="relative aspect-[3/4] bg-background-card rounded-md sm:rounded-lg overflow-hidden transition-transform duration-200 group-hover:scale-105 group-hover:ring-2 group-hover:ring-purple">
         {game.cover?.image_id ? (
           <Image
             src={getCoverUrl(game.cover.image_id)}
             alt={game.name}
             fill
             className="object-cover"
-            sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 16vw"
+            sizes="(max-width: 640px) 25vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 16vw"
           />
         ) : (
           <div className="absolute inset-0 bg-gradient-to-br from-purple/20 to-purple-dark/40 flex items-center justify-center">
-            <span className="text-4xl">🎮</span>
+            <span className="text-2xl sm:text-4xl">🎮</span>
           </div>
         )}
       </div>
-      <div className="mt-2">
-        <h3 className="text-sm font-medium text-foreground truncate group-hover:text-purple-light transition-colors">
+      <div className="mt-1 sm:mt-2">
+        <h3 className="text-xs sm:text-sm font-medium text-foreground truncate group-hover:text-purple-light transition-colors">
           {game.name}
         </h3>
-        <div className="flex items-center justify-between mt-1">
-          {year && <span className="text-xs text-foreground-muted">{year}</span>}
-          {rating && <span className="text-xs text-gold">{rating}</span>}
+        <div className="flex items-center justify-between mt-0.5 sm:mt-1">
+          {year && <span className="text-[10px] sm:text-xs text-foreground-muted">{year}</span>}
+          {rating && <span className="text-[10px] sm:text-xs text-gold">{rating}</span>}
         </div>
       </div>
     </Link>
@@ -70,7 +70,13 @@ export default async function Home() {
                   View all →
                 </Link>
               </div>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+              <div
+                className="gap-2 sm:gap-4"
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(4, minmax(0, 1fr))'
+                }}
+              >
                 {popularGames.map((game) => (
                   <GameCard key={game.id} game={game} />
                 ))}
@@ -126,7 +132,13 @@ export default async function Home() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+          <div
+            className="gap-2 sm:gap-4"
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(4, minmax(0, 1fr))'
+            }}
+          >
             {popularGames.map((game) => (
               <GameCard key={game.id} game={game} />
             ))}

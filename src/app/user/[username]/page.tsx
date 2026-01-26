@@ -177,10 +177,16 @@ export default async function ProfilePage({ params }: PageProps) {
           </div>
 
           {recentGames && recentGames.length > 0 ? (
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div
+              className="gap-2 sm:gap-4"
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(4, minmax(0, 1fr))'
+              }}
+            >
               {recentGames.map((game: GameLog) => (
                 <Link key={game.id} href={`/game/${game.game_slug}`} className="group">
-                  <div className="relative aspect-[3/4] bg-background-card rounded-lg overflow-hidden">
+                  <div className="relative aspect-[3/4] bg-background-card rounded-md sm:rounded-lg overflow-hidden">
                     {game.game_cover_id ? (
                       <Image
                         src={getCoverUrl(game.game_cover_id)}
@@ -190,23 +196,23 @@ export default async function ProfilePage({ params }: PageProps) {
                       />
                     ) : (
                       <div className="absolute inset-0 bg-purple/20 flex items-center justify-center">
-                        <span className="text-3xl">🎮</span>
+                        <span className="text-2xl sm:text-3xl">🎮</span>
                       </div>
                     )}
                   </div>
-                  <p className="mt-2 text-sm truncate group-hover:text-purple transition-colors">
+                  <p className="mt-1 sm:mt-2 text-xs sm:text-sm truncate group-hover:text-purple transition-colors">
                     {game.game_name}
                   </p>
                   {game.rating && (
-                    <div className="flex gap-0.5 mt-1">
+                    <div className="flex gap-0.5 mt-0.5 sm:mt-1">
                       {[1, 2, 3, 4, 5].map((star) => {
                         const fill = Math.min(1, Math.max(0, game.rating! - star + 1))
                         return (
-                          <span key={star} className="relative w-3 h-3">
-                            <span className="absolute text-foreground-muted/30 text-xs">★</span>
+                          <span key={star} className="relative w-2 h-2 sm:w-3 sm:h-3">
+                            <span className="absolute text-foreground-muted/30 text-[10px] sm:text-xs">★</span>
                             {fill > 0 && (
                               <span
-                                className="absolute text-gold text-xs overflow-hidden"
+                                className="absolute text-gold text-[10px] sm:text-xs overflow-hidden"
                                 style={{ width: `${fill * 100}%` }}
                               >
                                 ★

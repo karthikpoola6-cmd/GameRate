@@ -103,10 +103,16 @@ export function GamesGridClient({ games }: GamesGridClientProps) {
 
       {/* Games Grid */}
       {filteredGames.length > 0 ? (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+        <div
+          className="gap-2 sm:gap-4"
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(4, minmax(0, 1fr))'
+          }}
+        >
           {filteredGames.map((game) => (
             <Link key={game.id} href={`/game/${game.game_slug}`} className="group">
-              <div className="relative aspect-[3/4] bg-background-card rounded-lg overflow-hidden">
+              <div className="relative aspect-[3/4] bg-background-card rounded-md sm:rounded-lg overflow-hidden">
                 {game.game_cover_id ? (
                   <Image
                     src={getCoverUrl(game.game_cover_id)}
@@ -116,20 +122,20 @@ export function GamesGridClient({ games }: GamesGridClientProps) {
                   />
                 ) : (
                   <div className="absolute inset-0 bg-purple/20 flex items-center justify-center">
-                    <span className="text-3xl">🎮</span>
+                    <span className="text-2xl sm:text-3xl">🎮</span>
                   </div>
                 )}
               </div>
-              <p className="mt-2 text-sm truncate group-hover:text-purple transition-colors">
+              <p className="mt-1 sm:mt-2 text-xs sm:text-sm truncate group-hover:text-purple transition-colors">
                 {game.game_name}
               </p>
               {game.rating && (
-                <div className="flex items-center gap-1 mt-1">
-                  <span className="text-gold text-sm">
+                <div className="flex items-center gap-0.5 sm:gap-1 mt-0.5 sm:mt-1">
+                  <span className="text-gold text-[10px] sm:text-sm">
                     {'★'.repeat(Math.floor(game.rating))}
                     {game.rating % 1 >= 0.5 && '½'}
                   </span>
-                  <span className="text-foreground-muted text-xs">
+                  <span className="text-foreground-muted text-[10px] sm:text-xs">
                     {game.rating}
                   </span>
                 </div>
