@@ -5,6 +5,7 @@ import { getGameBySlug, getCoverUrl, getScreenshotUrl, type IGDBGame } from "@/l
 import { Navigation } from "@/components/Navigation";
 import { GameLogButtons } from "@/components/GameLogButtons";
 import { AddToListButton } from "@/components/AddToListButton";
+import { PlayedByClient } from "./PlayedByClient";
 import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = 'force-dynamic'
@@ -25,7 +26,7 @@ export default async function GamePage({ params }: PageProps) {
   const { data: { user: currentUser } } = await supabase.auth.getUser();
 
   // Get friends who played this game
-  let playedByFriends: { id: string; username: string; display_name: string | null; avatar_url: string | null; rating: number | null }[] = [];
+  let playedByFriends: { id: string; username: string; display_name: string | null; avatar_url: string | null; rating: number | null; review: string | null }[] = [];
 
   if (currentUser) {
     // Get who the current user follows
@@ -40,7 +41,7 @@ export default async function GamePage({ params }: PageProps) {
       // Get friends who have logged this game
       const { data: friendLogs } = await supabase
         .from('game_logs')
-        .select('user_id, rating, profiles:user_id(id, username, display_name, avatar_url)')
+        .select('user_id, rating, review, profiles:user_id(id, username, display_name, avatar_url)')
         .eq('game_id', game.id)
         .in('user_id', followingIds)
         .limit(10);
@@ -52,6 +53,7 @@ export default async function GamePage({ params }: PageProps) {
           display_name: (log.profiles as any).display_name,
           avatar_url: (log.profiles as any).avatar_url,
           rating: log.rating,
+          review: log.review,
         }));
       }
     }
@@ -214,34 +216,7 @@ export default async function GamePage({ params }: PageProps) {
           {playedByFriends.length > 0 && (
             <div className="mt-8 pt-6 border-t border-purple/10">
               <h3 className="text-xs uppercase tracking-wider text-foreground-muted mb-3">Played by</h3>
-              <div className="flex gap-3">
-                {playedByFriends.map((friend) => (
-                  <Link key={friend.id} href={`/user/${friend.username}`} className="flex flex-col items-center">
-                    <div className="relative">
-                      <div className="w-10 h-10 rounded-full bg-background-secondary overflow-hidden">
-                        {friend.avatar_url ? (
-                          <Image
-                            src={friend.avatar_url}
-                            alt={friend.username}
-                            width={40}
-                            height={40}
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-sm bg-gradient-to-br from-purple/30 to-purple-dark/30">
-                            {friend.username[0].toUpperCase()}
-                          </div>
-                        )}
-                      </div>
-                      {friend.rating && (
-                        <div className="absolute -bottom-1 -right-1 bg-background-card px-1 rounded text-[10px] text-gold border border-purple/20">
-                          {friend.rating}★
-                        </div>
-                      )}
-                    </div>
-                  </Link>
-                ))}
-              </div>
+              <PlayedByClient friends={playedByFriends} gameName={game.name} />
             </div>
           )}
 

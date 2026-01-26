@@ -63,24 +63,30 @@ export default async function WantToPlayPage({ params }: PageProps) {
 
         {/* Games Grid */}
         {games && games.length > 0 ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+          <div
+            className="gap-2 sm:gap-4"
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(4, minmax(0, 1fr))'
+            }}
+          >
             {games.map((game: GameLog) => (
-              <Link key={game.id} href={`/game/${game.game_slug}`} className="group">
-                <div className="relative aspect-[3/4] bg-background-card rounded-lg overflow-hidden">
+              <Link key={game.id} href={`/game/${game.game_slug}`}>
+                <div className="relative aspect-[3/4] bg-background-card rounded-md sm:rounded-lg overflow-hidden">
                   {game.game_cover_id ? (
                     <Image
                       src={getCoverUrl(game.game_cover_id)}
                       alt={game.game_name}
                       fill
-                      className="object-cover group-hover:scale-105 transition-transform"
+                      className="object-cover"
                     />
                   ) : (
                     <div className="absolute inset-0 bg-purple/20 flex items-center justify-center">
-                      <span className="text-3xl">🎮</span>
+                      <span className="text-2xl sm:text-3xl">🎮</span>
                     </div>
                   )}
                 </div>
-                <p className="mt-2 text-sm truncate group-hover:text-purple transition-colors">
+                <p className="mt-1 sm:mt-2 text-xs sm:text-sm truncate">
                   {game.game_name}
                 </p>
               </Link>
