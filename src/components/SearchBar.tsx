@@ -171,6 +171,7 @@ export function SearchBar({ variant = 'nav', placeholder = 'Search games...' }: 
                     width={40}
                     height={56}
                     className="w-full h-full object-cover"
+                    unoptimized
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-foreground-muted">

@@ -176,6 +176,7 @@ export function FavoriteGames({ favorites: initialFavorites, isOwnProfile }: Fav
                         fill
                         className="object-cover"
                         draggable={false}
+                        unoptimized
                       />
                     ) : (
                       <div className="absolute inset-0 bg-purple/20 flex items-center justify-center">

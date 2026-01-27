@@ -208,6 +208,7 @@ export function AddGameToList({ listId, onGameAdded, currentItemCount }: AddGame
                         width={40}
                         height={56}
                         className="w-full h-full object-cover"
+                        unoptimized
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-foreground-muted">

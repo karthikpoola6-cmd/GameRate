@@ -119,6 +119,7 @@ export function GamesGridClient({ games }: GamesGridClientProps) {
                     alt={game.game_name}
                     fill
                     className="object-cover"
+                    unoptimized
                   />
                 ) : (
                   <div className="absolute inset-0 bg-purple/20 flex items-center justify-center">

@@ -129,6 +129,7 @@ export function ActivityFeedClient({ items }: { items: ActivityItem[] }) {
                     width={96}
                     height={128}
                     className="w-full h-full object-cover"
+                    unoptimized
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-2xl bg-gradient-to-br from-purple/20 to-purple-dark/40">

@@ -21,6 +21,7 @@ function GameCard({ game }: { game: IGDBGame }) {
             fill
             className="object-cover"
             sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 16vw"
+            unoptimized
           />
         ) : (
           <div className="absolute inset-0 bg-gradient-to-br from-purple/20 to-purple-dark/40 flex items-center justify-center">

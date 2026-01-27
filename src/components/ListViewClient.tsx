@@ -145,6 +145,7 @@ export function ListViewClient({ listId, items: initialItems, listOwnerId, initi
                       width={48}
                       height={64}
                       className="w-full h-full object-cover"
+                      unoptimized
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-2xl">

@@ -35,6 +35,7 @@ export function ReviewsListClient({ reviews }: { reviews: Review[] }) {
                   width={64}
                   height={80}
                   className="w-full h-full object-cover"
+                  unoptimized
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center bg-purple/20">
@@ -78,6 +79,7 @@ export function ReviewsListClient({ reviews }: { reviews: Review[] }) {
                     width={64}
                     height={80}
                     className="w-full h-full object-cover"
+                    unoptimized
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center bg-purple/20">

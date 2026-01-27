@@ -127,6 +127,7 @@ export default async function UserListsPage({
                               width={48}
                               height={64}
                               className="w-full h-full object-cover"
+                              unoptimized
                             />
                           )}
                         </div>

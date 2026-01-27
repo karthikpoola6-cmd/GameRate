@@ -140,6 +140,7 @@ export default async function GamePage({ params }: PageProps) {
                     fill
                     className="object-cover"
                     priority
+                    unoptimized
                   />
                 ) : (
                   <div className="absolute inset-0 bg-gradient-to-br from-purple/20 to-purple-dark/40 flex items-center justify-center">
