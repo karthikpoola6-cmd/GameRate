@@ -211,7 +211,7 @@ export function FavoriteGames({ favorites: initialFavorites, isOwnProfile }: Fav
                 {renderRating(game.rating)}
               </div>
             ) : isOwnProfile ? (
-              <Link href="/" className="w-28 sm:w-36">
+              <Link href="/search" className="w-28 sm:w-36">
                 <div className={`aspect-[3/4] bg-background-card/50 rounded-lg border-2 border-dashed border-purple/20 flex flex-col items-center justify-center gap-2 ${
                   dragOverIndex === index ? 'border-purple border-solid' : ''
                 }`}>

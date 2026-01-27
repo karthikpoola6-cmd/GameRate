@@ -144,17 +144,34 @@ export function GameLogButtons({ gameId, gameSlug, gameName, gameCoverId }: Game
       return
     }
 
-    // Handle clearing rating (rating = 0) - delete the log entirely
+    // Handle clearing rating (rating = 0)
     if (rating === 0) {
       if (gameLog) {
-        await supabase
-          .from('game_logs')
-          .delete()
-          .eq('id', gameLog.id)
-        setGameLog(null)
-        toast.success('Rating cleared')
+        // If game is a favorite, keep the log but clear the rating
+        if (gameLog.favorite) {
+          const { data, error } = await supabase
+            .from('game_logs')
+            .update({ rating: null })
+            .eq('id', gameLog.id)
+            .select()
+            .single()
+
+          if (!error && data) {
+            setGameLog(data as GameLog)
+            toast.success('Rating cleared')
+          }
+        } else {
+          // Not a favorite - delete the log entirely
+          await supabase
+            .from('game_logs')
+            .delete()
+            .eq('id', gameLog.id)
+          setGameLog(null)
+          toast.success('Rating cleared')
+        }
       }
       setSaving(false)
+      router.refresh()
       return
     }
 
