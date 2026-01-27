@@ -144,3 +144,13 @@ body {
     @apply border-border outline-ring/50;
   }
 }
+
+/* Wiggle animation for edit mode */
+@keyframes wiggle {
+  0%, 100% { transform: rotate(-1deg); }
+  50% { transform: rotate(1deg); }
+}
+
+.animate-wiggle {
+  animation: wiggle 0.3s ease-in-out infinite;
+}

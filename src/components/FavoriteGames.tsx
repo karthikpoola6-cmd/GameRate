@@ -14,6 +14,7 @@ interface FavoriteGamesProps {
 
 export function FavoriteGames({ favorites: initialFavorites, isOwnProfile }: FavoriteGamesProps) {
   const [favorites, setFavorites] = useState(initialFavorites)
+  const [isEditing, setIsEditing] = useState(false)
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null)
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null)
   const [saving, setSaving] = useState(false)
@@ -45,7 +46,7 @@ export function FavoriteGames({ favorites: initialFavorites, isOwnProfile }: Fav
   }
 
   async function handleDragEnd(fromIndex: number, toIndex: number) {
-    if (!isOwnProfile) return
+    if (!isOwnProfile || !isEditing) return
     if (fromIndex === toIndex) return
 
     const newSlots = [...slots]
@@ -80,13 +81,13 @@ export function FavoriteGames({ favorites: initialFavorites, isOwnProfile }: Fav
   }
 
   function handleDragStart(e: React.DragEvent, index: number) {
-    if (!isOwnProfile) return
+    if (!isOwnProfile || !isEditing) return
     setDraggedIndex(index)
     e.dataTransfer.effectAllowed = 'move'
   }
 
   function handleDragOver(e: React.DragEvent, index: number) {
-    if (!isOwnProfile) return
+    if (!isOwnProfile || !isEditing) return
     e.preventDefault()
     setDragOverIndex(index)
   }
@@ -96,7 +97,7 @@ export function FavoriteGames({ favorites: initialFavorites, isOwnProfile }: Fav
   }
 
   function handleDrop(e: React.DragEvent, toIndex: number) {
-    if (!isOwnProfile) return
+    if (!isOwnProfile || !isEditing) return
     e.preventDefault()
     if (draggedIndex !== null && draggedIndex !== toIndex) {
       handleDragEnd(draggedIndex, toIndex)
@@ -109,7 +110,7 @@ export function FavoriteGames({ favorites: initialFavorites, isOwnProfile }: Fav
   function renderRating(rating: number | null) {
     if (!rating) return null
     return (
-      <div className="flex gap-0.5 mt-1 justify-center">
+      <div className="flex gap-0.5 justify-center">
         {[1, 2, 3, 4, 5].map((star) => {
           const fill = Math.min(1, Math.max(0, rating - star + 1))
           return (
@@ -147,28 +148,43 @@ export function FavoriteGames({ favorites: initialFavorites, isOwnProfile }: Fav
         <h2 className="text-xl font-bold">Favorite Games</h2>
         {saving && <span className="text-sm text-foreground-muted">Saving...</span>}
         {isOwnProfile && !saving && (
-          <span className="text-sm text-foreground-muted">(drag to reorder)</span>
+          <button
+            onClick={() => setIsEditing(!isEditing)}
+            className={`text-sm px-3 py-1 rounded-full transition-colors ${
+              isEditing
+                ? 'bg-purple text-white'
+                : 'text-foreground-muted hover:text-foreground hover:bg-background-card'
+            }`}
+          >
+            {isEditing ? 'Done' : 'Edit'}
+          </button>
         )}
       </div>
       <div className="flex gap-4 justify-center sm:justify-start flex-wrap">
         {slots.map((game, index) => (
           <div
             key={game?.id || `empty-${index}`}
-            className={`${isOwnProfile && game ? 'cursor-grab active:cursor-grabbing' : ''} ${
+            className={`${isEditing && game ? 'cursor-grab active:cursor-grabbing' : ''} ${
               dragOverIndex === index ? 'scale-105' : ''
             } transition-transform`}
-            draggable={isOwnProfile && !!game}
+            draggable={isEditing && !!game}
             onDragStart={(e) => game && handleDragStart(e, index)}
             onDragOver={(e) => handleDragOver(e, index)}
             onDragLeave={handleDragLeave}
             onDrop={(e) => handleDrop(e, index)}
           >
             {game ? (
-              <div className="group relative">
-                <Link href={`/game/${game.game_slug}`} onClick={(e) => draggedIndex !== null && e.preventDefault()}>
+              <div className="relative">
+                <Link
+                  href={`/game/${game.game_slug}`}
+                  onClick={(e) => (draggedIndex !== null || isEditing) && e.preventDefault()}
+                  className={isEditing ? 'pointer-events-none' : ''}
+                >
                   <div className={`relative w-28 sm:w-36 aspect-[3/4] bg-background-card rounded-lg overflow-hidden ring-2 ring-gold/50 ${
                     draggedIndex === index ? 'opacity-50' : ''
-                  } ${dragOverIndex === index ? 'ring-purple ring-4' : ''}`}>
+                  } ${dragOverIndex === index ? 'ring-purple ring-4' : ''} ${
+                    isEditing ? 'animate-wiggle' : ''
+                  }`}>
                     {game.game_cover_id ? (
                       <Image
                         src={getCoverUrl(game.game_cover_id)}
@@ -183,36 +199,34 @@ export function FavoriteGames({ favorites: initialFavorites, isOwnProfile }: Fav
                         <span className="text-3xl">🎮</span>
                       </div>
                     )}
-                    {/* Position badge */}
-                    <div className="absolute top-2 left-2 w-6 h-6 bg-gold text-background rounded-full flex items-center justify-center text-sm font-bold">
-                      {index + 1}
-                    </div>
-                    {/* Remove button - always visible on mobile */}
-                    {isOwnProfile && (
-                      <button
-                        onClick={(e) => {
-                          e.preventDefault()
-                          e.stopPropagation()
-                          handleRemoveFavorite(game.id)
-                        }}
-                        className="absolute top-2 right-2 w-7 h-7 bg-black/60 text-white rounded-full flex items-center justify-center active:bg-red-500"
-                        title="Remove from favorites"
-                      >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                      </button>
-                    )}
                   </div>
                 </Link>
+                {/* Remove button - only visible in edit mode */}
+                {isEditing && (
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault()
+                      e.stopPropagation()
+                      handleRemoveFavorite(game.id)
+                    }}
+                    className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center shadow-lg hover:bg-red-600 transition-colors z-10"
+                    title="Remove from favorites"
+                  >
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                )}
+                {/* Game name with ranking */}
                 <p className="mt-2 text-sm text-center truncate max-w-28 sm:max-w-36">
+                  <span className="text-gold font-semibold">{index + 1}.</span>{' '}
                   {game.game_name}
                 </p>
                 {renderRating(game.rating)}
               </div>
             ) : isOwnProfile ? (
               <Link href="/search" className="w-28 sm:w-36">
-                <div className={`aspect-[3/4] bg-background-card/50 rounded-lg border-2 border-dashed border-purple/20 flex flex-col items-center justify-center gap-2 ${
+                <div className={`aspect-[3/4] bg-background-card/50 rounded-lg border-2 border-dashed border-purple/20 flex flex-col items-center justify-center gap-2 hover:border-purple/40 transition-colors ${
                   dragOverIndex === index ? 'border-purple border-solid' : ''
                 }`}>
                   <div className="w-10 h-10 rounded-full bg-purple/20 flex items-center justify-center">
@@ -222,6 +236,10 @@ export function FavoriteGames({ favorites: initialFavorites, isOwnProfile }: Fav
                   </div>
                   <span className="text-foreground-muted/50 text-xs">Add game</span>
                 </div>
+                {/* Empty slot label */}
+                <p className="mt-2 text-sm text-center text-foreground-muted/30">
+                  <span className="font-semibold">{index + 1}.</span> Empty
+                </p>
               </Link>
             ) : (
               <div className="w-28 sm:w-36">
