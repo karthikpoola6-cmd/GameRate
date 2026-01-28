@@ -124,7 +124,7 @@ export function SearchBar({ variant = 'nav', placeholder = 'Search games...' }: 
             w-full bg-background-secondary border border-purple/20
             text-foreground placeholder:text-foreground-muted/50
             focus:outline-none focus:border-purple focus:ring-2 focus:ring-purple/20
-            transition-all
+           
             ${isHero
               ? 'rounded-full py-4 px-6 pl-12'
               : 'rounded-lg py-2 px-4 pl-10 text-sm'
@@ -159,8 +159,8 @@ export function SearchBar({ variant = 'nav', placeholder = 'Search games...' }: 
               key={result.id}
               onClick={() => navigateToGame(result.slug)}
               className={`
-                w-full flex items-center gap-3 p-3 text-left transition-colors
-                ${index === selectedIndex ? 'bg-purple/20' : 'hover:bg-background-secondary'}
+                w-full flex items-center gap-3 p-3 text-left
+                ${index === selectedIndex ? 'bg-purple/20' : ''}
               `}
             >
               <div className="w-10 h-14 bg-background-secondary rounded overflow-hidden flex-shrink-0">
@@ -194,7 +194,7 @@ export function SearchBar({ variant = 'nav', placeholder = 'Search games...' }: 
               router.push(`/search?q=${encodeURIComponent(query)}`)
               setIsOpen(false)
             }}
-            className="w-full p-3 text-sm text-purple hover:bg-background-secondary transition-colors border-t border-purple/10"
+            className="w-full p-3 text-sm text-purple border-t border-purple/10"
           >
             See all results for &quot;{query}&quot;
           </button>

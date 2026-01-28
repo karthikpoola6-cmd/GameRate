@@ -60,7 +60,7 @@ export default async function PlayersPage({
                     <Link
                       key={player.id}
                       href={`/user/${player.username}`}
-                      className="flex items-center gap-4 p-4 bg-background-card border border-purple/10 rounded-lg hover:border-purple/30 transition-colors"
+                      className="flex items-center gap-4 p-4 bg-background-card border border-purple/10 rounded-lg"
                     >
                       <div className="w-12 h-12 rounded-full bg-background-secondary overflow-hidden flex-shrink-0">
                         {player.avatar_url ? (
@@ -70,6 +70,7 @@ export default async function PlayersPage({
                             width={48}
                             height={48}
                             className="w-full h-full object-cover"
+                            unoptimized
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center text-xl bg-gradient-to-br from-purple/30 to-purple-dark/30">

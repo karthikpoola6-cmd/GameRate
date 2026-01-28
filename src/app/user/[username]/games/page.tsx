@@ -44,7 +44,7 @@ export default async function UserGamesPage({ params }: PageProps) {
           <div className="mb-6">
             <Link
               href={`/user/${username}`}
-              className="text-purple hover:text-purple-light transition-colors text-sm"
+              className="text-purple text-sm"
             >
               ← Back to profile
             </Link>

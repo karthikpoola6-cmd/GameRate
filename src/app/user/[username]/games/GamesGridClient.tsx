@@ -63,10 +63,10 @@ export function GamesGridClient({ games }: GamesGridClientProps) {
               <button
                 key={option.value}
                 onClick={() => setSort(option.value as SortOption)}
-                className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${
+                className={`px-3 py-1.5 text-sm rounded-lg ${
                   sort === option.value
                     ? 'bg-purple text-white'
-                    : 'bg-background-card text-foreground-muted hover:text-foreground border border-purple/10'
+                    : 'bg-background-card text-foreground-muted border border-purple/10'
                 }`}
               >
                 {option.label}
@@ -83,10 +83,10 @@ export function GamesGridClient({ games }: GamesGridClientProps) {
               <button
                 key={option.value}
                 onClick={() => setRatingFilter(option.value)}
-                className={`px-2 py-1 text-sm rounded-lg transition-colors ${
+                className={`px-2 py-1 text-sm rounded-lg ${
                   ratingFilter === option.value
                     ? 'bg-gold text-background'
-                    : 'bg-background-card text-foreground-muted hover:text-foreground border border-purple/10'
+                    : 'bg-background-card text-foreground-muted border border-purple/10'
                 }`}
               >
                 {option.value === 'all' ? 'All' : `${option.label}★`}
@@ -152,7 +152,7 @@ export function GamesGridClient({ games }: GamesGridClientProps) {
               setSort('recent')
               setRatingFilter('all')
             }}
-            className="mt-3 text-purple hover:text-purple-light text-sm transition-colors"
+            className="mt-3 text-purple text-sm"
           >
             Clear filters
           </button>

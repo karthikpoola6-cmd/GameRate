@@ -150,10 +150,10 @@ export function FavoriteGames({ favorites: initialFavorites, isOwnProfile }: Fav
         {isOwnProfile && !saving && (
           <button
             onClick={() => setIsEditing(!isEditing)}
-            className={`text-sm px-3 py-1 rounded-full transition-colors ${
+            className={`text-sm px-3 py-1 rounded-full ${
               isEditing
                 ? 'bg-purple text-white'
-                : 'text-foreground-muted hover:text-foreground hover:bg-background-card'
+                : 'text-foreground-muted-card'
             }`}
           >
             {isEditing ? 'Done' : 'Edit'}
@@ -166,7 +166,7 @@ export function FavoriteGames({ favorites: initialFavorites, isOwnProfile }: Fav
             key={game?.id || `empty-${index}`}
             className={`${isEditing && game ? 'cursor-grab active:cursor-grabbing' : ''} ${
               dragOverIndex === index ? 'scale-105' : ''
-            } transition-transform`}
+            }`}
             draggable={isEditing && !!game}
             onDragStart={(e) => game && handleDragStart(e, index)}
             onDragOver={(e) => handleDragOver(e, index)}
@@ -209,7 +209,7 @@ export function FavoriteGames({ favorites: initialFavorites, isOwnProfile }: Fav
                       e.stopPropagation()
                       handleRemoveFavorite(game.id)
                     }}
-                    className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center shadow-lg hover:bg-red-600 transition-colors z-10"
+                    className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center shadow-lg z-10"
                     title="Remove from favorites"
                   >
                     <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -226,7 +226,7 @@ export function FavoriteGames({ favorites: initialFavorites, isOwnProfile }: Fav
               </div>
             ) : isOwnProfile ? (
               <Link href="/search" className="w-28 sm:w-36">
-                <div className={`aspect-[3/4] bg-background-card/50 rounded-lg border-2 border-dashed border-purple/20 flex flex-col items-center justify-center gap-2 hover:border-purple/40 transition-colors ${
+                <div className={`aspect-[3/4] bg-background-card/50 rounded-lg border-2 border-dashed border-purple/20 flex flex-col items-center justify-center gap-2/40 ${
                   dragOverIndex === index ? 'border-purple border-solid' : ''
                 }`}>
                   <div className="w-10 h-10 rounded-full bg-purple/20 flex items-center justify-center">

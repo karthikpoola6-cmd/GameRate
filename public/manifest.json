@@ -2,7 +2,7 @@
   "name": "GameRate - Track, Rate & Discover Games",
   "short_name": "GameRate",
   "description": "Your personal video game diary. Track games you've played, rate them, create lists, and discover new favorites.",
-  "start_url": "/",
+  "start_url": "/home",
   "display": "standalone",
   "background_color": "#0f0a19",
   "theme_color": "#8b5cf6",

@@ -99,14 +99,12 @@ export default async function ListPage({
       <main className="pt-24 pb-16 px-4">
         <div className="max-w-4xl mx-auto">
           {/* Back link */}
-          {isOwner && (
-            <Link
-              href={`/user/${typedList.profiles.username}/lists`}
-              className="text-purple hover:text-purple-light transition-colors text-sm"
-            >
-              ← Back to your lists
-            </Link>
-          )}
+          <Link
+            href={`/user/${typedList.profiles.username}/lists`}
+            className="text-purple text-sm"
+          >
+            ← Back to {isOwner ? 'your' : `${typedList.profiles.username}'s`} lists
+          </Link>
 
           {/* Header */}
           <div className="mb-8 mt-4">
@@ -135,7 +133,6 @@ export default async function ListPage({
             <div className="flex items-center gap-4 mt-4 text-sm text-foreground-muted">
               <Link
                 href={`/user/${typedList.profiles.username}`}
-                className="hover:text-foreground transition-colors"
               >
                 by @{typedList.profiles.username}
               </Link>

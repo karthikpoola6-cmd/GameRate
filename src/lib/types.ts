@@ -57,11 +57,3 @@ export interface Follow {
   following_id: string
   created_at: string
 }
-
-// Extended types with relations
-export interface ProfileWithStats extends Profile {
-  games_count: number
-  lists_count: number
-  followers_count: number
-  following_count: number
-}

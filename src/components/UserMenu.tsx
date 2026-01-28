@@ -43,7 +43,7 @@ export function UserMenu({ email, username, avatarUrl }: UserMenuProps) {
     <div className="relative" ref={menuRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-10 h-10 bg-purple/20 hover:bg-purple/30 rounded-full flex items-center justify-center text-purple font-medium transition-colors overflow-hidden"
+        className="w-10 h-10 bg-purple/20 rounded-full flex items-center justify-center text-purple font-medium overflow-hidden"
       >
         {avatarUrl ? (
           <Image
@@ -52,6 +52,7 @@ export function UserMenu({ email, username, avatarUrl }: UserMenuProps) {
             width={40}
             height={40}
             className="w-full h-full object-cover"
+            unoptimized
           />
         ) : (
           initials
@@ -68,28 +69,28 @@ export function UserMenu({ email, username, avatarUrl }: UserMenuProps) {
           <div className="py-2">
             <Link
               href={username ? `/user/${username}` : '/setup-username'}
-              className="block px-4 py-2 text-sm text-foreground-muted hover:text-foreground hover:bg-background-secondary transition-colors"
+              className="block px-4 py-2 text-sm text-foreground-muted"
               onClick={() => setIsOpen(false)}
             >
               Your Profile
             </Link>
             <Link
               href={username ? `/user/${username}/want-to-play` : '/setup-username'}
-              className="block px-4 py-2 text-sm text-foreground-muted hover:text-foreground hover:bg-background-secondary transition-colors"
+              className="block px-4 py-2 text-sm text-foreground-muted"
               onClick={() => setIsOpen(false)}
             >
               Want to Play
             </Link>
             <Link
               href={username ? `/user/${username}/lists` : '/setup-username'}
-              className="block px-4 py-2 text-sm text-foreground-muted hover:text-foreground hover:bg-background-secondary transition-colors"
+              className="block px-4 py-2 text-sm text-foreground-muted"
               onClick={() => setIsOpen(false)}
             >
               Your Lists
             </Link>
             <Link
               href="/settings/profile"
-              className="block px-4 py-2 text-sm text-foreground-muted hover:text-foreground hover:bg-background-secondary transition-colors"
+              className="block px-4 py-2 text-sm text-foreground-muted"
               onClick={() => setIsOpen(false)}
             >
               Settings
@@ -99,7 +100,7 @@ export function UserMenu({ email, username, avatarUrl }: UserMenuProps) {
           <div className="border-t border-purple/10 py-2">
             <button
               onClick={handleSignOut}
-              className="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-background-secondary transition-colors"
+              className="w-full text-left px-4 py-2 text-sm text-red-400"
             >
               Sign out
             </button>

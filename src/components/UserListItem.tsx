@@ -61,6 +61,7 @@ export function UserListItem({ user, currentUserId, initialFollowing }: UserList
             width={48}
             height={48}
             className="w-full h-full object-cover"
+            unoptimized
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-xl bg-gradient-to-br from-purple/30 to-purple-dark/30">
@@ -77,7 +78,7 @@ export function UserListItem({ user, currentUserId, initialFollowing }: UserList
         <button
           onClick={handleFollow}
           disabled={loading}
-          className="w-8 h-8 flex items-center justify-center bg-purple text-white rounded-full flex-shrink-0 active:scale-95 transition-transform disabled:opacity-50"
+          className="w-8 h-8 flex items-center justify-center bg-purple text-white rounded-full flex-shrink-0 active:scale-95 disabled:opacity-50"
           aria-label={`Follow ${user.username}`}
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

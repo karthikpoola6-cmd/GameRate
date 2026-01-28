@@ -143,7 +143,7 @@ export function AddToListButton({ game }: AddToListButtonProps) {
     <div ref={containerRef} className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-4 py-2 bg-background-secondary border border-purple/20 rounded-lg hover:border-purple/40 transition-colors"
+        className="flex items-center gap-2 px-4 py-2 bg-background-secondary border border-purple/20 rounded-lg/40"
       >
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -172,14 +172,14 @@ export function AddToListButton({ game }: AddToListButtonProps) {
                     <button
                       type="submit"
                       disabled={creating || !newListName.trim()}
-                      className="flex-1 bg-purple hover:bg-purple-dark text-white px-3 py-1.5 rounded text-sm disabled:opacity-50"
+                      className="flex-1 bg-purple text-white px-3 py-1.5 rounded text-sm disabled:opacity-50"
                     >
                       {creating ? 'Creating...' : 'Create'}
                     </button>
                     <button
                       type="button"
                       onClick={() => setShowCreate(false)}
-                      className="px-3 py-1.5 text-sm text-foreground-muted hover:text-foreground"
+                      className="px-3 py-1.5 text-sm text-foreground-muted"
                     >
                       Cancel
                     </button>
@@ -188,7 +188,7 @@ export function AddToListButton({ game }: AddToListButtonProps) {
               ) : (
                 <button
                   onClick={() => setShowCreate(true)}
-                  className="w-full flex items-center gap-2 p-3 text-sm text-purple hover:bg-background-secondary transition-colors border-b border-purple/10"
+                  className="w-full flex items-center gap-2 p-3 text-sm text-purple border-b border-purple/10"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -208,7 +208,7 @@ export function AddToListButton({ game }: AddToListButtonProps) {
                     <button
                       key={list.id}
                       onClick={() => handleToggleList(list.id, !!list.game_in_list)}
-                      className="w-full flex items-center gap-3 p-3 text-left hover:bg-background-secondary transition-colors"
+                      className="w-full flex items-center gap-3 p-3 text-left"
                     >
                       <div className={`w-5 h-5 rounded border-2 flex items-center justify-center ${
                         list.game_in_list

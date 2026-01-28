@@ -54,7 +54,7 @@ export async function ActivityFeed({ userId }: { userId: string }) {
         </p>
         <Link
           href="/players"
-          className="inline-block mt-4 text-purple hover:text-purple-light transition-colors"
+          className="inline-block mt-4 text-purple"
         >
           Find players to follow →
         </Link>

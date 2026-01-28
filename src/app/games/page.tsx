@@ -13,7 +13,7 @@ function GameCard({ game }: { game: IGDBGame }) {
 
   return (
     <Link href={`/game/${game.slug}`} className="group">
-      <div className="relative aspect-[3/4] bg-background-card rounded-lg overflow-hidden transition-transform duration-200 group-hover:scale-105 group-hover:ring-2 group-hover:ring-purple">
+      <div className="relative aspect-[3/4] bg-background-card rounded-lg overflow-hidden">
         {game.cover?.image_id ? (
           <Image
             src={getCoverUrl(game.cover.image_id)}
@@ -30,7 +30,7 @@ function GameCard({ game }: { game: IGDBGame }) {
         )}
       </div>
       <div className="mt-2">
-        <h3 className="text-sm font-medium text-foreground truncate group-hover:text-purple-light transition-colors">
+        <h3 className="text-sm font-medium text-foreground truncate">
           {game.name}
         </h3>
         <div className="flex items-center justify-between mt-1">

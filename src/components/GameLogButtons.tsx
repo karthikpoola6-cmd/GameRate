@@ -394,7 +394,7 @@ export function GameLogButtons({ gameId, gameSlug, gameName, gameCoverId }: Game
               disabled={saving || isFull}
               variant="outline"
               size="sm"
-              className={isFavorite ? 'border-red-500/40 text-red-400 hover:text-red-300' : ''}
+              className={isFavorite ? 'border-red-500/40 text-red-400' : ''}
               title={isFull ? 'Remove a favorite from another game first' : ''}
             >
               <svg
@@ -468,7 +468,7 @@ export function GameLogButtons({ gameId, gameSlug, gameName, gameCoverId }: Game
                 type="button"
                 disabled={saving}
                 onClick={handleStarClick}
-                className="relative h-8 w-8 hover:scale-110 transition-transform"
+                className="relative h-8 w-8"
                 aria-label={`Rate ${starNum} stars`}
               >
                 {/* Empty star (background) */}
@@ -528,7 +528,7 @@ export function GameLogButtons({ gameId, gameSlug, gameName, gameCoverId }: Game
             size="xs"
             onClick={handleRemoveLog}
             disabled={saving}
-            className="text-foreground-muted hover:text-red-500"
+            className="text-foreground-muted"
           >
             Remove
           </Button>
@@ -542,7 +542,7 @@ export function GameLogButtons({ gameId, gameSlug, gameName, gameCoverId }: Game
             value={review}
             onChange={(e) => setReview(e.target.value)}
             placeholder="Write your thoughts about this game..."
-            className="w-full bg-background-secondary border border-purple/20 rounded-lg p-3 text-foreground placeholder:text-foreground-muted/50 focus:outline-none focus:border-purple focus:ring-2 focus:ring-purple/20 transition-all resize-none"
+            className="w-full bg-background-secondary border border-purple/20 rounded-lg p-3 text-foreground placeholder:text-foreground-muted/50 focus:outline-none focus:border-purple focus:ring-2 focus:ring-purple/20 resize-none"
             rows={4}
           />
           <div className="flex justify-end gap-2 mt-3">

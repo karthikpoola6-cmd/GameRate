@@ -120,25 +120,6 @@ body {
   display: none;
 }
 
-/* Thin horizontal scrollbar for activity feed */
-.scrollbar-thin {
-  scrollbar-width: thin;
-  scrollbar-color: var(--purple-dark) transparent;
-}
-.scrollbar-thin::-webkit-scrollbar {
-  height: 6px;
-}
-.scrollbar-thin::-webkit-scrollbar-track {
-  background: transparent;
-}
-.scrollbar-thin::-webkit-scrollbar-thumb {
-  background: var(--purple-dark);
-  border-radius: 3px;
-}
-.scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  background: var(--purple);
-}
-
 @layer base {
   * {
     @apply border-border outline-ring/50;

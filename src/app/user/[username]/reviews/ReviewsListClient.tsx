@@ -98,7 +98,7 @@ export function ReviewsListClient({ reviews }: { reviews: Review[] }) {
               </div>
               <button
                 onClick={() => setSelectedReview(null)}
-                className="text-foreground-muted hover:text-foreground p-1"
+                className="text-foreground-muted p-1"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -115,7 +115,7 @@ export function ReviewsListClient({ reviews }: { reviews: Review[] }) {
             <div className="p-4 border-t border-purple/10">
               <Link
                 href={`/game/${selectedReview.game_slug}`}
-                className="block w-full text-center bg-purple hover:bg-purple-dark text-white py-2 rounded-lg font-medium transition-colors"
+                className="block w-full text-center bg-purple text-white py-2 rounded-lg font-medium"
               >
                 View Game
               </Link>

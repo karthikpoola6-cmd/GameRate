@@ -25,13 +25,13 @@ export default function GameNotFound() {
         <div className="flex gap-4 justify-center">
           <Link
             href="/"
-            className="bg-purple hover:bg-purple-dark text-white px-6 py-3 rounded-lg font-medium transition-colors"
+            className="bg-purple text-white px-6 py-3 rounded-lg font-medium"
           >
             Go Home
           </Link>
           <Link
             href="/games"
-            className="bg-background-card hover:bg-background-secondary text-foreground px-6 py-3 rounded-lg font-medium transition-colors border border-purple/20"
+            className="bg-background-card text-foreground px-6 py-3 rounded-lg font-medium border border-purple/20"
           >
             Browse Games
           </Link>

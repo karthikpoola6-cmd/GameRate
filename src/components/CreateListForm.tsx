@@ -76,7 +76,7 @@ export function CreateListForm() {
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="e.g., Best RPGs, Games to Play..."
-          className="w-full bg-background-secondary border border-purple/20 rounded-lg py-3 px-4 text-foreground placeholder:text-foreground-muted/50 focus:outline-none focus:border-purple focus:ring-2 focus:ring-purple/20 transition-all"
+          className="w-full bg-background-secondary border border-purple/20 rounded-lg py-3 px-4 text-foreground placeholder:text-foreground-muted/50 focus:outline-none focus:border-purple focus:ring-2 focus:ring-purple/20"
         />
       </div>
 
@@ -90,7 +90,7 @@ export function CreateListForm() {
           onChange={(e) => setDescription(e.target.value)}
           rows={3}
           placeholder="What's this list about?"
-          className="w-full bg-background-secondary border border-purple/20 rounded-lg py-3 px-4 text-foreground placeholder:text-foreground-muted/50 focus:outline-none focus:border-purple focus:ring-2 focus:ring-purple/20 transition-all resize-none"
+          className="w-full bg-background-secondary border border-purple/20 rounded-lg py-3 px-4 text-foreground placeholder:text-foreground-muted/50 focus:outline-none focus:border-purple focus:ring-2 focus:ring-purple/20 resize-none"
         />
       </div>
 
@@ -99,12 +99,12 @@ export function CreateListForm() {
           <button
             type="button"
             onClick={() => setIsPublic(!isPublic)}
-            className={`relative w-12 h-6 rounded-full transition-colors ${
+            className={`relative w-12 h-6 rounded-full ${
               isPublic ? 'bg-purple' : 'bg-background-secondary'
             }`}
           >
             <span
-              className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${
+              className={`absolute top-1 w-4 h-4 bg-white rounded-full ${
                 isPublic ? 'left-7' : 'left-1'
               }`}
             />
@@ -118,12 +118,12 @@ export function CreateListForm() {
           <button
             type="button"
             onClick={() => setIsRanked(!isRanked)}
-            className={`relative w-12 h-6 rounded-full transition-colors ${
+            className={`relative w-12 h-6 rounded-full ${
               isRanked ? 'bg-purple' : 'bg-background-secondary'
             }`}
           >
             <span
-              className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${
+              className={`absolute top-1 w-4 h-4 bg-white rounded-full ${
                 isRanked ? 'left-7' : 'left-1'
               }`}
             />
@@ -141,13 +141,13 @@ export function CreateListForm() {
         <button
           type="submit"
           disabled={loading}
-          className="flex-1 bg-purple hover:bg-purple-dark disabled:opacity-50 text-white py-3 rounded-lg font-medium transition-colors"
+          className="flex-1 bg-purple disabled:opacity-50 text-white py-3 rounded-lg font-medium"
         >
           {loading ? 'Creating...' : 'Create List'}
         </button>
         <Link
           href="/"
-          className="px-6 py-3 text-foreground-muted hover:text-foreground transition-colors"
+          className="px-6 py-3 text-foreground-muted"
         >
           Cancel
         </Link>

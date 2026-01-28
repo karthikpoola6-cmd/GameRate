@@ -297,7 +297,7 @@ export default function EditProfilePage() {
           </Link>
           <Link
             href={`/user/${profile.username}`}
-            className="text-foreground-muted hover:text-foreground transition-colors"
+            className="text-foreground-muted"
           >
             Back to profile
           </Link>
@@ -342,6 +342,7 @@ export default function EditProfilePage() {
                       alt="Avatar"
                       fill
                       className="object-cover"
+                      unoptimized
                     />
                   ) : (
                     <span className="text-3xl font-bold text-purple">
@@ -365,7 +366,7 @@ export default function EditProfilePage() {
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="absolute bottom-0 left-0 w-8 h-8 bg-purple hover:bg-purple-dark rounded-full flex items-center justify-center transition-colors shadow-lg border-2 border-background"
+                  className="absolute bottom-0 left-0 w-8 h-8 bg-purple rounded-full flex items-center justify-center shadow-lg border-2 border-background"
                   title="Change photo"
                 >
                   <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -385,7 +386,7 @@ export default function EditProfilePage() {
                       setAvatarPreview(null)
                       setAvatarUrl(null)
                     }}
-                    className="mt-2 text-red-400 hover:text-red-300 text-sm transition-colors"
+                    className="mt-2 text-red-400 text-sm"
                   >
                     Remove photo
                   </button>
@@ -408,7 +409,7 @@ export default function EditProfilePage() {
                 onChange={(e) => setUsername(e.target.value.replace(/[^a-zA-Z0-9_]/g, ''))}
                 required
                 maxLength={20}
-                className="w-full bg-background-secondary border border-purple/20 rounded-lg py-3 px-4 pl-8 text-foreground focus:outline-none focus:border-purple focus:ring-2 focus:ring-purple/20 transition-all"
+                className="w-full bg-background-secondary border border-purple/20 rounded-lg py-3 px-4 pl-8 text-foreground focus:outline-none focus:border-purple focus:ring-2 focus:ring-purple/20"
               />
               {username.length >= 3 && username.toLowerCase() !== profile.username?.toLowerCase() && (
                 <span className="absolute right-4 top-1/2 -translate-y-1/2">
@@ -438,7 +439,7 @@ export default function EditProfilePage() {
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
               maxLength={50}
-              className="w-full bg-background-secondary border border-purple/20 rounded-lg py-3 px-4 text-foreground focus:outline-none focus:border-purple focus:ring-2 focus:ring-purple/20 transition-all"
+              className="w-full bg-background-secondary border border-purple/20 rounded-lg py-3 px-4 text-foreground focus:outline-none focus:border-purple focus:ring-2 focus:ring-purple/20"
               placeholder="Your display name"
             />
           </div>
@@ -454,7 +455,7 @@ export default function EditProfilePage() {
               onChange={(e) => setBio(e.target.value)}
               maxLength={300}
               rows={4}
-              className="w-full bg-background-secondary border border-purple/20 rounded-lg py-3 px-4 text-foreground focus:outline-none focus:border-purple focus:ring-2 focus:ring-purple/20 transition-all resize-none"
+              className="w-full bg-background-secondary border border-purple/20 rounded-lg py-3 px-4 text-foreground focus:outline-none focus:border-purple focus:ring-2 focus:ring-purple/20 resize-none"
               placeholder="Tell us about yourself..."
             />
             <p className="text-xs text-foreground-muted mt-1 text-right">
@@ -465,7 +466,7 @@ export default function EditProfilePage() {
           <button
             type="submit"
             disabled={loading || (username.toLowerCase() !== profile.username?.toLowerCase() && !usernameAvailable)}
-            className="w-full bg-purple hover:bg-purple-dark disabled:opacity-50 disabled:cursor-not-allowed text-white py-3 rounded-lg font-medium transition-colors"
+            className="w-full bg-purple disabled:opacity-50 disabled:cursor-not-allowed text-white py-3 rounded-lg font-medium"
           >
             {loading ? 'Saving...' : 'Save Changes'}
           </button>
@@ -484,7 +485,7 @@ export default function EditProfilePage() {
               </div>
               <button
                 onClick={() => setShowDeleteModal(true)}
-                className="bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-white px-4 py-2 rounded-lg font-medium transition-colors border border-red-500/30"
+                className="bg-red-500/10 text-red-400 px-4 py-2 rounded-lg font-medium border border-red-500/30"
               >
                 Delete Account
               </button>
@@ -536,13 +537,13 @@ export default function EditProfilePage() {
             <div className="flex gap-3 max-w-md mx-auto">
               <button
                 onClick={handleCropCancel}
-                className="flex-1 bg-background-secondary hover:bg-background text-foreground py-3 rounded-lg font-medium transition-colors border border-purple/20"
+                className="flex-1 bg-background-secondary text-foreground py-3 rounded-lg font-medium border border-purple/20"
               >
                 Cancel
               </button>
               <button
                 onClick={handleCropConfirm}
-                className="flex-1 bg-purple hover:bg-purple-dark text-white py-3 rounded-lg font-medium transition-colors"
+                className="flex-1 bg-purple text-white py-3 rounded-lg font-medium"
               >
                 Apply
               </button>
@@ -567,7 +568,7 @@ export default function EditProfilePage() {
               type="text"
               value={deleteConfirmation}
               onChange={(e) => setDeleteConfirmation(e.target.value)}
-              className="w-full bg-background-secondary border border-red-500/20 rounded-lg py-2 px-4 text-foreground focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20 transition-all mb-4"
+              className="w-full bg-background-secondary border border-red-500/20 rounded-lg py-2 px-4 text-foreground focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20 mb-4"
               placeholder="delete my account"
             />
 
@@ -584,7 +585,7 @@ export default function EditProfilePage() {
                   setDeleteConfirmation('')
                   setDeleteError(null)
                 }}
-                className="flex-1 bg-background-secondary hover:bg-background text-foreground py-2 rounded-lg font-medium transition-colors border border-purple/20"
+                className="flex-1 bg-background-secondary text-foreground py-2 rounded-lg font-medium border border-purple/20"
               >
                 Cancel
               </button>
@@ -617,7 +618,7 @@ export default function EditProfilePage() {
                   }
                 }}
                 disabled={deleting || deleteConfirmation !== 'delete my account'}
-                className="flex-1 bg-red-500 hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed text-white py-2 rounded-lg font-medium transition-colors"
+                className="flex-1 bg-red-500 disabled:opacity-50 disabled:cursor-not-allowed text-white py-2 rounded-lg font-medium"
               >
                 {deleting ? 'Deleting...' : 'Delete Forever'}
               </button>

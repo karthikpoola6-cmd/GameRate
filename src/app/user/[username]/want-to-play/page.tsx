@@ -49,7 +49,7 @@ export default async function WantToPlayPage({ params }: PageProps) {
         <div className="mb-8">
           <Link
             href={`/user/${username}`}
-            className="text-purple hover:text-purple-light text-sm transition-colors"
+            className="text-purple text-sm"
           >
             ← Back to {isOwnProfile ? 'your' : `${profile.display_name || profile.username}'s`} profile
           </Link>
@@ -103,7 +103,7 @@ export default async function WantToPlayPage({ params }: PageProps) {
             {isOwnProfile && (
               <Link
                 href="/"
-                className="inline-block mt-4 text-purple hover:text-purple-light transition-colors"
+                className="inline-block mt-4 text-purple"
               >
                 Browse games to add some →
               </Link>

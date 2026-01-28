@@ -74,7 +74,7 @@ async function igdbFetch<T>(endpoint: string, body: string): Promise<T> {
 export async function searchGames(query: string, limit = 10): Promise<IGDBSearchResult[]> {
   const body = `
     search "${query}";
-    fields name, cover.image_id, first_release_date, rating;
+    fields name, slug, cover.image_id, first_release_date, rating;
     limit ${limit};
   `
   return igdbFetch<IGDBSearchResult[]>('games', body)
@@ -96,14 +96,37 @@ export async function getGameBySlug(slug: string): Promise<IGDBGame | null> {
 }
 
 export async function getPopularGames(limit = 20): Promise<IGDBGame[]> {
+  // Fetch more games than needed to account for duplicates we'll filter out
   const body = `
     fields name, slug, cover.image_id, first_release_date, rating, rating_count,
            aggregated_rating, genres.name;
     where rating_count > 100 & cover != null;
     sort rating desc;
-    limit ${limit};
+    limit ${limit + 20};
   `
-  return igdbFetch<IGDBGame[]>('games', body)
+  const games = await igdbFetch<IGDBGame[]>('games', body)
+
+  // Deduplicate by base game name (remove versions like "Game of the Year", "Complete Edition", etc.)
+  const seen = new Set<string>()
+  const uniqueGames: IGDBGame[] = []
+
+  for (const game of games) {
+    // Get base name by removing common suffixes and version info
+    const baseName = game.name
+      .replace(/:\s*(Game of the Year|GOTY|Complete|Definitive|Ultimate|Enhanced|Special|Remastered|Anniversary|Legendary).*$/i, '')
+      .replace(/\s*-\s*(Game of the Year|GOTY|Complete|Definitive|Ultimate|Enhanced|Special|Remastered|Anniversary|Legendary).*$/i, '')
+      .replace(/\s+(Edition|Version)$/i, '')
+      .trim()
+      .toLowerCase()
+
+    if (!seen.has(baseName)) {
+      seen.add(baseName)
+      uniqueGames.push(game)
+      if (uniqueGames.length >= limit) break
+    }
+  }
+
+  return uniqueGames
 }
 
 export async function getRecentGames(limit = 20): Promise<IGDBGame[]> {

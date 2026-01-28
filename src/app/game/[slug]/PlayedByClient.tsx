@@ -46,6 +46,7 @@ export function PlayedByClient({ friends, gameName }: Props) {
                       width={40}
                       height={40}
                       className="w-full h-full object-cover"
+                      unoptimized
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-sm bg-gradient-to-br from-purple/30 to-purple-dark/30">
@@ -77,6 +78,7 @@ export function PlayedByClient({ friends, gameName }: Props) {
                       width={40}
                       height={40}
                       className="w-full h-full object-cover"
+                      unoptimized
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-sm bg-gradient-to-br from-purple/30 to-purple-dark/30">
@@ -115,6 +117,7 @@ export function PlayedByClient({ friends, gameName }: Props) {
                     width={48}
                     height={48}
                     className="w-full h-full object-cover"
+                    unoptimized
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-lg bg-gradient-to-br from-purple/30 to-purple-dark/30">
@@ -134,7 +137,7 @@ export function PlayedByClient({ friends, gameName }: Props) {
               )}
               <button
                 onClick={() => setSelectedFriend(null)}
-                className="text-foreground-muted hover:text-foreground p-1"
+                className="text-foreground-muted p-1"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -151,7 +154,7 @@ export function PlayedByClient({ friends, gameName }: Props) {
             <div className="p-4 border-t border-purple/10">
               <Link
                 href={`/user/${selectedFriend.username}`}
-                className="block w-full text-center bg-purple hover:bg-purple-dark text-white py-2 rounded-lg font-medium transition-colors"
+                className="block w-full text-center bg-purple text-white py-2 rounded-lg font-medium"
               >
                 View {selectedFriend.display_name || selectedFriend.username}'s Profile
               </Link>

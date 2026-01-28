@@ -113,11 +113,11 @@ export default function SetupUsernamePage() {
       return
     }
 
-    // Refresh to clear any cached data, then redirect
+    // Refresh to clear any cached data, then redirect to app home
     router.refresh()
     // Brief delay to ensure database write propagates
     await new Promise(resolve => setTimeout(resolve, 500))
-    router.push(`/user/${cleanUsername}`)
+    router.push('/home')
   }
 
   return (
@@ -163,7 +163,7 @@ export default function SetupUsernamePage() {
                     onChange={(e) => setUsername(e.target.value.replace(/[^a-zA-Z0-9_]/g, ''))}
                     required
                     maxLength={20}
-                    className="w-full bg-background-secondary border border-purple/20 rounded-lg py-3 px-4 pl-8 text-foreground placeholder:text-foreground-muted/50 focus:outline-none focus:border-purple focus:ring-2 focus:ring-purple/20 transition-all"
+                    className="w-full bg-background-secondary border border-purple/20 rounded-lg py-3 px-4 pl-8 text-foreground placeholder:text-foreground-muted/50 focus:outline-none focus:border-purple focus:ring-2 focus:ring-purple/20"
                     placeholder="YourUsername"
                   />
                   {username.length >= 3 && (
@@ -186,7 +186,7 @@ export default function SetupUsernamePage() {
               <button
                 type="submit"
                 disabled={loading || !available || username.length < 3}
-                className="w-full bg-purple hover:bg-purple-dark disabled:opacity-50 disabled:cursor-not-allowed text-white py-3 rounded-lg font-medium transition-colors"
+                className="w-full bg-purple disabled:opacity-50 disabled:cursor-not-allowed text-white py-3 rounded-lg font-medium"
               >
                 {loading ? 'Saving...' : 'Continue'}
               </button>

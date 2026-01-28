@@ -27,7 +27,7 @@ export function PlayerSearch() {
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         placeholder="Search by username..."
-        className="w-full bg-background-secondary border border-purple/20 rounded-lg py-3 px-4 pl-11 text-foreground placeholder:text-foreground-muted/50 focus:outline-none focus:border-purple focus:ring-2 focus:ring-purple/20 transition-all"
+        className="w-full bg-background-secondary border border-purple/20 rounded-lg py-3 px-4 pl-11 text-foreground placeholder:text-foreground-muted/50 focus:outline-none focus:border-purple focus:ring-2 focus:ring-purple/20"
       />
       <svg
         className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-foreground-muted"

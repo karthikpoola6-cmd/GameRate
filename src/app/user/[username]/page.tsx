@@ -122,6 +122,7 @@ export default async function ProfilePage({ params }: PageProps) {
                   width={128}
                   height={128}
                   className="rounded-full object-cover"
+                  unoptimized
                 />
               ) : (
                 profile.username.slice(0, 2).toUpperCase()
@@ -145,11 +146,11 @@ export default async function ProfilePage({ params }: PageProps) {
                   <div className="text-xl font-bold">{gamesCount || 0}</div>
                   <div className="text-sm text-foreground-muted">Games</div>
                 </div>
-                <Link href={`/user/${username}/followers`} className="text-center hover:text-purple transition-colors">
+                <Link href={`/user/${username}/followers`} className="text-center">
                   <div className="text-xl font-bold">{followersCount || 0}</div>
                   <div className="text-sm text-foreground-muted">Followers</div>
                 </Link>
-                <Link href={`/user/${username}/following`} className="text-center hover:text-purple transition-colors">
+                <Link href={`/user/${username}/following`} className="text-center">
                   <div className="text-xl font-bold">{followingCount || 0}</div>
                   <div className="text-sm text-foreground-muted">Following</div>
                 </Link>
@@ -194,7 +195,7 @@ export default async function ProfilePage({ params }: PageProps) {
             {(gamesCount || 0) > 0 && (
               <Link
                 href={`/user/${username}/games`}
-                className="text-purple hover:text-purple-light text-sm transition-colors"
+                className="text-purple text-sm"
               >
                 View all →
               </Link>
@@ -250,7 +251,7 @@ export default async function ProfilePage({ params }: PageProps) {
               {isOwnProfile && (
                 <Link
                   href="/"
-                  className="inline-block mt-4 text-purple hover:text-purple-light transition-colors"
+                  className="inline-block mt-4 text-purple"
                 >
                   Browse games to get started →
                 </Link>
@@ -263,21 +264,21 @@ export default async function ProfilePage({ params }: PageProps) {
         <div className="border border-purple/10 rounded-lg overflow-hidden">
           <Link
             href={`/user/${username}/lists`}
-            className="flex items-center justify-between py-3 px-4 hover:bg-background-secondary/30 transition-colors border-b border-purple/10"
+            className="flex items-center justify-between py-3 px-4 border-b border-purple/10"
           >
             <span className="font-medium">Lists</span>
             <span className="text-foreground-muted text-sm">{listsCount || 0} →</span>
           </Link>
           <Link
             href={`/user/${username}/reviews`}
-            className="flex items-center justify-between py-3 px-4 hover:bg-background-secondary/30 transition-colors border-b border-purple/10"
+            className="flex items-center justify-between py-3 px-4 border-b border-purple/10"
           >
             <span className="font-medium">Reviews</span>
             <span className="text-foreground-muted text-sm">{reviewsCount || 0} →</span>
           </Link>
           <Link
             href={`/user/${username}/want-to-play`}
-            className="flex items-center justify-between py-3 px-4 hover:bg-background-secondary/30 transition-colors"
+            className="flex items-center justify-between py-3 px-4"
           >
             <span className="font-medium">Want to Play</span>
             <span className="text-foreground-muted text-sm">{wantToPlayCount || 0} →</span>

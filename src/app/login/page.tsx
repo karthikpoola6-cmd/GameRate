@@ -1,9 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 
 export default function LoginPage() {
@@ -12,8 +11,22 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
-  const router = useRouter()
+  const [checkingAuth, setCheckingAuth] = useState(true)
   const supabase = createClient()
+
+  // Check if already logged in
+  useEffect(() => {
+    async function checkExistingSession() {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        // Already logged in, redirect to home
+        window.location.href = '/home'
+      } else {
+        setCheckingAuth(false)
+      }
+    }
+    checkExistingSession()
+  }, [supabase])
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault()
@@ -29,9 +42,18 @@ export default function LoginPage() {
       setError(error.message)
       setLoading(false)
     } else {
-      router.push('/')
-      router.refresh()
+      // Use window.location for full page reload to ensure cookies are sent
+      window.location.href = '/home'
     }
+  }
+
+  // Show loading while checking existing session
+  if (checkingAuth) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-foreground-muted">Loading...</div>
+      </div>
+    )
   }
 
   return (
@@ -74,7 +96,7 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="w-full bg-background-secondary border border-purple/20 rounded-lg py-3 px-4 text-foreground placeholder:text-foreground-muted/50 focus:outline-none focus:border-purple focus:ring-2 focus:ring-purple/20 transition-all"
+                  className="w-full bg-background-secondary border border-purple/20 rounded-lg py-3 px-4 text-foreground placeholder:text-foreground-muted/50 focus:outline-none focus:border-purple focus:ring-2 focus:ring-purple/20"
                   placeholder="you@example.com"
                 />
               </div>
@@ -90,13 +112,13 @@ export default function LoginPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                    className="w-full bg-background-secondary border border-purple/20 rounded-lg py-3 px-4 pr-12 text-foreground placeholder:text-foreground-muted/50 focus:outline-none focus:border-purple focus:ring-2 focus:ring-purple/20 transition-all"
+                    className="w-full bg-background-secondary border border-purple/20 rounded-lg py-3 px-4 pr-12 text-foreground placeholder:text-foreground-muted/50 focus:outline-none focus:border-purple focus:ring-2 focus:ring-purple/20"
                     placeholder="Your password"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-foreground-muted hover:text-foreground transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-foreground-muted"
                   >
                     {showPassword ? (
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
@@ -115,7 +137,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-purple hover:bg-purple-dark disabled:opacity-50 disabled:cursor-not-allowed text-white py-3 rounded-lg font-medium transition-colors"
+                className="w-full bg-purple disabled:opacity-50 disabled:cursor-not-allowed text-white py-3 rounded-lg font-medium"
               >
                 {loading ? 'Signing in...' : 'Sign in'}
               </button>
@@ -123,7 +145,7 @@ export default function LoginPage() {
 
             <div className="mt-6 text-center text-sm text-foreground-muted">
               Don&apos;t have an account?{' '}
-              <Link href="/signup" className="text-purple hover:text-purple-light transition-colors">
+              <Link href="/signup" className="text-purple">
                 Create one
               </Link>
             </div>

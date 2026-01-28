@@ -142,7 +142,7 @@ export function AddGameToList({ listId, onGameAdded, currentItemCount }: AddGame
     <div ref={containerRef} className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-4 py-2 bg-purple hover:bg-purple-dark text-white rounded-lg font-medium transition-colors"
+        className="flex items-center gap-2 px-4 py-2 bg-purple text-white rounded-lg font-medium"
       >
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -198,7 +198,7 @@ export function AddGameToList({ listId, onGameAdded, currentItemCount }: AddGame
                   key={game.id}
                   onClick={() => handleAddGame(game)}
                   disabled={adding === game.id}
-                  className="w-full flex items-center gap-3 p-3 text-left hover:bg-background-secondary transition-colors disabled:opacity-50"
+                  className="w-full flex items-center gap-3 p-3 text-left disabled:opacity-50"
                 >
                   <div className="w-10 h-14 bg-background-secondary rounded overflow-hidden flex-shrink-0">
                     {game.cover?.image_id ? (

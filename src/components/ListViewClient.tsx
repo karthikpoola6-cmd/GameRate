@@ -99,10 +99,10 @@ export function ListViewClient({ listId, items: initialItems, listOwnerId, initi
             {/* Ranked toggle */}
             <button
               onClick={handleToggleRanked}
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium ${
                 isRanked
                   ? 'bg-purple text-white'
-                  : 'bg-background-secondary text-foreground-muted hover:text-foreground'
+                  : 'bg-background-secondary text-foreground-muted'
               }`}
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -131,7 +131,7 @@ export function ListViewClient({ listId, items: initialItems, listOwnerId, initi
           {items.map((item, index) => (
             <div
               key={item.id}
-              className={`group relative flex items-center gap-3 p-3 bg-background-card border border-purple/10 rounded-lg transition-all hover:border-purple/30`}
+              className={`group relative flex items-center gap-3 p-3 bg-background-card border border-purple/10 rounded-lg`}
             >
               <div className="relative flex-shrink-0">
                 <Link
@@ -166,7 +166,7 @@ export function ListViewClient({ listId, items: initialItems, listOwnerId, initi
                 className="flex-1 min-w-0"
               >
                 <div className="flex items-center gap-2">
-                  <h3 className="font-medium truncate hover:text-purple transition-colors">
+                  <h3 className="font-medium truncate">
                     {item.game_name}
                   </h3>
                   {/* Star rating */}
@@ -225,10 +225,10 @@ export function ListViewClient({ listId, items: initialItems, listOwnerId, initi
                   <button
                     onClick={() => handleMoveUp(index)}
                     disabled={index === 0 || saving}
-                    className={`w-8 h-8 flex items-center justify-center rounded-lg transition-all ${
+                    className={`w-8 h-8 flex items-center justify-center rounded-lg ${
                       index === 0
                         ? 'text-foreground-muted/20 cursor-not-allowed'
-                        : 'text-foreground-muted hover:text-purple hover:bg-purple/10 active:bg-purple/20'
+                        : 'text-foreground-muted/10 active:bg-purple/20'
                     }`}
                     title="Move up"
                   >
@@ -239,10 +239,10 @@ export function ListViewClient({ listId, items: initialItems, listOwnerId, initi
                   <button
                     onClick={() => handleMoveDown(index)}
                     disabled={index === items.length - 1 || saving}
-                    className={`w-8 h-8 flex items-center justify-center rounded-lg transition-all ${
+                    className={`w-8 h-8 flex items-center justify-center rounded-lg ${
                       index === items.length - 1
                         ? 'text-foreground-muted/20 cursor-not-allowed'
-                        : 'text-foreground-muted hover:text-purple hover:bg-purple/10 active:bg-purple/20'
+                        : 'text-foreground-muted/10 active:bg-purple/20'
                     }`}
                     title="Move down"
                   >
@@ -254,7 +254,7 @@ export function ListViewClient({ listId, items: initialItems, listOwnerId, initi
                   <button
                     onClick={() => handleRemoveItem(item.id)}
                     disabled={saving}
-                    className="w-8 h-8 flex items-center justify-center rounded-lg text-foreground-muted/50 hover:text-red-400 hover:bg-red-500/10 active:bg-red-500/20 transition-all"
+                    className="w-8 h-8 flex items-center justify-center rounded-lg text-foreground-muted/50 active:bg-red-500/20"
                     title="Remove from list"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

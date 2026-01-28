@@ -69,6 +69,7 @@ export interface IGDBWebsite {
 export interface IGDBSearchResult {
   id: number
   name: string
+  slug: string
   cover?: IGDBCover
   first_release_date?: number
   rating?: number
