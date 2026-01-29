@@ -30,6 +30,7 @@ export function ListViewClient({ listId, items: initialItems, listOwnerId, initi
   const [saving, setSaving] = useState(false)
   const [isRanked, setIsRanked] = useState(initialIsRanked)
   const [isEditing, setIsEditing] = useState(false)
+  const [hasChanges, setHasChanges] = useState(false)
   const [currentUserId, setCurrentUserId] = useState<string | null>(null)
   const supabase = createClient()
 
@@ -61,7 +62,7 @@ export function ListViewClient({ listId, items: initialItems, listOwnerId, initi
     await supabase.from('list_items').delete().eq('id', itemId)
   }
 
-  async function handleReorder(fromIndex: number, toIndex: number) {
+  function handleReorder(fromIndex: number, toIndex: number) {
     if (fromIndex === toIndex) return
     if (toIndex < 0 || toIndex >= items.length) return
 
@@ -69,25 +70,31 @@ export function ListViewClient({ listId, items: initialItems, listOwnerId, initi
     const [movedItem] = newItems.splice(fromIndex, 1)
     newItems.splice(toIndex, 0, movedItem)
     setItems(newItems)
+    setHasChanges(true)
+  }
 
+  async function savePositions() {
     setSaving(true)
-    for (let i = 0; i < newItems.length; i++) {
-      await supabase
+    // Batch update all positions
+    const updates = items.map((item, index) =>
+      supabase
         .from('list_items')
-        .update({ position: i })
-        .eq('id', newItems[i].id)
-    }
+        .update({ position: index })
+        .eq('id', item.id)
+    )
+    await Promise.all(updates)
+    setHasChanges(false)
     setSaving(false)
   }
 
   function handleMoveUp(index: number) {
-    if (index > 0 && !saving) {
+    if (index > 0) {
       handleReorder(index, index - 1)
     }
   }
 
   function handleMoveDown(index: number) {
-    if (index < items.length - 1 && !saving) {
+    if (index < items.length - 1) {
       handleReorder(index, index + 1)
     }
   }
@@ -99,10 +106,18 @@ export function ListViewClient({ listId, items: initialItems, listOwnerId, initi
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             {saving && <span className="text-sm text-foreground-muted">Saving...</span>}
+            {!saving && hasChanges && isEditing && (
+              <span className="text-sm text-purple">Unsaved</span>
+            )}
             {/* Edit toggle button */}
             {!saving && (
               <button
-                onPointerDown={() => setIsEditing(!isEditing)}
+                onPointerDown={async () => {
+                  if (isEditing && hasChanges) {
+                    await savePositions()
+                  }
+                  setIsEditing(!isEditing)
+                }}
                 className={`text-sm px-3 py-1.5 rounded-full font-medium select-none ${
                   isEditing
                     ? 'bg-purple text-white'
@@ -173,7 +188,7 @@ export function ListViewClient({ listId, items: initialItems, listOwnerId, initi
                 <div className="flex flex-col gap-1 flex-shrink-0">
                   <button
                     onPointerDown={() => handleMoveUp(index)}
-                    disabled={index === 0 || saving}
+                    disabled={index === 0}
                     className={`w-11 h-11 flex items-center justify-center rounded-lg select-none ${
                       index === 0
                         ? 'bg-background-secondary/50 text-foreground-muted/20'
@@ -187,7 +202,7 @@ export function ListViewClient({ listId, items: initialItems, listOwnerId, initi
                   </button>
                   <button
                     onPointerDown={() => handleMoveDown(index)}
-                    disabled={index === items.length - 1 || saving}
+                    disabled={index === items.length - 1}
                     className={`w-11 h-11 flex items-center justify-center rounded-lg select-none ${
                       index === items.length - 1
                         ? 'bg-background-secondary/50 text-foreground-muted/20'
