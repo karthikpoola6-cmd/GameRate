@@ -4,10 +4,11 @@ import Image from 'next/image'
 import { createClient } from '@/lib/supabase/server'
 import { Navigation } from '@/components/Navigation'
 import { FavoriteGames } from '@/components/FavoriteGames'
+import { RatingDistribution } from '@/components/RatingDistribution'
 import { Button } from '@/components/ui/button'
 import { getCoverUrl } from '@/lib/igdb'
 import { FollowButtonClient } from './FollowButton'
-import type { Profile, GameLog } from '@/lib/types'
+import type { GameLog } from '@/lib/types'
 
 // Always fetch fresh data for user profiles
 export const dynamic = 'force-dynamic'
@@ -46,6 +47,7 @@ export default async function ProfilePage({ params }: PageProps) {
     { count: listsCount },
     { count: reviewsCount },
     { count: wantToPlayCount },
+    { data: allRatings },
   ] = await Promise.all([
     supabase.from('game_logs').select('*', { count: 'exact', head: true }).eq('user_id', profile.id).not('rating', 'is', null),
     supabase.from('follows').select('*', { count: 'exact', head: true }).eq('following_id', profile.id),
@@ -89,7 +91,31 @@ export default async function ProfilePage({ params }: PageProps) {
       .select('*', { count: 'exact', head: true })
       .eq('user_id', profile.id)
       .eq('status', 'want_to_play'),
+    // Get all ratings for distribution
+    supabase
+      .from('game_logs')
+      .select('rating')
+      .eq('user_id', profile.id)
+      .not('rating', 'is', null),
   ])
+
+  // Calculate rating distribution
+  const ratingDistribution: Record<number, number> = {
+    0.5: 0, 1: 0, 1.5: 0, 2: 0, 2.5: 0, 3: 0, 3.5: 0, 4: 0, 4.5: 0, 5: 0
+  }
+
+  if (allRatings && allRatings.length > 0) {
+    allRatings.forEach(g => {
+      const rating = Number(g.rating)
+      // Round to nearest 0.5 to handle any floating point issues
+      const rounded = Math.round(rating * 2) / 2
+      if (rounded >= 0.5 && rounded <= 5) {
+        ratingDistribution[rounded] = (ratingDistribution[rounded] || 0) + 1
+      }
+    })
+  }
+
+  const maxCount = Math.max(...Object.values(ratingDistribution), 1)
 
   // Check if current user follows this profile
   let isFollowing = false
@@ -179,7 +205,7 @@ export default async function ProfilePage({ params }: PageProps) {
       </div>
 
       {/* Content */}
-      <div className="max-w-4xl mx-auto px-4 py-8 space-y-8">
+      <div className="max-w-4xl mx-auto px-4 pt-4 pb-8 space-y-8">
         {/* Top 5 Favorites */}
         {(isOwnProfile || (favoriteGames && favoriteGames.length > 0)) && (
           <FavoriteGames
@@ -187,6 +213,11 @@ export default async function ProfilePage({ params }: PageProps) {
             isOwnProfile={isOwnProfile}
           />
         )}
+
+        {/* Rating Distribution - just above recent ratings */}
+        <div className="-mb-4">
+          <RatingDistribution distribution={ratingDistribution} maxCount={maxCount} />
+        </div>
 
         {/* Recent Ratings */}
         <section>
