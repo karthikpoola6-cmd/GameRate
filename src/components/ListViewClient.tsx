@@ -30,8 +30,6 @@ export function ListViewClient({ listId, items: initialItems, listOwnerId, initi
   const [saving, setSaving] = useState(false)
   const [isRanked, setIsRanked] = useState(initialIsRanked)
   const [isEditing, setIsEditing] = useState(false)
-  const [draggedIndex, setDraggedIndex] = useState<number | null>(null)
-  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null)
   const [currentUserId, setCurrentUserId] = useState<string | null>(null)
   const supabase = createClient()
 
@@ -82,30 +80,16 @@ export function ListViewClient({ listId, items: initialItems, listOwnerId, initi
     setSaving(false)
   }
 
-  function handleDragStart(e: React.DragEvent, index: number) {
-    if (!isOwner || !isEditing) return
-    setDraggedIndex(index)
-    e.dataTransfer.effectAllowed = 'move'
-  }
-
-  function handleDragOver(e: React.DragEvent, index: number) {
-    if (!isOwner || !isEditing) return
-    e.preventDefault()
-    setDragOverIndex(index)
-  }
-
-  function handleDragLeave() {
-    setDragOverIndex(null)
-  }
-
-  function handleDrop(e: React.DragEvent, toIndex: number) {
-    if (!isOwner || !isEditing) return
-    e.preventDefault()
-    if (draggedIndex !== null && draggedIndex !== toIndex) {
-      handleReorder(draggedIndex, toIndex)
+  function handleMoveUp(index: number) {
+    if (index > 0 && !saving) {
+      handleReorder(index, index - 1)
     }
-    setDraggedIndex(null)
-    setDragOverIndex(null)
+  }
+
+  function handleMoveDown(index: number) {
+    if (index < items.length - 1 && !saving) {
+      handleReorder(index, index + 1)
+    }
   }
 
   return (
@@ -118,24 +102,26 @@ export function ListViewClient({ listId, items: initialItems, listOwnerId, initi
             {/* Edit toggle button */}
             {!saving && (
               <button
-                onClick={() => setIsEditing(!isEditing)}
-                className={`text-sm px-3 py-1.5 rounded-full font-medium ${
+                onPointerDown={() => setIsEditing(!isEditing)}
+                className={`text-sm px-3 py-1.5 rounded-full font-medium select-none ${
                   isEditing
                     ? 'bg-purple text-white'
                     : 'text-foreground-muted'
                 }`}
+                style={{ touchAction: 'manipulation' }}
               >
                 {isEditing ? 'Done' : 'Edit'}
               </button>
             )}
             {/* Ranked toggle */}
             <button
-              onClick={handleToggleRanked}
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium ${
+              onPointerDown={handleToggleRanked}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium select-none ${
                 isRanked
                   ? 'bg-purple text-white'
                   : 'bg-background-secondary text-foreground-muted'
               }`}
+              style={{ touchAction: 'manipulation' }}
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
@@ -163,49 +149,56 @@ export function ListViewClient({ listId, items: initialItems, listOwnerId, initi
           {items.map((item, index) => (
             <div
               key={item.id}
-              className={`group relative flex items-center gap-3 p-3 bg-background-card border border-purple/10 rounded-lg ${
-                draggedIndex === index ? 'opacity-50' : ''
-              } ${dragOverIndex === index ? 'ring-2 ring-purple' : ''}`}
-              onDragOver={(e) => handleDragOver(e, index)}
-              onDragLeave={handleDragLeave}
-              onDrop={(e) => handleDrop(e, index)}
+              className="group relative flex items-center gap-3 p-3 bg-background-card border border-purple/10 rounded-lg"
             >
               {/* Remove button - only visible in edit mode */}
               {isOwner && isEditing && (
                 <button
-                  onClick={(e) => {
+                  onPointerDown={(e) => {
                     e.preventDefault()
                     e.stopPropagation()
                     handleRemoveItem(item.id)
                   }}
-                  className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center shadow-lg z-10"
-                  title="Remove from list"
+                  className="absolute -top-2 -right-2 w-7 h-7 bg-red-500 text-white rounded-full flex items-center justify-center shadow-lg z-10 select-none active:scale-90 active:bg-red-600"
+                  style={{ touchAction: 'manipulation' }}
                 >
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>
               )}
 
-              {/* Drag handle - only visible in edit mode */}
+              {/* Arrow buttons - only visible in edit mode */}
               {isOwner && isEditing && (
-                <div
-                  draggable
-                  onDragStart={(e) => handleDragStart(e, index)}
-                  onDragOver={(e) => handleDragOver(e, index)}
-                  onDragLeave={handleDragLeave}
-                  onDrop={(e) => handleDrop(e, index)}
-                  className="flex-shrink-0 w-6 h-6 rounded-full bg-purple/20 flex items-center justify-center cursor-grab active:cursor-grabbing"
-                  title="Drag to reorder"
-                >
-                  <svg className="w-3.5 h-3.5 text-purple" fill="currentColor" viewBox="0 0 24 24">
-                    <circle cx="9" cy="6" r="1.5" />
-                    <circle cx="15" cy="6" r="1.5" />
-                    <circle cx="9" cy="12" r="1.5" />
-                    <circle cx="15" cy="12" r="1.5" />
-                    <circle cx="9" cy="18" r="1.5" />
-                    <circle cx="15" cy="18" r="1.5" />
-                  </svg>
+                <div className="flex flex-col gap-1 flex-shrink-0">
+                  <button
+                    onPointerDown={() => handleMoveUp(index)}
+                    disabled={index === 0 || saving}
+                    className={`w-11 h-11 flex items-center justify-center rounded-lg select-none ${
+                      index === 0
+                        ? 'bg-background-secondary/50 text-foreground-muted/20'
+                        : 'bg-purple/20 text-purple active:bg-purple active:text-white active:scale-95'
+                    }`}
+                    style={{ touchAction: 'manipulation' }}
+                  >
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 15l7-7 7 7" />
+                    </svg>
+                  </button>
+                  <button
+                    onPointerDown={() => handleMoveDown(index)}
+                    disabled={index === items.length - 1 || saving}
+                    className={`w-11 h-11 flex items-center justify-center rounded-lg select-none ${
+                      index === items.length - 1
+                        ? 'bg-background-secondary/50 text-foreground-muted/20'
+                        : 'bg-purple/20 text-purple active:bg-purple active:text-white active:scale-95'
+                    }`}
+                    style={{ touchAction: 'manipulation' }}
+                  >
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
                 </div>
               )}
 
@@ -231,8 +224,8 @@ export function ListViewClient({ listId, items: initialItems, listOwnerId, initi
                     </div>
                   )}
                 </Link>
-                {/* Position badge - only show when ranked */}
-                {isRanked && (
+                {/* Position badge - only show when ranked and NOT editing */}
+                {isRanked && !isEditing && (
                   <div className="absolute -top-1 -left-1 w-5 h-5 bg-purple text-white rounded-full flex items-center justify-center text-xs font-bold shadow z-10">
                     {index + 1}
                   </div>
