@@ -9,12 +9,13 @@ export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
+  const [rememberMe, setRememberMe] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [checkingAuth, setCheckingAuth] = useState(true)
   const supabase = createClient()
 
-  // Check if already logged in
+  // Check if already logged in and load saved email
   useEffect(() => {
     async function checkExistingSession() {
       const { data: { user } } = await supabase.auth.getUser()
@@ -22,6 +23,12 @@ export default function LoginPage() {
         // Already logged in, redirect to home
         window.location.href = '/home'
       } else {
+        // Load saved email if exists
+        const savedEmail = localStorage.getItem('gamerate_saved_email')
+        if (savedEmail) {
+          setEmail(savedEmail)
+          setRememberMe(true)
+        }
         setCheckingAuth(false)
       }
     }
@@ -42,6 +49,12 @@ export default function LoginPage() {
       setError(error.message)
       setLoading(false)
     } else {
+      // Save or remove email based on remember me
+      if (rememberMe) {
+        localStorage.setItem('gamerate_saved_email', email)
+      } else {
+        localStorage.removeItem('gamerate_saved_email')
+      }
       // Use window.location for full page reload to ensure cookies are sent
       window.location.href = '/home'
     }
@@ -132,6 +145,20 @@ export default function LoginPage() {
                     )}
                   </button>
                 </div>
+              </div>
+
+              {/* Remember me checkbox */}
+              <div className="flex items-center gap-2">
+                <input
+                  id="remember"
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  className="w-4 h-4 rounded border-purple/20 bg-background-secondary text-purple focus:ring-purple/20 focus:ring-2"
+                />
+                <label htmlFor="remember" className="text-sm text-foreground-muted">
+                  Remember my email
+                </label>
               </div>
 
               <button

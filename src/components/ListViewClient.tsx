@@ -164,12 +164,8 @@ export function ListViewClient({ listId, items: initialItems, listOwnerId, initi
             <div
               key={item.id}
               className={`group relative flex items-center gap-3 p-3 bg-background-card border border-purple/10 rounded-lg ${
-                isEditing ? 'cursor-grab active:cursor-grabbing' : ''
-              } ${draggedIndex === index ? 'opacity-50' : ''} ${
-                dragOverIndex === index ? 'ring-2 ring-purple' : ''
-              }`}
-              draggable={isEditing}
-              onDragStart={(e) => handleDragStart(e, index)}
+                draggedIndex === index ? 'opacity-50' : ''
+              } ${dragOverIndex === index ? 'ring-2 ring-purple' : ''}`}
               onDragOver={(e) => handleDragOver(e, index)}
               onDragLeave={handleDragLeave}
               onDrop={(e) => handleDrop(e, index)}
@@ -189,6 +185,28 @@ export function ListViewClient({ listId, items: initialItems, listOwnerId, initi
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>
+              )}
+
+              {/* Drag handle - only visible in edit mode */}
+              {isOwner && isEditing && (
+                <div
+                  draggable
+                  onDragStart={(e) => handleDragStart(e, index)}
+                  onDragOver={(e) => handleDragOver(e, index)}
+                  onDragLeave={handleDragLeave}
+                  onDrop={(e) => handleDrop(e, index)}
+                  className="flex-shrink-0 w-6 h-6 rounded-full bg-purple/20 flex items-center justify-center cursor-grab active:cursor-grabbing"
+                  title="Drag to reorder"
+                >
+                  <svg className="w-3.5 h-3.5 text-purple" fill="currentColor" viewBox="0 0 24 24">
+                    <circle cx="9" cy="6" r="1.5" />
+                    <circle cx="15" cy="6" r="1.5" />
+                    <circle cx="9" cy="12" r="1.5" />
+                    <circle cx="15" cy="12" r="1.5" />
+                    <circle cx="9" cy="18" r="1.5" />
+                    <circle cx="15" cy="18" r="1.5" />
+                  </svg>
+                </div>
               )}
 
               <div className="relative flex-shrink-0">
