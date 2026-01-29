@@ -28,7 +28,7 @@ export function RatingDistribution({ distribution, maxCount }: RatingDistributio
         }}
       >
         {ratingSteps.map((rating) => {
-          const count = Number(distribution[rating] ?? distribution[String(rating)] ?? 0)
+          const count = Number(distribution[rating] ?? 0)
           const heightPx = maxCount > 0 ? Math.max((count / maxCount) * 48, count > 0 ? 4 : 2) : 2
           const isSelected = selected === rating
 
