@@ -77,10 +77,11 @@ export default async function GamePage({ params }: PageProps) {
               src={getScreenshotUrl(game.screenshots[0].image_id, "1080p")}
               alt=""
               fill
-              className="object-cover opacity-60"
+              className="object-cover opacity-80"
               priority
+              unoptimized
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-background/30" />
+            <div className="absolute inset-0 bg-gradient-to-t from-background via-background/30 to-transparent" />
           </>
         ) : (
           <div className="absolute inset-0 bg-gradient-to-b from-purple/20 to-background" />
@@ -236,6 +237,7 @@ export default async function GamePage({ params }: PageProps) {
                       alt={`${game.name} screenshot`}
                       fill
                       className="object-cover"
+                      unoptimized
                     />
                   </div>
                 ))}

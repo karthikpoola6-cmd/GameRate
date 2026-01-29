@@ -29,6 +29,9 @@ export function ListViewClient({ listId, items: initialItems, listOwnerId, initi
   const [items, setItems] = useState(initialItems)
   const [saving, setSaving] = useState(false)
   const [isRanked, setIsRanked] = useState(initialIsRanked)
+  const [isEditing, setIsEditing] = useState(false)
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null)
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null)
   const [currentUserId, setCurrentUserId] = useState<string | null>(null)
   const supabase = createClient()
 
@@ -79,12 +82,30 @@ export function ListViewClient({ listId, items: initialItems, listOwnerId, initi
     setSaving(false)
   }
 
-  function handleMoveUp(index: number) {
-    handleReorder(index, index - 1)
+  function handleDragStart(e: React.DragEvent, index: number) {
+    if (!isOwner || !isEditing) return
+    setDraggedIndex(index)
+    e.dataTransfer.effectAllowed = 'move'
   }
 
-  function handleMoveDown(index: number) {
-    handleReorder(index, index + 1)
+  function handleDragOver(e: React.DragEvent, index: number) {
+    if (!isOwner || !isEditing) return
+    e.preventDefault()
+    setDragOverIndex(index)
+  }
+
+  function handleDragLeave() {
+    setDragOverIndex(null)
+  }
+
+  function handleDrop(e: React.DragEvent, toIndex: number) {
+    if (!isOwner || !isEditing) return
+    e.preventDefault()
+    if (draggedIndex !== null && draggedIndex !== toIndex) {
+      handleReorder(draggedIndex, toIndex)
+    }
+    setDraggedIndex(null)
+    setDragOverIndex(null)
   }
 
   return (
@@ -92,10 +113,21 @@ export function ListViewClient({ listId, items: initialItems, listOwnerId, initi
       {/* Header row with controls */}
       {isOwner && (
         <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-4">
-            <p className="text-sm text-foreground-muted">
-              {saving ? 'Saving...' : ''}
-            </p>
+          <div className="flex items-center gap-3">
+            {saving && <span className="text-sm text-foreground-muted">Saving...</span>}
+            {/* Edit toggle button */}
+            {!saving && (
+              <button
+                onClick={() => setIsEditing(!isEditing)}
+                className={`text-sm px-3 py-1.5 rounded-full font-medium ${
+                  isEditing
+                    ? 'bg-purple text-white'
+                    : 'text-foreground-muted'
+                }`}
+              >
+                {isEditing ? 'Done' : 'Edit'}
+              </button>
+            )}
             {/* Ranked toggle */}
             <button
               onClick={handleToggleRanked}
@@ -131,12 +163,39 @@ export function ListViewClient({ listId, items: initialItems, listOwnerId, initi
           {items.map((item, index) => (
             <div
               key={item.id}
-              className={`group relative flex items-center gap-3 p-3 bg-background-card border border-purple/10 rounded-lg`}
+              className={`group relative flex items-center gap-3 p-3 bg-background-card border border-purple/10 rounded-lg ${
+                isEditing ? 'cursor-grab active:cursor-grabbing' : ''
+              } ${draggedIndex === index ? 'opacity-50' : ''} ${
+                dragOverIndex === index ? 'ring-2 ring-purple' : ''
+              }`}
+              draggable={isEditing}
+              onDragStart={(e) => handleDragStart(e, index)}
+              onDragOver={(e) => handleDragOver(e, index)}
+              onDragLeave={handleDragLeave}
+              onDrop={(e) => handleDrop(e, index)}
             >
+              {/* Remove button - only visible in edit mode */}
+              {isOwner && isEditing && (
+                <button
+                  onClick={(e) => {
+                    e.preventDefault()
+                    e.stopPropagation()
+                    handleRemoveItem(item.id)
+                  }}
+                  className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center shadow-lg z-10"
+                  title="Remove from list"
+                >
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              )}
+
               <div className="relative flex-shrink-0">
                 <Link
                   href={`/game/${item.game_slug}`}
-                  className="block w-12 h-16 bg-background-secondary rounded overflow-hidden"
+                  onClick={(e) => isEditing && e.preventDefault()}
+                  className={`block w-12 h-16 bg-background-secondary rounded overflow-hidden ${isEditing ? 'pointer-events-none' : ''}`}
                 >
                   {item.game_cover_id ? (
                     <Image
@@ -145,6 +204,7 @@ export function ListViewClient({ listId, items: initialItems, listOwnerId, initi
                       width={48}
                       height={64}
                       className="w-full h-full object-cover"
+                      draggable={false}
                       unoptimized
                     />
                   ) : (
@@ -163,7 +223,8 @@ export function ListViewClient({ listId, items: initialItems, listOwnerId, initi
 
               <Link
                 href={`/game/${item.game_slug}`}
-                className="flex-1 min-w-0"
+                onClick={(e) => isEditing && e.preventDefault()}
+                className={`flex-1 min-w-0 ${isEditing ? 'pointer-events-none' : ''}`}
               >
                 <div className="flex items-center gap-2">
                   <h3 className="font-medium truncate">
@@ -218,51 +279,6 @@ export function ListViewClient({ listId, items: initialItems, listOwnerId, initi
                   </p>
                 )}
               </Link>
-
-              {isOwner && (
-                <div className="flex items-center gap-2">
-                  {/* Reorder arrows */}
-                  <button
-                    onClick={() => handleMoveUp(index)}
-                    disabled={index === 0 || saving}
-                    className={`w-8 h-8 flex items-center justify-center rounded-lg ${
-                      index === 0
-                        ? 'text-foreground-muted/20 cursor-not-allowed'
-                        : 'text-foreground-muted/10 active:bg-purple/20'
-                    }`}
-                    title="Move up"
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-                    </svg>
-                  </button>
-                  <button
-                    onClick={() => handleMoveDown(index)}
-                    disabled={index === items.length - 1 || saving}
-                    className={`w-8 h-8 flex items-center justify-center rounded-lg ${
-                      index === items.length - 1
-                        ? 'text-foreground-muted/20 cursor-not-allowed'
-                        : 'text-foreground-muted/10 active:bg-purple/20'
-                    }`}
-                    title="Move down"
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </button>
-                  {/* Remove button */}
-                  <button
-                    onClick={() => handleRemoveItem(item.id)}
-                    disabled={saving}
-                    className="w-8 h-8 flex items-center justify-center rounded-lg text-foreground-muted/50 active:bg-red-500/20"
-                    title="Remove from list"
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
-                </div>
-              )}
             </div>
           ))}
         </div>
