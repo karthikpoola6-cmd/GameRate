@@ -58,39 +58,96 @@ export default async function LandingPage() {
             </span>
             .
           </h1>
-          <p className="text-lg text-foreground-muted max-w-2xl mx-auto mb-8">
+          <p className="text-lg text-foreground-muted max-w-2xl mx-auto">
             The social network for gamers. Rate and review games, create lists, follow friends, and discover your next favorite game.
           </p>
-          <Link
-            href="/signup"
-            className="inline-flex items-center justify-center h-12 px-8 rounded-lg bg-purple text-white font-medium text-lg"
-          >
-            Get Started
-          </Link>
         </div>
       </section>
 
-      {/* About Section */}
-      <section className="py-16 px-4 bg-background-secondary/50">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-8">
-            Why I Built{" "}
-            <span className="text-purple">GameRate</span>
+      {/* Install Section */}
+      <section className="py-12 px-4 bg-background-secondary/50">
+        <div className="max-w-2xl mx-auto text-center">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-purple/10 border border-purple/20 mb-6">
+            <Image
+              src="/GameRate.png"
+              alt="GameRate"
+              width={40}
+              height={40}
+              className="w-10 h-10"
+            />
+          </div>
+          <h2 className="text-2xl font-bold mb-3">
+            Add GameRate to Your Home Screen
           </h2>
-          <div className="bg-background-card rounded-xl p-6 md:p-8 border border-purple/10 mb-12">
-            <p className="text-foreground-muted leading-relaxed mb-4">
-              I&apos;ve always loved tracking the games I play. Which ones did I finish? What did I think of them? What should I play next? I tried spreadsheets, notes apps, and other game trackers, but nothing felt quite right.
-            </p>
-            <p className="text-foreground-muted leading-relaxed mb-4">
-              I wanted something simple and personal — a place to rate games with my own scale, showcase my favorites, and see what my friends are playing. Not another database of every game ever made, but a personal gaming diary.
-            </p>
-            <p className="text-foreground-muted leading-relaxed">
-              So I built GameRate. It&apos;s the app I always wanted: half-star ratings, a top 5 favorites display, activity feeds from friends, and lists to organize everything. I hope you enjoy using it as much as I enjoyed building it.
-            </p>
+          <p className="text-foreground-muted mb-8">
+            Install GameRate for the full app experience — no app store needed.
+          </p>
+
+          <div className="grid sm:grid-cols-2 gap-4 text-left">
+            {/* iOS Instructions */}
+            <div className="bg-background-card rounded-xl p-5 border border-purple/10">
+              <div className="flex items-center gap-2 mb-3">
+                <svg className="w-5 h-5 text-foreground-muted" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+                </svg>
+                <span className="font-semibold">iPhone & iPad</span>
+              </div>
+              <ol className="space-y-2 text-sm text-foreground-muted">
+                <li className="flex items-start gap-2">
+                  <span className="text-purple font-medium">1.</span>
+                  <span>Tap the <span className="text-foreground">Share</span> button in Safari</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-purple font-medium">2.</span>
+                  <span>Scroll down and tap <span className="text-foreground">Add to Home Screen</span></span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-purple font-medium">3.</span>
+                  <span>Tap <span className="text-foreground">Add</span> to confirm</span>
+                </li>
+              </ol>
+            </div>
+
+            {/* Android Instructions */}
+            <div className="bg-background-card rounded-xl p-5 border border-purple/10">
+              <div className="flex items-center gap-2 mb-3">
+                <svg className="w-5 h-5 text-foreground-muted" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M17.6 9.48l1.84-3.18c.16-.31.04-.69-.26-.85-.29-.15-.65-.06-.83.22l-1.88 3.24c-1.39-.59-2.94-.92-4.47-.92s-3.08.33-4.47.92L5.65 5.67c-.19-.29-.54-.38-.84-.22-.31.16-.43.54-.27.85L6.4 9.48C3.3 11.25 1.28 14.44 1 18h22c-.28-3.56-2.3-6.75-5.4-8.52zM7 15.25c-.69 0-1.25-.56-1.25-1.25S6.31 12.75 7 12.75s1.25.56 1.25 1.25-.56 1.25-1.25 1.25zm10 0c-.69 0-1.25-.56-1.25-1.25s.56-1.25 1.25-1.25 1.25.56 1.25 1.25-.56 1.25-1.25 1.25z"/>
+                </svg>
+                <span className="font-semibold">Android</span>
+              </div>
+              <ol className="space-y-2 text-sm text-foreground-muted">
+                <li className="flex items-start gap-2">
+                  <span className="text-purple font-medium">1.</span>
+                  <span>Tap the <span className="text-foreground">menu</span> (three dots) in Chrome</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-purple font-medium">2.</span>
+                  <span>Tap <span className="text-foreground">Install app</span> or <span className="text-foreground">Add to Home screen</span></span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-purple font-medium">3.</span>
+                  <span>Tap <span className="text-foreground">Install</span> to confirm</span>
+                </li>
+              </ol>
+            </div>
           </div>
 
-          {/* Feature Highlights with Mockups */}
-          <h3 className="text-2xl font-semibold text-center mb-8">What You Can Do</h3>
+          <div className="mt-8">
+            <Link
+              href="/signup"
+              className="inline-flex items-center justify-center h-12 px-8 rounded-lg bg-purple text-white font-medium text-lg"
+            >
+              Get Started
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="py-16 px-4">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-3xl font-bold text-center mb-8">What You Can Do</h2>
           <div className="grid md:grid-cols-2 gap-6">
             {/* Top 5 Favorites */}
             <div className="bg-background-card rounded-xl p-6 border border-purple/10">
@@ -242,6 +299,27 @@ export default async function LandingPage() {
                 Create lists to organize your games and write reviews to share your thoughts with the community.
               </p>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* About Section */}
+      <section className="py-16 px-4">
+        <div className="max-w-3xl mx-auto">
+          <h2 className="text-3xl font-bold text-center mb-8">
+            Why I Built{" "}
+            <span className="text-purple">GameRate</span>
+          </h2>
+          <div className="bg-background-card rounded-xl p-6 md:p-8 border border-purple/10">
+            <p className="text-foreground-muted leading-relaxed mb-4">
+              I love escaping reality and exploring new worlds — and I&apos;ve felt that way since I was a kid. Growing up, my brother and I would rank our favorite games and compare lists, scribbled in notes and debated endlessly. That feeling of sharing what you love stuck with me.
+            </p>
+            <p className="text-foreground-muted leading-relaxed mb-4">
+              Years later, I had an app to track my movie journey, but nothing like it for games on mobile. As a college student navigating post-grad stress, I decided to build what I couldn&apos;t find.
+            </p>
+            <p className="text-foreground-muted leading-relaxed">
+              GameRate is the app I always wanted. I hope you enjoy it too.
+            </p>
           </div>
         </div>
       </section>
