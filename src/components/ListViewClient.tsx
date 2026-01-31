@@ -23,15 +23,32 @@ interface ListViewClientProps {
   items: ListItem[]
   listOwnerId: string  // The user ID of the list owner
   initialIsRanked: boolean
+  initialName: string
+  initialDescription: string | null
+  ownerUsername: string
+  gameCount: number
+  isPublic: boolean
 }
 
-export function ListViewClient({ listId, items: initialItems, listOwnerId, initialIsRanked }: ListViewClientProps) {
+export function ListViewClient({
+  listId,
+  items: initialItems,
+  listOwnerId,
+  initialIsRanked,
+  initialName,
+  initialDescription,
+  ownerUsername,
+  gameCount,
+  isPublic
+}: ListViewClientProps) {
   const [items, setItems] = useState(initialItems)
   const [saving, setSaving] = useState(false)
   const [isRanked, setIsRanked] = useState(initialIsRanked)
   const [isEditing, setIsEditing] = useState(false)
   const [hasChanges, setHasChanges] = useState(false)
   const [currentUserId, setCurrentUserId] = useState<string | null>(null)
+  const [listName, setListName] = useState(initialName)
+  const [listDescription, setListDescription] = useState(initialDescription || '')
   const supabase = createClient()
 
   // Verify current user on mount
@@ -73,8 +90,14 @@ export function ListViewClient({ listId, items: initialItems, listOwnerId, initi
     setHasChanges(true)
   }
 
-  async function savePositions() {
+  async function saveChanges() {
     setSaving(true)
+    // Update list name/description
+    await supabase
+      .from('lists')
+      .update({ name: listName, description: listDescription || null })
+      .eq('id', listId)
+
     // Batch update all positions
     const updates = items.map((item, index) =>
       supabase
@@ -101,7 +124,65 @@ export function ListViewClient({ listId, items: initialItems, listOwnerId, initi
 
   return (
     <div>
-      {/* Header row with controls */}
+      {/* Header */}
+      <div className="mb-6 mt-3">
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex-1 min-w-0">
+            {isOwner && isEditing ? (
+              <input
+                type="text"
+                value={listName}
+                onChange={(e) => {
+                  setListName(e.target.value)
+                  setHasChanges(true)
+                }}
+                className="text-2xl font-bold bg-background-secondary border border-purple/30 rounded-lg px-3 py-1 w-full focus:outline-none focus:border-purple"
+                placeholder="List name"
+              />
+            ) : (
+              <h1 className="text-2xl font-bold">{listName}</h1>
+            )}
+            {isOwner && isEditing ? (
+              <input
+                type="text"
+                value={listDescription}
+                onChange={(e) => {
+                  setListDescription(e.target.value)
+                  setHasChanges(true)
+                }}
+                className="text-foreground-muted mt-2 bg-background-secondary border border-purple/30 rounded-lg px-3 py-1 w-full text-sm focus:outline-none focus:border-purple"
+                placeholder="Description (optional)"
+              />
+            ) : (
+              listDescription && (
+                <p className="text-foreground-muted mt-1 text-sm">{listDescription}</p>
+              )
+            )}
+          </div>
+
+          <div className="flex items-center gap-2 flex-shrink-0">
+            {isRanked && !isEditing && (
+              <span className="px-2 py-1 bg-gold/20 text-gold text-xs rounded">
+                Ranked
+              </span>
+            )}
+            {!isPublic && !isEditing && (
+              <span className="px-2 py-1 bg-purple/20 text-purple text-xs rounded">
+                Private
+              </span>
+            )}
+          </div>
+        </div>
+
+        <div className="flex items-center gap-4 mt-2 text-sm text-foreground-muted">
+          <Link href={`/user/${ownerUsername}`}>
+            by @{ownerUsername}
+          </Link>
+          <span>{items.length} games</span>
+        </div>
+      </div>
+
+      {/* Controls row */}
       {isOwner && (
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
@@ -114,7 +195,7 @@ export function ListViewClient({ listId, items: initialItems, listOwnerId, initi
               <button
                 onPointerDown={async () => {
                   if (isEditing && hasChanges) {
-                    await savePositions()
+                    await saveChanges()
                   }
                   setIsEditing(!isEditing)
                 }}
@@ -128,21 +209,23 @@ export function ListViewClient({ listId, items: initialItems, listOwnerId, initi
                 {isEditing ? 'Done' : 'Edit'}
               </button>
             )}
-            {/* Ranked toggle */}
-            <button
-              onPointerDown={handleToggleRanked}
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium select-none ${
-                isRanked
-                  ? 'bg-purple text-white'
-                  : 'bg-background-secondary text-foreground-muted'
-              }`}
-              style={{ touchAction: 'manipulation' }}
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
-              </svg>
-              Ranked
-            </button>
+            {/* Ranked toggle - only show in edit mode */}
+            {isEditing && (
+              <button
+                onPointerDown={handleToggleRanked}
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium select-none ${
+                  isRanked
+                    ? 'bg-purple text-white'
+                    : 'bg-background-secondary text-foreground-muted'
+                }`}
+                style={{ touchAction: 'manipulation' }}
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
+                </svg>
+                Ranked
+              </button>
+            )}
           </div>
           <AddGameToList
             listId={listId}

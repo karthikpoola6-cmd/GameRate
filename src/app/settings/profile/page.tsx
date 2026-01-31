@@ -61,8 +61,6 @@ export default function EditProfilePage() {
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [checkingUsername, setCheckingUsername] = useState(false)
-  const [usernameAvailable, setUsernameAvailable] = useState<boolean | null>(null)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [deleteConfirmation, setDeleteConfirmation] = useState('')
   const [deleting, setDeleting] = useState(false)
@@ -179,46 +177,10 @@ export default function EditProfilePage() {
     return publicUrl
   }
 
-  // Check username availability
-  useEffect(() => {
-    if (!username || username.length < 3 || username.toLowerCase() === profile?.username?.toLowerCase()) {
-      setUsernameAvailable(username.toLowerCase() === profile?.username?.toLowerCase() ? true : null)
-      return
-    }
-
-    const timer = setTimeout(async () => {
-      setCheckingUsername(true)
-      const { data } = await supabase
-        .from('profiles')
-        .select('username')
-        .ilike('username', username)
-        .single()
-
-      // Available if no match, or if it's the current user's username (case-insensitive)
-      setUsernameAvailable(!data || data.username.toLowerCase() === profile?.username?.toLowerCase())
-      setCheckingUsername(false)
-    }, 500)
-
-    return () => clearTimeout(timer)
-  }, [username, profile?.username, supabase])
-
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError(null)
     setSuccess(false)
-
-    const cleanUsername = username.trim()
-
-    if (!/^[a-zA-Z0-9_]{3,20}$/.test(cleanUsername)) {
-      setError('Username must be 3-20 characters, only letters, numbers, and underscores')
-      return
-    }
-
-    if (!usernameAvailable && cleanUsername.toLowerCase() !== profile?.username?.toLowerCase()) {
-      setError('Username is not available')
-      return
-    }
-
     setLoading(true)
 
     const { data: { user } } = await supabase.auth.getUser()
@@ -243,7 +205,6 @@ export default function EditProfilePage() {
     const { error: updateError } = await supabase
       .from('profiles')
       .update({
-        username: cleanUsername,
         display_name: displayName.trim() || null,
         bio: bio.trim() || null,
         avatar_url: newAvatarUrl,
@@ -251,11 +212,7 @@ export default function EditProfilePage() {
       .eq('id', user.id)
 
     if (updateError) {
-      if (updateError.code === '23505') {
-        setError('Username is already taken')
-      } else {
-        setError(updateError.message)
-      }
+      setError(updateError.message)
       setLoading(false)
       return
     }
@@ -267,13 +224,6 @@ export default function EditProfilePage() {
 
     setSuccess(true)
     setLoading(false)
-
-    // If username changed, redirect to new profile
-    if (cleanUsername.toLowerCase() !== profile?.username?.toLowerCase()) {
-      setTimeout(() => {
-        router.push(`/user/${cleanUsername}`)
-      }, 1000)
-    }
   }
 
   if (!profile) {
@@ -305,7 +255,7 @@ export default function EditProfilePage() {
       </nav>
 
       {/* Edit Form */}
-      <div className="max-w-xl mx-auto px-4 py-12">
+      <div className="max-w-xl mx-auto px-4 py-6">
         <h1 className="text-2xl font-bold mb-8">Edit Profile</h1>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -395,7 +345,7 @@ export default function EditProfilePage() {
             </div>
           </div>
 
-          {/* Username */}
+          {/* Username (read-only) */}
           <div>
             <label htmlFor="username" className="block text-sm font-medium mb-2">
               Username
@@ -406,25 +356,13 @@ export default function EditProfilePage() {
                 id="username"
                 type="text"
                 value={username}
-                onChange={(e) => setUsername(e.target.value.replace(/[^a-zA-Z0-9_]/g, ''))}
-                required
-                maxLength={20}
-                className="w-full bg-background-secondary border border-purple/20 rounded-lg py-3 px-4 pl-8 text-foreground focus:outline-none focus:border-purple focus:ring-2 focus:ring-purple/20"
+                readOnly
+                disabled
+                className="w-full bg-background-secondary/50 border border-purple/10 rounded-lg py-3 px-4 pl-8 text-foreground-muted cursor-not-allowed"
               />
-              {username.length >= 3 && username.toLowerCase() !== profile.username?.toLowerCase() && (
-                <span className="absolute right-4 top-1/2 -translate-y-1/2">
-                  {checkingUsername ? (
-                    <span className="text-foreground-muted">...</span>
-                  ) : usernameAvailable ? (
-                    <span className="text-green-500">✓</span>
-                  ) : (
-                    <span className="text-red-500">✗</span>
-                  )}
-                </span>
-              )}
             </div>
             <p className="text-xs text-foreground-muted mt-1">
-              3-20 characters. Letters, numbers, and underscores only.
+              Username cannot be changed
             </p>
           </div>
 
@@ -465,7 +403,7 @@ export default function EditProfilePage() {
 
           <button
             type="submit"
-            disabled={loading || (username.toLowerCase() !== profile.username?.toLowerCase() && !usernameAvailable)}
+            disabled={loading}
             className="w-full bg-purple disabled:opacity-50 disabled:cursor-not-allowed text-white py-3 rounded-lg font-medium"
           >
             {loading ? 'Saving...' : 'Save Changes'}

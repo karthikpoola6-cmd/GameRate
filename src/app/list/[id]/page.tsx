@@ -96,7 +96,7 @@ export default async function ListPage({
     <div className="min-h-screen bg-background">
       <Navigation />
 
-      <main className="pt-24 pb-16 px-4">
+      <main className="pt-4 lg:pt-24 pb-16 px-4">
         <div className="max-w-4xl mx-auto">
           {/* Back link */}
           <Link
@@ -106,46 +106,17 @@ export default async function ListPage({
             ← Back to {isOwner ? 'your' : `${typedList.profiles.username}'s`} lists
           </Link>
 
-          {/* Header */}
-          <div className="mb-8 mt-4">
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <h1 className="text-3xl font-bold">{typedList.name}</h1>
-                {typedList.description && (
-                  <p className="text-foreground-muted mt-2">{typedList.description}</p>
-                )}
-              </div>
-
-              <div className="flex items-center gap-2 flex-shrink-0">
-                {typedList.is_ranked && (
-                  <span className="px-2 py-1 bg-gold/20 text-gold text-xs rounded">
-                    Ranked
-                  </span>
-                )}
-                {!typedList.is_public && (
-                  <span className="px-2 py-1 bg-purple/20 text-purple text-xs rounded">
-                    Private
-                  </span>
-                )}
-              </div>
-            </div>
-
-            <div className="flex items-center gap-4 mt-4 text-sm text-foreground-muted">
-              <Link
-                href={`/user/${typedList.profiles.username}`}
-              >
-                by @{typedList.profiles.username}
-              </Link>
-              <span>{sortedItems.length} games</span>
-            </div>
-          </div>
-
           {/* Games */}
           <ListViewClient
             listId={typedList.id}
             items={itemsWithRatings}
             listOwnerId={typedList.user_id}
             initialIsRanked={typedList.is_ranked}
+            initialName={typedList.name}
+            initialDescription={typedList.description}
+            ownerUsername={typedList.profiles.username}
+            gameCount={sortedItems.length}
+            isPublic={typedList.is_public}
           />
         </div>
       </main>

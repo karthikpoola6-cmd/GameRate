@@ -1,10 +1,10 @@
 import { notFound } from "next/navigation";
-import Link from "next/link";
 import Image from "next/image";
 import { getGameBySlug, getCoverUrl, getScreenshotUrl, type IGDBGame } from "@/lib/igdb";
 import { Navigation } from "@/components/Navigation";
 import { GameLogButtons } from "@/components/GameLogButtons";
 import { AddToListButton } from "@/components/AddToListButton";
+import { BackButton } from "@/components/BackButton";
 import { PlayedByClient } from "./PlayedByClient";
 import { createClient } from "@/lib/supabase/server";
 
@@ -38,12 +38,13 @@ export default async function GamePage({ params }: PageProps) {
     const followingIds = followingData?.map(f => f.following_id) || [];
 
     if (followingIds.length > 0) {
-      // Get friends who have logged this game
+      // Get friends who have actually played this game (exclude want_to_play)
       const { data: friendLogs } = await supabase
         .from('game_logs')
-        .select('user_id, rating, review, profiles:user_id(id, username, display_name, avatar_url)')
+        .select('user_id, rating, review, status, profiles:user_id(id, username, display_name, avatar_url)')
         .eq('game_id', game.id)
         .in('user_id', followingIds)
+        .neq('status', 'want_to_play')
         .limit(10);
 
       if (friendLogs) {
@@ -88,14 +89,7 @@ export default async function GamePage({ params }: PageProps) {
         )}
 
         {/* Back button */}
-        <Link
-          href="/"
-          className="absolute top-20 left-4 z-10 w-10 h-10 flex items-center justify-center bg-black/40 rounded-full"
-        >
-          <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-        </Link>
+        <BackButton />
       </div>
 
       {/* Main Content - Title left, Poster right */}

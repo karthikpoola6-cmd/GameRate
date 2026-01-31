@@ -157,10 +157,9 @@ export default async function ProfilePage({ params }: PageProps) {
 
             {/* Info */}
             <div className="flex-1 text-center sm:text-left">
-              <h1 className="text-3xl font-bold">
+              <h1 className="text-lg font-bold">
                 {profile.display_name || profile.username}
               </h1>
-              <p className="text-foreground-muted">@{profile.username}</p>
 
               {profile.bio && (
                 <p className="mt-3 text-foreground-muted max-w-lg">{profile.bio}</p>
