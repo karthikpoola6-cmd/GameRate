@@ -183,22 +183,20 @@ export default async function ProfilePage({ params }: PageProps) {
             </div>
 
             {/* Actions */}
-            <div className="flex gap-2">
-              {isOwnProfile ? (
-                <Button variant="outline" size="sm" asChild>
-                  <Link href="/settings/profile">Edit Profile</Link>
-                </Button>
-              ) : currentUser ? (
-                <FollowButtonClient
-                  profileId={profile.id}
-                  initialFollowing={isFollowing}
-                />
-              ) : (
-                <Button size="sm" asChild>
-                  <Link href="/login">Sign in to follow</Link>
-                </Button>
-              )}
-            </div>
+            {!isOwnProfile && (
+              <div className="flex gap-2">
+                {currentUser ? (
+                  <FollowButtonClient
+                    profileId={profile.id}
+                    initialFollowing={isFollowing}
+                  />
+                ) : (
+                  <Button size="sm" asChild>
+                    <Link href="/login">Sign in to follow</Link>
+                  </Button>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -219,7 +217,7 @@ export default async function ProfilePage({ params }: PageProps) {
         </div>
 
         {/* Recent Ratings */}
-        <section>
+        <section className="mt-4">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-bold">Recent Ratings</h2>
             {(gamesCount || 0) > 0 && (

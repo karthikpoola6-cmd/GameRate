@@ -60,11 +60,17 @@ export function RatingDistribution({ distribution, maxCount }: RatingDistributio
       </div>
 
       {/* Selected count - bottom */}
-      <div className="h-5 flex items-center justify-center">
+      <div className="h-4 -mt-0.5 flex items-center justify-center gap-1.5">
         {selected !== null ? (
-          <span className="text-xs text-foreground-muted">
-            {distribution[selected] || 0} {(distribution[selected] || 0) === 1 ? 'game' : 'games'}
-          </span>
+          <>
+            <span className="text-gold text-xs">
+              {'★'.repeat(Math.floor(selected))}
+              {selected % 1 >= 0.5 && '½'}
+            </span>
+            <span className="text-xs text-foreground-muted">
+              {distribution[selected] || 0} {(distribution[selected] || 0) === 1 ? 'game' : 'games'}
+            </span>
+          </>
         ) : (
           <span className="text-[10px] text-foreground-muted/50">tap a bar</span>
         )}

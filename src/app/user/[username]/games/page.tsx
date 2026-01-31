@@ -38,7 +38,7 @@ export default async function UserGamesPage({ params }: PageProps) {
     <div className="min-h-screen bg-background">
       <Navigation />
 
-      <main className="pt-24 pb-16 px-4">
+      <main className="pt-4 lg:pt-24 pb-16 px-4">
         <div className="max-w-4xl mx-auto">
           {/* Header */}
           <div className="mb-6">
@@ -48,10 +48,10 @@ export default async function UserGamesPage({ params }: PageProps) {
             >
               ← Back to profile
             </Link>
-            <h1 className="text-3xl font-bold mt-4">
+            <h1 className="text-xl font-bold mt-3">
               {profile.display_name || profile.username}&apos;s Ratings
             </h1>
-            <p className="text-foreground-muted mt-1">
+            <p className="text-foreground-muted text-sm">
               {ratedGames?.length || 0} rated games
             </p>
           </div>

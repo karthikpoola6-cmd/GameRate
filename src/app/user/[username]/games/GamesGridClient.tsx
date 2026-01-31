@@ -131,13 +131,10 @@ export function GamesGridClient({ games }: GamesGridClientProps) {
                 {game.game_name}
               </p>
               {game.rating && (
-                <div className="flex items-center gap-0.5 sm:gap-1 mt-0.5 sm:mt-1">
-                  <span className="text-gold text-[10px] sm:text-sm">
+                <div className="flex mt-0.5">
+                  <span className="text-gold text-[10px] sm:text-xs">
                     {'★'.repeat(Math.floor(game.rating))}
                     {game.rating % 1 >= 0.5 && '½'}
-                  </span>
-                  <span className="text-foreground-muted text-[10px] sm:text-xs">
-                    {game.rating}
                   </span>
                 </div>
               )}
