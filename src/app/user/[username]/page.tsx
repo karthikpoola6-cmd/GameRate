@@ -140,7 +140,7 @@ export default async function ProfilePage({ params }: PageProps) {
         <div className="max-w-4xl mx-auto">
           <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
             {/* Avatar */}
-            <div className="w-32 h-32 bg-purple/20 rounded-full flex items-center justify-center text-4xl font-bold text-purple flex-shrink-0">
+            <div className="w-32 h-32 bg-purple/20 rounded-full flex items-center justify-center text-4xl font-bold text-purple flex-shrink-0 ring-2 ring-gold/50">
               {profile.avatar_url ? (
                 <Image
                   src={profile.avatar_url}
