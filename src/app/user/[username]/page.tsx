@@ -211,13 +211,8 @@ export default async function ProfilePage({ params }: PageProps) {
           />
         )}
 
-        {/* Rating Distribution - just above recent ratings */}
-        <div className="-mb-4">
-          <RatingDistribution distribution={ratingDistribution} maxCount={maxCount} />
-        </div>
-
         {/* Recent Ratings */}
-        <section className="mt-4">
+        <section>
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-bold">Recent Ratings</h2>
             {(gamesCount || 0) > 0 && (
@@ -228,6 +223,11 @@ export default async function ProfilePage({ params }: PageProps) {
                 View all →
               </Link>
             )}
+          </div>
+
+          {/* Rating Distribution */}
+          <div className="mb-4">
+            <RatingDistribution distribution={ratingDistribution} maxCount={maxCount} />
           </div>
 
           {recentGames && recentGames.length > 0 ? (

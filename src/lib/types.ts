@@ -24,6 +24,7 @@ export interface GameLog {
   review: string | null
   favorite: boolean
   favorite_position: number | null  // 1-5 for Top 5 ordering
+  custom_backdrop_id: string | null
   created_at: string
   updated_at: string
 }

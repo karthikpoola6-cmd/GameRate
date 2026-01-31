@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
-import { getGameBySlug, getCoverUrl, getScreenshotUrl, type IGDBGame } from "@/lib/igdb";
+import Link from "next/link";
+import { getGameBySlug, getCoverUrl, getScreenshotUrl } from "@/lib/igdb";
 import { Navigation } from "@/components/Navigation";
 import { GameLogButtons } from "@/components/GameLogButtons";
 import { AddToListButton } from "@/components/AddToListButton";
@@ -60,6 +61,21 @@ export default async function GamePage({ params }: PageProps) {
     }
   }
 
+  // Get current user's game log for custom backdrop
+  let userGameLog: { id: string; custom_backdrop_id: string | null } | null = null
+  if (currentUser) {
+    const { data: gameLog } = await supabase
+      .from('game_logs')
+      .select('id, custom_backdrop_id')
+      .eq('user_id', currentUser.id)
+      .eq('game_id', game.id)
+      .single()
+    userGameLog = gameLog
+  }
+
+  // Determine which backdrop to display
+  const displayBackdropId = userGameLog?.custom_backdrop_id || game.screenshots?.[0]?.image_id
+
   const releaseYear = game.first_release_date
     ? new Date(game.first_release_date * 1000).getFullYear()
     : null;
@@ -72,10 +88,10 @@ export default async function GamePage({ params }: PageProps) {
 
       {/* Backdrop Screenshot - Letterboxd style */}
       <div className="relative w-full h-[45vh] min-h-[300px]">
-        {game.screenshots && game.screenshots.length > 0 ? (
+        {displayBackdropId ? (
           <>
             <Image
-              src={getScreenshotUrl(game.screenshots[0].image_id, "1080p")}
+              src={getScreenshotUrl(displayBackdropId, "1080p")}
               alt=""
               fill
               className="object-cover opacity-80"
@@ -90,6 +106,18 @@ export default async function GamePage({ params }: PageProps) {
 
         {/* Back button */}
         <BackButton />
+
+        {/* 3 Dots Menu - only show if user has game logged */}
+        {userGameLog && game.screenshots && game.screenshots.length > 1 && (
+          <Link
+            href={`/game/${slug}/backdrop`}
+            className="absolute top-3 right-3 z-10 flex items-center gap-1 p-2"
+          >
+            <span className="w-1.5 h-1.5 bg-white rounded-full drop-shadow-lg" />
+            <span className="w-1.5 h-1.5 bg-white rounded-full drop-shadow-lg" />
+            <span className="w-1.5 h-1.5 bg-white rounded-full drop-shadow-lg" />
+          </Link>
+        )}
       </div>
 
       {/* Main Content - Title left, Poster right */}
