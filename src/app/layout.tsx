@@ -21,6 +21,18 @@ export const metadata: Metadata = {
     icon: "/GameRate.png",
     apple: "/GameRate.png",
   },
+  openGraph: {
+    title: "GameRate - Track, Rate & Discover Games",
+    description: "Your personal video game diary. Rate games, build your Top 5, create lists, and see what friends are playing.",
+    url: "https://gamerate.vercel.app",
+    siteName: "GameRate",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "GameRate - Track, Rate & Discover Games",
+    description: "Your personal video game diary. Rate games, build your Top 5, create lists, and see what friends are playing.",
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
