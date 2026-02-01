@@ -24,11 +24,11 @@ export default async function ProfilePage({ params }: PageProps) {
   // Get current user
   const { data: { user: currentUser } } = await supabase.auth.getUser()
 
-  // Get profile
+  // Get profile (case-insensitive lookup)
   const { data: profile } = await supabase
     .from('profiles')
     .select('*')
-    .eq('username', username.toLowerCase())
+    .ilike('username', username)
     .single()
 
   if (!profile) {
@@ -57,7 +57,7 @@ export default async function ProfilePage({ params }: PageProps) {
       .select('*')
       .eq('user_id', profile.id)
       .not('rating', 'is', null)
-      .order('updated_at', { ascending: false })
+      .order('rated_at', { ascending: false, nullsFirst: false })
       .limit(8),
     supabase
       .from('game_logs')
@@ -325,7 +325,7 @@ export async function generateMetadata({ params }: PageProps) {
   const { data: profile } = await supabase
     .from('profiles')
     .select('username, display_name, bio')
-    .eq('username', username.toLowerCase())
+    .ilike('username', username)
     .single()
 
   if (!profile) {

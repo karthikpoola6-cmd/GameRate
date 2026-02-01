@@ -19,20 +19,20 @@ export default async function UserGamesPage({ params }: PageProps) {
   const { data: profile } = await supabase
     .from('profiles')
     .select('*')
-    .eq('username', username.toLowerCase())
+    .ilike('username', username)
     .single()
 
   if (!profile) {
     notFound()
   }
 
-  // Get all rated games
+  // Get all rated games (ordered by when rating was set)
   const { data: ratedGames } = await supabase
     .from('game_logs')
     .select('*')
     .eq('user_id', profile.id)
     .not('rating', 'is', null)
-    .order('updated_at', { ascending: false })
+    .order('rated_at', { ascending: false, nullsFirst: false })
 
   return (
     <div className="min-h-screen bg-background">
@@ -71,7 +71,7 @@ export async function generateMetadata({ params }: PageProps) {
   const { data: profile } = await supabase
     .from('profiles')
     .select('username, display_name')
-    .eq('username', username.toLowerCase())
+    .ilike('username', username)
     .single()
 
   if (!profile) {

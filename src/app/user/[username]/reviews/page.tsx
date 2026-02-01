@@ -29,7 +29,7 @@ export default async function UserReviewsPage({ params }: PageProps) {
   const { data: profile } = await supabase
     .from('profiles')
     .select('id, username, display_name')
-    .eq('username', username.toLowerCase())
+    .ilike('username', username)
     .single()
 
   if (!profile) {
@@ -99,7 +99,7 @@ export async function generateMetadata({ params }: PageProps) {
   const { data: profile } = await supabase
     .from('profiles')
     .select('username, display_name')
-    .eq('username', username.toLowerCase())
+    .ilike('username', username)
     .single()
 
   if (!profile) {

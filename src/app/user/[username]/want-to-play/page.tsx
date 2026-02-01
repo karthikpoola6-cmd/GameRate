@@ -23,7 +23,7 @@ export default async function WantToPlayPage({ params }: PageProps) {
   const { data: profile } = await supabase
     .from('profiles')
     .select('*')
-    .eq('username', username.toLowerCase())
+    .ilike('username', username)
     .single()
 
   if (!profile) {

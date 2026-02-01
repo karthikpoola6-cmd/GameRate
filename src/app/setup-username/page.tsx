@@ -94,11 +94,12 @@ export default function SetupUsernamePage() {
     }
 
     // Use upsert to handle case where profile doesn't exist yet
+    // Always store usernames in lowercase for consistent lookups
     const { error: updateError } = await supabase
       .from('profiles')
       .upsert({
         id: user.id,
-        username: cleanUsername
+        username: cleanUsername.toLowerCase()
       }, {
         onConflict: 'id'
       })

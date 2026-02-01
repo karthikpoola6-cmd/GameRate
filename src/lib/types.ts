@@ -27,6 +27,7 @@ export interface GameLog {
   custom_backdrop_id: string | null
   created_at: string
   updated_at: string
+  rated_at: string | null
 }
 
 export interface List {
