@@ -151,13 +151,14 @@ export default function EditProfilePage() {
   }
 
   // Upload avatar to Supabase Storage
+  // Uses fixed filename per user so new uploads overwrite old ones (no orphaned files)
   async function uploadAvatar(userId: string): Promise<string | null> {
     if (!avatarFile) return avatarUrl
 
     setUploadingAvatar(true)
 
-    const fileExt = avatarFile.name.split('.').pop()
-    const fileName = `${userId}-${Date.now()}.${fileExt}`
+    // Fixed filename per user - always overwrites previous avatar
+    const fileName = `${userId}.jpg`
 
     const { error: uploadError } = await supabase.storage
       .from('Avatars')
@@ -173,8 +174,9 @@ export default function EditProfilePage() {
       .from('Avatars')
       .getPublicUrl(fileName)
 
+    // Add cache buster to force browsers to fetch new image
     setUploadingAvatar(false)
-    return publicUrl
+    return `${publicUrl}?v=${Date.now()}`
   }
 
   async function handleSubmit(e: React.FormEvent) {
