@@ -27,11 +27,20 @@ export const metadata: Metadata = {
     url: "https://gamerate.vercel.app",
     siteName: "GameRate",
     type: "website",
+    images: [
+      {
+        url: "https://gamerate.vercel.app/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "GameRate - Track, Rate & Discover Games",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "GameRate - Track, Rate & Discover Games",
     description: "Your personal video game diary. Rate games, build your Top 5, create lists, and see what friends are playing.",
+    images: ["https://gamerate.vercel.app/og-image.png"],
   },
   appleWebApp: {
     capable: true,
