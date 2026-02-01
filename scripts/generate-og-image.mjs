@@ -9,9 +9,9 @@ const publicDir = join(__dirname, '..', 'public')
 async function generateOGImage() {
   const width = 1200
   const height = 630
-  const logoSize = 180
+  const logoSize = 220
 
-  // Create dark gradient background with all text elements
+  // Create dark gradient background with centered text
   const background = Buffer.from(`
     <svg width="${width}" height="${height}">
       <defs>
@@ -27,29 +27,11 @@ async function generateOGImage() {
       </defs>
       <rect width="100%" height="100%" fill="url(#bg)"/>
 
-      <!-- GameRate text -->
-      <text x="700" y="270" font-family="system-ui, -apple-system, sans-serif" font-size="72" font-weight="bold" fill="url(#textGrad)" text-anchor="middle">GameRate</text>
+      <!-- GameRate text - centered -->
+      <text x="${width/2}" y="380" font-family="system-ui, -apple-system, sans-serif" font-size="80" font-weight="bold" fill="url(#textGrad)" text-anchor="middle">GameRate</text>
 
-      <!-- Tagline -->
-      <text x="${width/2}" y="350" font-family="system-ui, sans-serif" font-size="32" fill="#a1a1aa" text-anchor="middle">Track, Rate &amp; Discover Games</text>
-
-      <!-- Feature pills -->
-      <g transform="translate(148, 420)">
-        <rect x="0" y="0" width="150" height="48" rx="24" fill="rgba(139, 92, 246, 0.25)" stroke="rgba(139, 92, 246, 0.4)" stroke-width="1"/>
-        <text x="75" y="31" font-family="system-ui, sans-serif" font-size="20" fill="#c4b5fd" text-anchor="middle">Rate Games</text>
-      </g>
-      <g transform="translate(328, 420)">
-        <rect x="0" y="0" width="150" height="48" rx="24" fill="rgba(139, 92, 246, 0.25)" stroke="rgba(139, 92, 246, 0.4)" stroke-width="1"/>
-        <text x="75" y="31" font-family="system-ui, sans-serif" font-size="20" fill="#c4b5fd" text-anchor="middle">Build Top 5</text>
-      </g>
-      <g transform="translate(508, 420)">
-        <rect x="0" y="0" width="150" height="48" rx="24" fill="rgba(139, 92, 246, 0.25)" stroke="rgba(139, 92, 246, 0.4)" stroke-width="1"/>
-        <text x="75" y="31" font-family="system-ui, sans-serif" font-size="20" fill="#c4b5fd" text-anchor="middle">Create Lists</text>
-      </g>
-      <g transform="translate(688, 420)">
-        <rect x="0" y="0" width="175" height="48" rx="24" fill="rgba(139, 92, 246, 0.25)" stroke="rgba(139, 92, 246, 0.4)" stroke-width="1"/>
-        <text x="87" y="31" font-family="system-ui, sans-serif" font-size="20" fill="#c4b5fd" text-anchor="middle">Follow Friends</text>
-      </g>
+      <!-- Tagline - centered below -->
+      <text x="${width/2}" y="450" font-family="system-ui, sans-serif" font-size="36" fill="#a1a1aa" text-anchor="middle">Track, Rate &amp; Discover Games</text>
     </svg>
   `)
 
@@ -87,14 +69,13 @@ async function generateOGImage() {
 
   const logo = logoWithTransparency
 
-  // Composite the logo onto the background
-  // Position logo to the left of "GameRate" text
+  // Composite the logo onto the background - centered above text
   const finalImage = await sharp(backgroundImage)
     .composite([
       {
         input: logo,
-        left: 310,
-        top: 150,
+        left: Math.round((width - logoSize) / 2),  // Center horizontally
+        top: 80,  // Position above the text
       }
     ])
     .png()
