@@ -9,7 +9,7 @@ const publicDir = join(__dirname, '..', 'public')
 async function generateOGImage() {
   const width = 1200
   const height = 630
-  const logoSize = 220
+  const logoSize = 280
 
   // Create dark gradient background with centered text
   const background = Buffer.from(`
@@ -28,10 +28,7 @@ async function generateOGImage() {
       <rect width="100%" height="100%" fill="url(#bg)"/>
 
       <!-- GameRate text - centered -->
-      <text x="${width/2}" y="380" font-family="system-ui, -apple-system, sans-serif" font-size="80" font-weight="bold" fill="url(#textGrad)" text-anchor="middle">GameRate</text>
-
-      <!-- Tagline - centered below -->
-      <text x="${width/2}" y="450" font-family="system-ui, sans-serif" font-size="36" fill="#a1a1aa" text-anchor="middle">Track, Rate &amp; Discover Games</text>
+      <text x="${width/2}" y="480" font-family="system-ui, -apple-system, sans-serif" font-size="90" font-weight="bold" fill="url(#textGrad)" text-anchor="middle">GameRate</text>
     </svg>
   `)
 
@@ -75,7 +72,7 @@ async function generateOGImage() {
       {
         input: logo,
         left: Math.round((width - logoSize) / 2),  // Center horizontally
-        top: 80,  // Position above the text
+        top: 100,  // Position above the text
       }
     ])
     .png()
