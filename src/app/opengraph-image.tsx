@@ -6,6 +6,13 @@ export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 
 export default async function Image() {
+  // Fetch the crystal logo and convert to base64
+  const logoResponse = await fetch(
+    new URL('/GameRate.png', 'https://gamerate.vercel.app')
+  )
+  const logoBuffer = await logoResponse.arrayBuffer()
+  const logoBase64 = `data:image/png;base64,${Buffer.from(logoBuffer).toString('base64')}`
+
   return new ImageResponse(
     (
       <div
@@ -21,21 +28,14 @@ export default async function Image() {
         }}
       >
         {/* Logo and Title */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '30px' }}>
-          <div
-            style={{
-              width: '120px',
-              height: '120px',
-              background: 'linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%)',
-              borderRadius: '24px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '60px',
-            }}
-          >
-            🎮
-          </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '24px', marginBottom: '30px' }}>
+          {/* Crystal Logo */}
+          <img
+            src={logoBase64}
+            width={140}
+            height={140}
+            style={{ objectFit: 'contain' }}
+          />
           <div
             style={{
               fontSize: '72px',
