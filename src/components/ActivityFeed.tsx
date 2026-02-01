@@ -14,6 +14,7 @@ interface ActivityItem {
   review: string | null
   favorite: boolean
   updated_at: string
+  rated_at: string | null
   profiles: {
     username: string
     display_name: string | null
@@ -28,12 +29,13 @@ export async function ActivityFeed({ userId }: { userId: string }) {
   const { data: activity } = await supabase
     .rpc('get_friend_activity', { follower_user_id: userId })
 
-  // Sort by updated_at (DISTINCT ON returns grouped, not sorted by date)
+  // Sort by rated_at (when they last rated a game), not updated_at
   // and limit to 10 friends
   let feedItems: ActivityItem[] | null = null
   if (activity && activity.length > 0) {
     feedItems = (activity as any[])
-      .sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())
+      .filter(item => item.rated_at !== null) // Only show items with ratings
+      .sort((a, b) => new Date(b.rated_at).getTime() - new Date(a.rated_at).getTime())
       .slice(0, 10)
       .map(item => ({
         ...item,
