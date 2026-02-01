@@ -226,7 +226,7 @@ export function FavoriteGames({ favorites: initialFavorites, isOwnProfile }: Fav
               </div>
             ) : isOwnProfile ? (
               <Link href="/search" className="w-28 sm:w-36">
-                <div className={`aspect-[3/4] bg-background-card/50 rounded-lg border-2 border-dashed border-purple/20 flex flex-col items-center justify-center gap-2/40 ${
+                <div className={`aspect-[3/4] bg-background-card/50 rounded-lg border-2 border-dashed border-purple/20 flex flex-col items-center justify-center gap-2 ${
                   dragOverIndex === index ? 'border-purple border-solid' : ''
                 }`}>
                   <div className="w-10 h-10 rounded-full bg-purple/20 flex items-center justify-center">
