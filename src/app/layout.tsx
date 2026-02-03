@@ -72,59 +72,6 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased pb-20 lg:pb-0`}
       >
-        {/* Splash Screen */}
-        <div
-          id="splash"
-          style={{
-            position: 'fixed',
-            inset: 0,
-            zIndex: 9999,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '12px',
-            backgroundColor: '#0f0a19',
-            transition: 'opacity 0.3s ease-out',
-          }}
-        >
-          <img
-            src="/GameRate.png"
-            alt="GameRate"
-            width={72}
-            height={72}
-            style={{ width: '72px', height: '72px' }}
-          />
-          <span
-            style={{
-              fontSize: '28px',
-              fontWeight: 'bold',
-              background: 'linear-gradient(to right, #8b5cf6, #f59e0b)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-            }}
-          >
-            GameRate
-          </span>
-        </div>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              window.addEventListener('load', function() {
-                setTimeout(function() {
-                  var splash = document.getElementById('splash');
-                  if (splash) {
-                    splash.style.opacity = '0';
-                    setTimeout(function() {
-                      splash.style.display = 'none';
-                    }, 300);
-                  }
-                }, 1000);
-              });
-            `,
-          }}
-        />
         {children}
         <script
           dangerouslySetInnerHTML={{
