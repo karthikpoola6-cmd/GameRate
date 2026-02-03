@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 
 export function CreateListForm() {
@@ -145,12 +144,13 @@ export function CreateListForm() {
         >
           {loading ? 'Creating...' : 'Create List'}
         </button>
-        <Link
-          href="/"
+        <button
+          type="button"
+          onClick={() => router.back()}
           className="px-6 py-3 text-foreground-muted"
         >
           Cancel
-        </Link>
+        </button>
       </div>
     </form>
   )

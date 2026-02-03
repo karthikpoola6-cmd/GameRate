@@ -29,10 +29,10 @@ export default function UserNotFound() {
             Go Home
           </Link>
           <Link
-            href="/members"
+            href="/players"
             className="bg-background-card text-foreground px-6 py-3 rounded-lg font-medium border border-purple/20"
           >
-            Browse Members
+            Browse Players
           </Link>
         </div>
       </div>
