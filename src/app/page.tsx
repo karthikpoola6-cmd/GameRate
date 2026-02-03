@@ -80,7 +80,7 @@ export default async function LandingPage() {
             Add GameRate to Your Home Screen
           </h2>
           <p className="text-foreground-muted mb-8">
-            Install GameRate for the full app experience — no app store needed.
+            Add GameRate to your phone for the full app experience — no app store needed.
           </p>
 
           <div className="grid sm:grid-cols-2 gap-4 text-left">
@@ -123,11 +123,11 @@ export default async function LandingPage() {
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-purple font-medium">2.</span>
-                  <span>Tap <span className="text-foreground">Install app</span> or <span className="text-foreground">Add to Home screen</span></span>
+                  <span>Tap <span className="text-foreground">Add to Home screen</span></span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-purple font-medium">3.</span>
-                  <span>Tap <span className="text-foreground">Install</span> to confirm</span>
+                  <span>Tap <span className="text-foreground">Add</span> to confirm</span>
                 </li>
               </ol>
             </div>
