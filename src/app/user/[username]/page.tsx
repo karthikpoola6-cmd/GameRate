@@ -136,7 +136,7 @@ export default async function ProfilePage({ params }: PageProps) {
       <Navigation />
 
       {/* Profile Header */}
-      <div className="pt-24 pb-8 px-4 bg-background-secondary/30">
+      <div className="pt-20 pb-8 px-4 bg-background-secondary/30">
         <div className="max-w-4xl mx-auto">
           <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
             {/* Avatar */}
