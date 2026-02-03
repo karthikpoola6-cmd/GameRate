@@ -312,10 +312,10 @@ export default async function LandingPage() {
           </h2>
           <div className="bg-background-card rounded-xl p-6 md:p-8 border border-purple/10">
             <p className="text-foreground-muted leading-relaxed mb-4">
-              I love escaping reality and exploring new worlds — and I&apos;ve felt that way since I was a kid. Growing up, my brother and I would rank our favorite games and compare lists, scribbled in notes and debated endlessly. That feeling of sharing what you love stuck with me.
+              People say don&apos;t mix work with play, but when you do, you get passion. I&apos;ve always loved escaping reality and exploring new worlds through games. Long nights with my brother debating which game was better and why, without a proper way to keep track. We ended up writing out rankings and ratings in our notes app, and that&apos;s what inspired GameRate, a mobile app for those nights.
             </p>
             <p className="text-foreground-muted leading-relaxed mb-4">
-              Years later, I had an app to track my movie journey, but nothing like it for games on mobile. As a college student navigating post-grad stress, I decided to build what I couldn&apos;t find.
+              As a college student, I wanted a real app to track my gaming journey on mobile. Something simple, social, and actually well-designed. It didn&apos;t exist. So I taught myself to build it: React, databases, APIs, the whole stack. What started as a passion project became something I&apos;m genuinely proud of.
             </p>
             <p className="text-foreground-muted leading-relaxed">
               GameRate is the app I always wanted. I hope you enjoy it too.
