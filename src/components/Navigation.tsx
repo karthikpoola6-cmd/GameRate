@@ -62,6 +62,7 @@ export async function Navigation() {
           {/* Right side - Profile & Settings for logged in, Sign in/up for logged out */}
           {user ? (
             <div className="flex items-center gap-3">
+              <SettingsMenu />
               {/* Desktop Profile Avatar - links directly to profile */}
               {username && (
                 <Link
@@ -87,7 +88,6 @@ export async function Navigation() {
                   </div>
                 </Link>
               )}
-              <SettingsMenu />
             </div>
           ) : (
             <div className="flex items-center gap-2">
