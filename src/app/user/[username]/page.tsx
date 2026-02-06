@@ -149,6 +149,7 @@ export default async function ProfilePage({ params }: PageProps) {
                   height={128}
                   className="rounded-full object-cover"
                   unoptimized
+                  priority
                 />
               ) : (
                 profile.username.slice(0, 2).toUpperCase()

@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button'
 import { useUser } from '@/contexts/UserContext'
 
 export function Navigation() {
-  const { user, profile, isLoading } = useUser()
+  const { user, profile, isLoading, hasMounted } = useUser()
   const { username, avatarUrl } = profile
 
   return (
@@ -61,7 +61,7 @@ export function Navigation() {
                   title="View Profile"
                 >
                   <div className="w-9 h-9 rounded-full overflow-hidden bg-purple/20 flex items-center justify-center ring-2 ring-purple/30">
-                    {avatarUrl ? (
+                    {hasMounted && avatarUrl ? (
                       <Image
                         src={avatarUrl}
                         alt="Profile"
@@ -71,11 +71,11 @@ export function Navigation() {
                         unoptimized
                         priority
                       />
-                    ) : (
+                    ) : username ? (
                       <span className="text-purple font-medium text-sm">
                         {username.slice(0, 2).toUpperCase()}
                       </span>
-                    )}
+                    ) : null}
                   </div>
                 </Link>
               )}

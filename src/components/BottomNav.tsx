@@ -7,7 +7,7 @@ import { useUser } from '@/contexts/UserContext'
 
 export function BottomNav() {
   const pathname = usePathname()
-  const { profile } = useUser()
+  const { profile, hasMounted } = useUser()
   const { username, avatarUrl } = profile
 
   const isActive = (path: string) => {
@@ -48,10 +48,10 @@ export function BottomNav() {
       ),
     },
     {
-      href: username ? `/user/${username}` : '/login',
+      href: hasMounted && username ? `/user/${username}` : '/login',
       label: 'Profile',
       path: '/profile',
-      icon: avatarUrl ? (
+      icon: hasMounted && avatarUrl ? (
         <Image
           src={avatarUrl}
           alt="Profile"
