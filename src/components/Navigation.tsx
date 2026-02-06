@@ -1,27 +1,16 @@
+'use client'
+
 import Link from 'next/link'
 import Image from 'next/image'
-import { createClient } from '@/lib/supabase/server'
 import { SearchBar } from './SearchBar'
 import { BottomNav } from './BottomNav'
 import { SettingsMenu } from './SettingsMenu'
 import { Button } from '@/components/ui/button'
+import { useUser } from '@/contexts/UserContext'
 
-export async function Navigation() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-
-  // Get username and avatar if logged in
-  let username: string | null = null
-  let avatarUrl: string | null = null
-  if (user) {
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('username, avatar_url')
-      .eq('id', user.id)
-      .single()
-    username = profile?.username || null
-    avatarUrl = profile?.avatar_url || null
-  }
+export function Navigation() {
+  const { user, profile, isLoading } = useUser()
+  const { username, avatarUrl } = profile
 
   return (
     <>
@@ -35,6 +24,7 @@ export async function Navigation() {
               width={36}
               height={36}
               className="w-9 h-9"
+              priority
             />
             <span className="text-2xl font-bold bg-gradient-to-r from-purple to-gold bg-clip-text text-transparent">
               GameRate
@@ -60,7 +50,7 @@ export async function Navigation() {
           </div>
 
           {/* Right side - Profile & Settings for logged in, Sign in/up for logged out */}
-          {user ? (
+          {!isLoading && user ? (
             <div className="flex items-center gap-3">
               <SettingsMenu />
               {/* Desktop Profile Avatar - links directly to profile */}
@@ -79,6 +69,7 @@ export async function Navigation() {
                         height={36}
                         className="w-full h-full object-cover"
                         unoptimized
+                        priority
                       />
                     ) : (
                       <span className="text-purple font-medium text-sm">
@@ -89,7 +80,7 @@ export async function Navigation() {
                 </Link>
               )}
             </div>
-          ) : (
+          ) : !isLoading ? (
             <div className="flex items-center gap-2">
               <Button variant="ghost" size="sm" asChild>
                 <Link href="/login">Sign in</Link>
@@ -98,12 +89,12 @@ export async function Navigation() {
                 <Link href="/signup">Create account</Link>
               </Button>
             </div>
-          )}
+          ) : null}
         </div>
       </nav>
 
       {/* Mobile Bottom Navigation */}
-      <BottomNav username={username} avatarUrl={avatarUrl} />
+      <BottomNav />
     </>
   )
 }

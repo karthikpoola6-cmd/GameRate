@@ -3,14 +3,12 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import Image from 'next/image'
+import { useUser } from '@/contexts/UserContext'
 
-interface BottomNavProps {
-  username: string | null
-  avatarUrl: string | null
-}
-
-export function BottomNav({ username, avatarUrl }: BottomNavProps) {
+export function BottomNav() {
   const pathname = usePathname()
+  const { profile } = useUser()
+  const { username, avatarUrl } = profile
 
   const isActive = (path: string) => {
     if (path === '/home') return pathname === '/home' || pathname === '/'
@@ -60,6 +58,8 @@ export function BottomNav({ username, avatarUrl }: BottomNavProps) {
           width={28}
           height={28}
           className="w-7 h-7 rounded-full object-cover ring-2 ring-transparent"
+          unoptimized
+          priority
         />
       ) : (
         <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
