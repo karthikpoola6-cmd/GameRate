@@ -71,7 +71,7 @@ interface ExclusionZone {
 export function FloatingShapes({ exclusionZone }: { exclusionZone?: ExclusionZone }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const spritesRef = useRef<Sprite[]>([])
-  const animationRef = useRef<number>()
+  const animationRef = useRef<number | null>(null)
 
   useEffect(() => {
     const canvas = canvasRef.current
