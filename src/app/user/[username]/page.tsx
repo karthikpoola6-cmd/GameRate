@@ -6,6 +6,9 @@ import { Navigation } from '@/components/Navigation'
 import { FavoriteGames } from '@/components/FavoriteGames'
 import { RatingDistribution } from '@/components/RatingDistribution'
 import { Button } from '@/components/ui/button'
+import { FadeIn } from '@/components/FadeIn'
+import { ScrollReveal } from '@/components/ScrollReveal'
+import { FloatingShapes } from '@/components/FloatingShapes'
 import { getCoverUrl } from '@/lib/igdb'
 import { FollowButtonClient } from './FollowButton'
 import type { GameLog } from '@/lib/types'
@@ -136,28 +139,32 @@ export default async function ProfilePage({ params }: PageProps) {
       <Navigation />
 
       {/* Profile Header */}
-      <div className="pt-20 pb-8 px-4 bg-background-secondary/30">
-        <div className="max-w-4xl mx-auto">
+      <div className="relative pt-20 pb-8 px-4 bg-[#080510] overflow-hidden">
+        {/* Animated Background */}
+        <FloatingShapes />
+        <div className="relative max-w-4xl mx-auto">
           <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
             {/* Avatar */}
-            <div className="w-32 h-32 bg-purple/20 rounded-full flex items-center justify-center text-4xl font-bold text-purple flex-shrink-0 ring-2 ring-gold/50">
-              {profile.avatar_url ? (
-                <Image
-                  src={profile.avatar_url}
-                  alt={profile.username}
-                  width={128}
-                  height={128}
-                  className="rounded-full object-cover"
-                  unoptimized
-                  priority
-                />
-              ) : (
-                profile.username.slice(0, 2).toUpperCase()
-              )}
-            </div>
+            <FadeIn delay={0} direction="up">
+              <div className="w-32 h-32 bg-purple/20 rounded-full flex items-center justify-center text-4xl font-bold text-purple flex-shrink-0 ring-2 ring-gold/50">
+                {profile.avatar_url ? (
+                  <Image
+                    src={profile.avatar_url}
+                    alt={profile.username}
+                    width={128}
+                    height={128}
+                    className="rounded-full object-cover"
+                    unoptimized
+                    priority
+                  />
+                ) : (
+                  profile.username.slice(0, 2).toUpperCase()
+                )}
+              </div>
+            </FadeIn>
 
             {/* Info */}
-            <div className="flex-1 text-center sm:text-left">
+            <FadeIn delay={100} className="flex-1 text-center sm:text-left">
               <h1 className="text-lg font-bold">
                 {profile.display_name || profile.username}
               </h1>
@@ -181,22 +188,24 @@ export default async function ProfilePage({ params }: PageProps) {
                   <div className="text-sm text-foreground-muted">Following</div>
                 </Link>
               </div>
-            </div>
+            </FadeIn>
 
             {/* Actions */}
             {!isOwnProfile && (
-              <div className="flex gap-2">
-                {currentUser ? (
-                  <FollowButtonClient
-                    profileId={profile.id}
-                    initialFollowing={isFollowing}
-                  />
-                ) : (
-                  <Button size="sm" asChild>
-                    <Link href="/login">Sign in to follow</Link>
-                  </Button>
-                )}
-              </div>
+              <FadeIn delay={200}>
+                <div className="flex gap-2">
+                  {currentUser ? (
+                    <FollowButtonClient
+                      profileId={profile.id}
+                      initialFollowing={isFollowing}
+                    />
+                  ) : (
+                    <Button size="sm" asChild>
+                      <Link href="/login">Sign in to follow</Link>
+                    </Button>
+                  )}
+                </div>
+              </FadeIn>
             )}
           </div>
         </div>
@@ -206,113 +215,123 @@ export default async function ProfilePage({ params }: PageProps) {
       <div className="max-w-4xl mx-auto px-4 pt-4 pb-8 space-y-8">
         {/* Top 5 Favorites */}
         {(isOwnProfile || (favoriteGames && favoriteGames.length > 0)) && (
-          <FavoriteGames
-            favorites={(favoriteGames as GameLog[]) || []}
-            isOwnProfile={isOwnProfile}
-          />
+          <FadeIn delay={250}>
+            <FavoriteGames
+              favorites={(favoriteGames as GameLog[]) || []}
+              isOwnProfile={isOwnProfile}
+            />
+          </FadeIn>
         )}
 
         {/* Recent Ratings */}
         <section>
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold">Recent Ratings</h2>
-            {(gamesCount || 0) > 0 && (
-              <Link
-                href={`/user/${username}/games`}
-                className="text-purple text-sm"
-              >
-                View all →
-              </Link>
-            )}
-          </div>
+          <ScrollReveal>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-bold">Recent Ratings</h2>
+              {(gamesCount || 0) > 0 && (
+                <Link
+                  href={`/user/${username}/games`}
+                  className="text-purple text-sm"
+                >
+                  View all →
+                </Link>
+              )}
+            </div>
+          </ScrollReveal>
 
-          {/* Rating Distribution */}
+          {/* Rating Distribution - bars animate on scroll via internal observer */}
           <div className="mb-4">
             <RatingDistribution distribution={ratingDistribution} maxCount={maxCount} />
           </div>
 
           {recentGames && recentGames.length > 0 ? (
-            <div
-              className="gap-2 sm:gap-4"
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(4, minmax(0, 1fr))'
-              }}
-            >
-              {recentGames.map((game: GameLog) => (
-                <Link key={game.id} href={`/game/${game.game_slug}`}>
-                  <div className="relative aspect-[3/4] bg-background-card rounded-md sm:rounded-lg overflow-hidden">
-                    {game.game_cover_id ? (
-                      <Image
-                        src={getCoverUrl(game.game_cover_id)}
-                        alt={game.game_name}
-                        fill
-                        className="object-cover"
-                        unoptimized
-                      />
-                    ) : (
-                      <div className="absolute inset-0 bg-purple/20 flex items-center justify-center">
-                        <span className="text-2xl sm:text-3xl">🎮</span>
+              <div
+                className="gap-2 sm:gap-4"
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(4, minmax(0, 1fr))'
+                }}
+              >
+                {recentGames.map((game: GameLog, index: number) => (
+                  <ScrollReveal key={game.id} delay={index * 50}>
+                    <Link href={`/game/${game.game_slug}`}>
+                      <div className="relative aspect-[3/4] bg-background-card rounded-md sm:rounded-lg overflow-hidden">
+                        {game.game_cover_id ? (
+                          <Image
+                            src={getCoverUrl(game.game_cover_id)}
+                            alt={game.game_name}
+                            fill
+                            className="object-cover"
+                            unoptimized
+                          />
+                        ) : (
+                          <div className="absolute inset-0 bg-purple/20 flex items-center justify-center">
+                            <span className="text-2xl sm:text-3xl">🎮</span>
+                          </div>
+                        )}
                       </div>
-                    )}
-                  </div>
-                  <p className="mt-1 sm:mt-2 text-xs sm:text-sm truncate">
-                    {game.game_name}
+                      <p className="mt-1 sm:mt-2 text-xs sm:text-sm truncate">
+                        {game.game_name}
+                      </p>
+                      {game.rating && (
+                        <div className="flex mt-0.5">
+                          <span className="text-gold text-[10px] sm:text-xs">
+                            {'★'.repeat(Math.floor(game.rating))}
+                            {game.rating % 1 >= 0.5 && '½'}
+                          </span>
+                        </div>
+                      )}
+                    </Link>
+                  </ScrollReveal>
+                ))}
+              </div>
+            ) : (
+              <ScrollReveal>
+                <div className="bg-background-card rounded-xl p-8 text-center border border-purple/10">
+                  <p className="text-foreground-muted">
+                    {isOwnProfile
+                      ? "You haven't logged any games yet."
+                      : "This user hasn't logged any games yet."}
                   </p>
-                  {game.rating && (
-                    <div className="flex mt-0.5">
-                      <span className="text-gold text-[10px] sm:text-xs">
-                        {'★'.repeat(Math.floor(game.rating))}
-                        {game.rating % 1 >= 0.5 && '½'}
-                      </span>
-                    </div>
+                  {isOwnProfile && (
+                    <Link
+                      href="/"
+                      className="inline-block mt-4 text-purple"
+                    >
+                      Browse games to get started →
+                    </Link>
                   )}
-                </Link>
-              ))}
-            </div>
-          ) : (
-            <div className="bg-background-card rounded-xl p-8 text-center border border-purple/10">
-              <p className="text-foreground-muted">
-                {isOwnProfile
-                  ? "You haven't logged any games yet."
-                  : "This user hasn't logged any games yet."}
-              </p>
-              {isOwnProfile && (
-                <Link
-                  href="/"
-                  className="inline-block mt-4 text-purple"
-                >
-                  Browse games to get started →
-                </Link>
-              )}
-            </div>
-          )}
+                </div>
+              </ScrollReveal>
+            )}
         </section>
 
         {/* Lists, Reviews & Want to Play Navigation */}
-        <div className="border border-purple/10 rounded-lg overflow-hidden">
-          <Link
-            href={`/user/${username}/lists`}
-            className="flex items-center justify-between py-3 px-4 border-b border-purple/10"
-          >
-            <span className="font-medium">Lists</span>
-            <span className="text-foreground-muted text-sm">{listsCount || 0} →</span>
-          </Link>
-          <Link
-            href={`/user/${username}/reviews`}
-            className="flex items-center justify-between py-3 px-4 border-b border-purple/10"
-          >
-            <span className="font-medium">Reviews</span>
-            <span className="text-foreground-muted text-sm">{reviewsCount || 0} →</span>
-          </Link>
-          <Link
-            href={`/user/${username}/want-to-play`}
-            className="flex items-center justify-between py-3 px-4"
-          >
-            <span className="font-medium">Want to Play</span>
-            <span className="text-foreground-muted text-sm">{wantToPlayCount || 0} →</span>
-          </Link>
-        </div>
+        <ScrollReveal>
+          <div className="border border-purple/10 rounded-lg overflow-hidden">
+            <Link
+              href={`/user/${username}/lists`}
+              className="flex items-center justify-between py-3 px-4 border-b border-purple/10"
+            >
+              <span className="font-medium">Lists</span>
+              <span className="text-foreground-muted text-sm">{listsCount || 0} →</span>
+            </Link>
+            <Link
+              href={`/user/${username}/reviews`}
+              className="flex items-center justify-between py-3 px-4 border-b border-purple/10"
+            >
+              <span className="font-medium">Reviews</span>
+              <span className="text-foreground-muted text-sm">{reviewsCount || 0} →</span>
+            </Link>
+            <Link
+              href={`/user/${username}/want-to-play`}
+              className="flex items-center justify-between py-3 px-4"
+            >
+              <span className="font-medium">Want to Play</span>
+              <span className="text-foreground-muted text-sm">{wantToPlayCount || 0} →</span>
+            </Link>
+          </div>
+        </ScrollReveal>
       </div>
 
     </div>

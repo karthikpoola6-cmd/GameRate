@@ -135,3 +135,13 @@ body {
 .animate-wiggle {
   animation: wiggle 0.3s ease-in-out infinite;
 }
+
+/* Smooth breathing animation for rating bars */
+@keyframes bar-breathe {
+  0%, 100% {
+    transform: scaleY(1);
+  }
+  50% {
+    transform: scaleY(1.12);
+  }
+}
