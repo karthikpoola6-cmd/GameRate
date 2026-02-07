@@ -66,7 +66,7 @@ export function ReviewsListClient({ reviews }: { reviews: Review[] }) {
           onClick={() => setSelectedReview(null)}
         >
           <div
-            className="bg-background-card border border-purple/20 rounded-xl max-w-lg w-full max-h-[80vh] overflow-hidden flex flex-col"
+            className="glass border border-purple/20 rounded-xl max-w-lg w-full max-h-[80vh] overflow-hidden flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}

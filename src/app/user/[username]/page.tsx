@@ -165,7 +165,7 @@ export default async function ProfilePage({ params }: PageProps) {
 
             {/* Info */}
             <FadeIn delay={100} className="flex-1 text-center sm:text-left">
-              <h1 className="text-lg font-bold">
+              <h1 className="text-lg font-medium tracking-wide">
                 {profile.display_name || profile.username}
               </h1>
 
@@ -227,7 +227,7 @@ export default async function ProfilePage({ params }: PageProps) {
         <section>
           <ScrollReveal>
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold">Recent Ratings</h2>
+              <h2 className="text-lg font-medium tracking-wide">Recent Ratings</h2>
               {(gamesCount || 0) > 0 && (
                 <Link
                   href={`/user/${username}/games`}
@@ -287,7 +287,7 @@ export default async function ProfilePage({ params }: PageProps) {
               </div>
             ) : (
               <ScrollReveal>
-                <div className="bg-background-card rounded-xl p-8 text-center border border-purple/10">
+                <div className="glass rounded-xl p-8 text-center border border-purple/10">
                   <p className="text-foreground-muted">
                     {isOwnProfile
                       ? "You haven't logged any games yet."
@@ -308,7 +308,7 @@ export default async function ProfilePage({ params }: PageProps) {
 
         {/* Lists, Reviews & Want to Play Navigation */}
         <ScrollReveal>
-          <div className="border border-purple/10 rounded-lg overflow-hidden">
+          <div className="glass border border-purple/10 rounded-lg overflow-hidden">
             <Link
               href={`/user/${username}/lists`}
               className="flex items-center justify-between py-3 px-4 border-b border-purple/10"

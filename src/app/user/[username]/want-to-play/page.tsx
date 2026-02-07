@@ -94,7 +94,7 @@ export default async function WantToPlayPage({ params }: PageProps) {
             ))}
           </div>
         ) : (
-          <div className="bg-background-card rounded-xl p-8 text-center border border-purple/10">
+          <div className="glass rounded-xl p-8 text-center border border-purple/10">
             <p className="text-foreground-muted">
               {isOwnProfile
                 ? "You haven't added any games to your backlog yet."

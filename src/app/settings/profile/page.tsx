@@ -243,7 +243,7 @@ export default function EditProfilePage() {
         <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-1.5">
             <Image src="/GameRate.png" alt="GameRate" width={36} height={36} className="w-9 h-9" />
-            <span className="text-2xl font-medium tracking-wider bg-gradient-to-r from-purple to-gold bg-clip-text text-transparent">
+            <span className="text-xl font-medium tracking-wider bg-gradient-to-r from-purple to-gold bg-clip-text text-transparent" style={{ fontFamily: 'var(--font-display)' }}>
               GameRate
             </span>
           </Link>
@@ -453,7 +453,7 @@ export default function EditProfilePage() {
           </div>
 
           {/* Controls */}
-          <div className="bg-background-card border-t border-purple/20 p-4">
+          <div className="glass border-t border-purple/20 p-4">
             {/* Zoom slider */}
             <div className="flex items-center gap-4 mb-4 max-w-md mx-auto">
               <svg className="w-4 h-4 text-foreground-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -495,7 +495,7 @@ export default function EditProfilePage() {
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-          <div className="bg-background-card border border-red-500/20 rounded-xl max-w-md w-full p-6">
+          <div className="glass border border-red-500/20 rounded-xl max-w-md w-full p-6">
             <h2 className="text-xl font-bold text-red-400 mb-4">Delete Account</h2>
             <p className="text-foreground-muted mb-4">
               This will permanently delete your account, including all your game logs, lists, ratings, and reviews. This action cannot be undone.

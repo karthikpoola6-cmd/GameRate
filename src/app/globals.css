@@ -119,6 +119,13 @@ body {
   }
 }
 
+/* Glassmorphism card */
+.glass {
+  background: rgba(36, 24, 50, 0.45);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
 /* Wiggle animation for edit mode */
 @keyframes wiggle {
   0%, 100% { transform: rotate(-1deg); }

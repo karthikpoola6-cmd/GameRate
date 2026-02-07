@@ -537,7 +537,7 @@ export function GameLogButtons({ gameId, gameSlug, gameName, gameCoverId }: Game
 
       {/* Review Form */}
       {showReviewForm && (
-        <div className="bg-background-card rounded-xl p-4 border border-purple/10">
+        <div className="glass rounded-xl p-4 border border-purple/10">
           <textarea
             value={review}
             onChange={(e) => setReview(e.target.value)}
@@ -569,7 +569,7 @@ export function GameLogButtons({ gameId, gameSlug, gameName, gameCoverId }: Game
 
       {/* Display existing review */}
       {gameLog?.review && !showReviewForm && (
-        <div className="bg-background-card rounded-xl p-4 border border-purple/10">
+        <div className="glass rounded-xl p-4 border border-purple/10">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm text-foreground-muted">Your review</span>
           </div>

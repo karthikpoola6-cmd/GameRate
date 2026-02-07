@@ -66,7 +66,7 @@ export function GamesGridClient({ games }: GamesGridClientProps) {
                 className={`px-3 py-1.5 text-sm rounded-lg ${
                   sort === option.value
                     ? 'bg-purple text-white'
-                    : 'bg-background-card text-foreground-muted border border-purple/10'
+                    : 'glass text-foreground-muted border border-purple/10'
                 }`}
               >
                 {option.label}
@@ -86,7 +86,7 @@ export function GamesGridClient({ games }: GamesGridClientProps) {
                 className={`px-2 py-1 text-sm rounded-lg ${
                   ratingFilter === option.value
                     ? 'bg-gold text-background'
-                    : 'bg-background-card text-foreground-muted border border-purple/10'
+                    : 'glass text-foreground-muted border border-purple/10'
                 }`}
               >
                 {option.value === 'all' ? 'All' : `${option.label}★`}
@@ -142,7 +142,7 @@ export function GamesGridClient({ games }: GamesGridClientProps) {
           ))}
         </div>
       ) : (
-        <div className="bg-background-card rounded-xl p-8 text-center border border-purple/10">
+        <div className="glass rounded-xl p-8 text-center border border-purple/10">
           <p className="text-foreground-muted">No games match this filter.</p>
           <button
             onClick={() => {

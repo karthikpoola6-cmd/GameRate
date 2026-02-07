@@ -9,7 +9,7 @@ export default function GameNotFound() {
         <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-1.5">
             <Image src="/GameRate.png" alt="GameRate" width={36} height={36} className="w-9 h-9" />
-            <span className="text-2xl font-medium tracking-wider bg-gradient-to-r from-purple to-gold bg-clip-text text-transparent">
+            <span className="text-xl font-medium tracking-wider bg-gradient-to-r from-purple to-gold bg-clip-text text-transparent" style={{ fontFamily: 'var(--font-display)' }}>
               GameRate
             </span>
           </Link>
@@ -31,7 +31,7 @@ export default function GameNotFound() {
           </Link>
           <Link
             href="/games"
-            className="bg-background-card text-foreground px-6 py-3 rounded-lg font-medium border border-purple/20"
+            className="glass text-foreground px-6 py-3 rounded-lg font-medium border border-purple/20"
           >
             Browse Games
           </Link>

@@ -41,7 +41,7 @@ export default async function PlayersPage({
       <main className="pt-24 pb-16 px-4">
         <div className="max-w-xl mx-auto">
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold mb-2">Find Players</h1>
+            <h1 className="text-2xl font-medium tracking-wide mb-2">Find Players</h1>
             <p className="text-foreground-muted">Search for friends by username</p>
           </div>
 
@@ -60,7 +60,7 @@ export default async function PlayersPage({
                     <Link
                       key={player.id}
                       href={`/user/${player.username}`}
-                      className="flex items-center gap-4 p-4 bg-background-card border border-purple/10 rounded-lg"
+                      className="flex items-center gap-4 p-4 glass border border-purple/10 rounded-lg"
                     >
                       <div className="w-12 h-12 rounded-full bg-background-secondary overflow-hidden flex-shrink-0">
                         {player.avatar_url ? (

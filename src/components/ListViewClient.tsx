@@ -247,7 +247,7 @@ export function ListViewClient({
           {items.map((item, index) => (
             <div
               key={item.id}
-              className="group relative flex items-center gap-3 p-3 bg-background-card border border-purple/10 rounded-lg"
+              className="group relative flex items-center gap-3 p-3 glass border border-purple/10 rounded-lg"
             >
               {/* Remove button - only visible in edit mode */}
               {isOwner && isEditing && (

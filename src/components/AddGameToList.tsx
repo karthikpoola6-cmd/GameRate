@@ -151,7 +151,7 @@ export function AddGameToList({ listId, onGameAdded, currentItemCount }: AddGame
       </button>
 
       {isOpen && (
-        <div className="absolute top-full right-0 mt-2 w-80 bg-background-card border border-purple/20 rounded-lg shadow-xl z-50">
+        <div className="absolute top-full right-0 mt-2 w-80 glass border border-purple/20 rounded-lg shadow-xl z-50">
           {/* Search input */}
           <div className="p-3 border-b border-purple/10">
             <div className="relative">

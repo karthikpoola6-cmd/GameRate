@@ -153,7 +153,7 @@ export function SearchBar({ variant = 'nav', placeholder = 'Search games...' }: 
 
       {/* Dropdown Results */}
       {isOpen && results.length > 0 && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-background-card border border-purple/20 rounded-lg shadow-xl overflow-hidden z-50">
+        <div className="absolute top-full left-0 right-0 mt-2 glass border border-purple/20 rounded-lg shadow-xl overflow-hidden z-50">
           {results.map((result, index) => (
             <button
               key={result.id}
@@ -203,7 +203,7 @@ export function SearchBar({ variant = 'nav', placeholder = 'Search games...' }: 
 
       {/* No results message */}
       {isOpen && query.length >= 2 && !isLoading && results.length === 0 && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-background-card border border-purple/20 rounded-lg shadow-xl p-4 z-50">
+        <div className="absolute top-full left-0 right-0 mt-2 glass border border-purple/20 rounded-lg shadow-xl p-4 z-50">
           <p className="text-sm text-foreground-muted text-center">No games found for &quot;{query}&quot;</p>
         </div>
       )}

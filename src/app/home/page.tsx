@@ -76,13 +76,13 @@ export default async function HomePage() {
         <div className="max-w-4xl mx-auto">
           {/* Activity Feed */}
           <section className="mb-12">
-            <h2 className="text-2xl font-bold mb-6">Friend Activity</h2>
+            <h2 className="text-lg font-medium tracking-wide mb-6">Friend Activity</h2>
             <ActivityFeed userId={user.id} />
           </section>
 
           {/* Popular Games */}
           <section>
-            <h2 className="text-2xl font-bold mb-6">Popular Games</h2>
+            <h2 className="text-lg font-medium tracking-wide mb-6">Popular Games</h2>
             <div
               className="gap-2 sm:gap-4"
               style={{

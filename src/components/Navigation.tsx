@@ -26,7 +26,7 @@ export function Navigation() {
               className="w-9 h-9"
               priority
             />
-            <span className="text-2xl font-medium tracking-wider bg-gradient-to-r from-purple to-gold bg-clip-text text-transparent">
+            <span className="text-xl font-medium tracking-wider bg-gradient-to-r from-purple to-gold bg-clip-text text-transparent" style={{ fontFamily: 'var(--font-display)' }}>
               GameRate
             </span>
           </Link>

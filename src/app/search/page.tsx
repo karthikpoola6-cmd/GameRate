@@ -152,15 +152,15 @@ export default async function SearchPage({
         <div className="max-w-6xl mx-auto">
           {/* Search Input */}
           <div className="max-w-2xl mx-auto mb-8">
-            <h1 className="text-3xl font-bold mb-6 text-center">Search Games</h1>
+            <h1 className="text-2xl font-medium tracking-wide mb-6 text-center">Search Games</h1>
             <SearchBar variant="hero" placeholder="Search for a game..." />
           </div>
 
           {/* Genre Navigation */}
           {!query && !selectedGenre && (
             <div className="max-w-2xl mx-auto mb-8">
-              <h2 className="text-lg font-semibold mb-3">Browse by Genre</h2>
-              <div className="border border-purple/10 rounded-lg overflow-hidden">
+              <h2 className="text-lg font-medium tracking-wide mb-3">Browse by Genre</h2>
+              <div className="glass border border-purple/10 rounded-lg overflow-hidden">
                 {GENRES.map((genre, index) => (
                   <Link
                     key={genre.id}
@@ -188,7 +188,7 @@ export default async function SearchPage({
                   ← Back to genres
                 </Link>
               </div>
-              <h2 className="text-2xl font-bold mb-6">Top {selectedGenre.name} Games</h2>
+              <h2 className="text-xl font-medium tracking-wide mb-6">Top {selectedGenre.name} Games</h2>
 
               {genreGames.length > 0 ? (
                 <div

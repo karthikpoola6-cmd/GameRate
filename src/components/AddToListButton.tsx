@@ -152,7 +152,7 @@ export function AddToListButton({ game }: AddToListButtonProps) {
       </button>
 
       {isOpen && (
-        <div className="absolute top-full left-0 mt-2 w-64 bg-background-card border border-purple/20 rounded-lg shadow-xl z-50">
+        <div className="absolute top-full left-0 mt-2 w-64 glass border border-purple/20 rounded-lg shadow-xl z-50">
           {isLoading ? (
             <div className="p-4 text-center text-foreground-muted">Loading...</div>
           ) : (

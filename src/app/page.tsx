@@ -31,7 +31,7 @@ export default async function LandingPage() {
               height={36}
               className="w-9 h-9"
             />
-            <span className="text-2xl font-medium tracking-wider bg-gradient-to-r from-purple to-gold bg-clip-text text-transparent" style={{ fontFamily: 'var(--font-display)' }}>
+            <span className="text-xl font-medium tracking-wider bg-gradient-to-r from-purple to-gold bg-clip-text text-transparent" style={{ fontFamily: 'var(--font-display)' }}>
               GameRate
             </span>
           </Link>
@@ -39,7 +39,6 @@ export default async function LandingPage() {
             href="/login"
             className="text-sm text-purple-light border border-purple/30 px-4 py-1.5 rounded-lg tracking-wider"
             style={{ fontFamily: 'var(--font-display)', boxShadow: '0 0 12px rgba(139, 92, 246, 0.25)' }}
-            style={{ boxShadow: '0 0 12px rgba(139, 92, 246, 0.25)' }}
           >
             Sign in
           </Link>
@@ -49,7 +48,7 @@ export default async function LandingPage() {
       {/* Section 1: Hero */}
       <section className="pt-20 pb-12 px-4">
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-5xl md:text-6xl font-medium mb-6 tracking-wide" style={{ fontFamily: 'var(--font-display)', textShadow: '0 0 20px rgba(139, 92, 246, 0.5), 0 0 40px rgba(139, 92, 246, 0.2)' }}>
+          <h1 className="text-4xl md:text-5xl font-medium mb-6 tracking-wide" style={{ textShadow: '0 0 20px rgba(139, 92, 246, 0.5), 0 0 40px rgba(139, 92, 246, 0.2)' }}>
             <WordReveal
               baseDelay={100}
               stagger={70}
@@ -115,7 +114,7 @@ export default async function LandingPage() {
                 className="w-10 h-10"
               />
             </div>
-            <h2 className="text-2xl font-medium tracking-wide mb-3" style={{ fontFamily: 'var(--font-display)', textShadow: '0 0 15px rgba(139, 92, 246, 0.4)' }}>
+            <h2 className="text-xl font-medium tracking-wide mb-3" style={{ textShadow: '0 0 15px rgba(139, 92, 246, 0.4)' }}>
               Add GameRate to Your Home Screen
             </h2>
             <p className="text-foreground-muted mb-8">
@@ -126,7 +125,7 @@ export default async function LandingPage() {
           <div className="grid sm:grid-cols-2 gap-4 text-left">
             {/* iOS Instructions */}
             <ScrollReveal delay={100} distance={40}>
-              <div className="bg-background-card rounded-xl p-5 border border-purple/10 h-full">
+              <div className="glass rounded-xl p-5 border border-purple/10 h-full">
                 <div className="flex items-center gap-2 mb-3">
                   <svg className="w-5 h-5 text-foreground-muted" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
@@ -152,7 +151,7 @@ export default async function LandingPage() {
 
             {/* Android Instructions */}
             <ScrollReveal delay={250} distance={40}>
-              <div className="bg-background-card rounded-xl p-5 border border-purple/10 h-full">
+              <div className="glass rounded-xl p-5 border border-purple/10 h-full">
                 <div className="flex items-center gap-2 mb-3">
                   <svg className="w-5 h-5 text-foreground-muted" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M17.6 9.48l1.84-3.18c.16-.31.04-.69-.26-.85-.29-.15-.65-.06-.83.22l-1.88 3.24c-1.39-.59-2.94-.92-4.47-.92s-3.08.33-4.47.92L5.65 5.67c-.19-.29-.54-.38-.84-.22-.31.16-.43.54-.27.85L6.4 9.48C3.3 11.25 1.28 14.44 1 18h22c-.28-3.56-2.3-6.75-5.4-8.52zM7 15.25c-.69 0-1.25-.56-1.25-1.25S6.31 12.75 7 12.75s1.25.56 1.25 1.25-.56 1.25-1.25 1.25zm10 0c-.69 0-1.25-.56-1.25-1.25s.56-1.25 1.25-1.25 1.25.56 1.25 1.25-.56 1.25-1.25 1.25z"/>
@@ -195,13 +194,13 @@ export default async function LandingPage() {
       <section className="py-16 px-4">
         <div className="max-w-4xl mx-auto">
           <ScrollReveal distance={30}>
-            <h2 className="text-3xl font-medium tracking-wide text-center mb-8" style={{ fontFamily: 'var(--font-display)', textShadow: '0 0 15px rgba(139, 92, 246, 0.4)' }}>What You Can Do</h2>
+            <h2 className="text-2xl font-medium tracking-wide text-center mb-8" style={{ textShadow: '0 0 15px rgba(139, 92, 246, 0.4)' }}>What You Can Do</h2>
           </ScrollReveal>
 
           <div className="grid md:grid-cols-2 gap-6">
             {/* Section 4: Top 5 Favorites */}
             <ScrollReveal delay={0} distance={50}>
-              <div className="bg-background-card rounded-xl p-6 border border-purple/10 h-full">
+              <div className="glass rounded-xl p-6 border border-purple/10 h-full">
                 <div className="bg-gradient-to-br from-gold/10 to-gold-dark/20 rounded-lg mb-4 py-5 px-3">
                   <div className="flex flex-col items-center gap-3">
                     {/* Top row - 3 games */}
@@ -251,7 +250,7 @@ export default async function LandingPage() {
                     </div>
                   </div>
                 </div>
-                <h4 className="text-lg font-medium tracking-wide mb-2" style={{ fontFamily: 'var(--font-display)' }}>Showcase Your Top 5</h4>
+                <h4 className="text-lg font-medium tracking-wide mb-2">Showcase Your Top 5</h4>
                 <p className="text-foreground-muted text-sm">
                   Pin your all-time favorite games to your profile. Show the world what defines your gaming taste.
                 </p>
@@ -260,7 +259,7 @@ export default async function LandingPage() {
 
             {/* Section 5: Rating Feature */}
             <ScrollReveal delay={150} distance={50}>
-              <div className="bg-background-card rounded-xl p-6 border border-purple/10 h-full">
+              <div className="glass rounded-xl p-6 border border-purple/10 h-full">
                 <div className="bg-gradient-to-br from-purple/10 to-purple-dark/20 rounded-lg mb-4 py-6 flex items-center justify-center">
                   <div className="text-center">
                     <div className="flex justify-center gap-1 mb-2">
@@ -282,7 +281,7 @@ export default async function LandingPage() {
                     <span className="text-xl font-bold text-gold">4.5</span>
                   </div>
                 </div>
-                <h4 className="text-lg font-medium tracking-wide mb-2" style={{ fontFamily: 'var(--font-display)' }}>Rate with Half-Stars</h4>
+                <h4 className="text-lg font-medium tracking-wide mb-2">Rate with Half-Stars</h4>
                 <p className="text-foreground-muted text-sm">
                   Because sometimes a game is more than a 4 but not quite a 5. Rate games on your own scale with precise half-star increments.
                 </p>
@@ -291,7 +290,7 @@ export default async function LandingPage() {
 
             {/* Section 6: Follow Friends */}
             <ScrollReveal delay={300} distance={50}>
-              <div className="bg-background-card rounded-xl p-6 border border-purple/10 h-full">
+              <div className="glass rounded-xl p-6 border border-purple/10 h-full">
                 <div className="aspect-[4/3] bg-gradient-to-br from-purple/10 to-purple-dark/20 rounded-lg mb-4 flex items-center justify-center">
                   <div className="space-y-2.5 w-full px-3">
                     {[
@@ -316,7 +315,7 @@ export default async function LandingPage() {
                     ))}
                   </div>
                 </div>
-                <h4 className="text-lg font-medium tracking-wide mb-2" style={{ fontFamily: 'var(--font-display)' }}>Follow Friends</h4>
+                <h4 className="text-lg font-medium tracking-wide mb-2">Follow Friends</h4>
                 <p className="text-foreground-muted text-sm">
                   See what your friends are playing, rating, and adding to their lists. Discover games through people you trust.
                 </p>
@@ -325,7 +324,7 @@ export default async function LandingPage() {
 
             {/* Section 7: Lists & Reviews */}
             <ScrollReveal delay={300} distance={50}>
-              <div className="bg-background-card rounded-xl p-6 border border-purple/10 h-full">
+              <div className="glass rounded-xl p-6 border border-purple/10 h-full">
                 <div className="aspect-[4/3] bg-gradient-to-br from-gold/10 to-gold-dark/20 rounded-lg mb-4 flex items-center justify-center">
                   <div className="space-y-2 w-full px-3">
                     <div className="bg-background/60 rounded-lg p-2.5 border border-gold/20">
@@ -351,7 +350,7 @@ export default async function LandingPage() {
                     </div>
                   </div>
                 </div>
-                <h4 className="text-lg font-medium tracking-wide mb-2" style={{ fontFamily: 'var(--font-display)' }}>Lists & Reviews</h4>
+                <h4 className="text-lg font-medium tracking-wide mb-2">Lists & Reviews</h4>
                 <p className="text-foreground-muted text-sm">
                   Create lists to organize your games and write reviews to share your thoughts with the community.
                 </p>
@@ -365,13 +364,13 @@ export default async function LandingPage() {
       <section className="pt-8 pb-16 px-4">
         <div className="max-w-3xl mx-auto">
           <ScrollReveal distance={30}>
-            <h2 className="text-3xl font-medium tracking-wide text-center mb-8" style={{ fontFamily: 'var(--font-display)', textShadow: '0 0 15px rgba(139, 92, 246, 0.4)' }}>
+            <h2 className="text-2xl font-medium tracking-wide text-center mb-8" style={{ textShadow: '0 0 15px rgba(139, 92, 246, 0.4)' }}>
               Why I Built{" "}
               <span className="text-purple">GameRate</span>
             </h2>
           </ScrollReveal>
           <ScrollReveal delay={200} distance={40}>
-            <div className="bg-background-card rounded-xl p-6 md:p-8 border border-purple/10">
+            <div className="glass rounded-xl p-6 md:p-8 border border-purple/10">
               <p className="text-foreground-muted leading-relaxed mb-4">
                 People say don&apos;t mix work with play, but when you do, you get passion. I&apos;ve always loved escaping reality and exploring new worlds through games. Long nights with my brother debating which game was better and why, without a proper way to keep track. We ended up writing out rankings and ratings in our notes app, and that&apos;s what inspired GameRate, a mobile app for those nights.
               </p>

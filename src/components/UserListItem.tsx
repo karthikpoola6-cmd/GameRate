@@ -51,7 +51,7 @@ export function UserListItem({ user, currentUserId, initialFollowing }: UserList
   return (
     <Link
       href={`/user/${user.username}`}
-      className="flex items-center gap-4 p-4 bg-background-card border border-purple/10 rounded-lg"
+      className="flex items-center gap-4 p-4 glass border border-purple/10 rounded-lg"
     >
       <div className="w-12 h-12 rounded-full bg-background-secondary overflow-hidden flex-shrink-0">
         {user.avatar_url ? (
