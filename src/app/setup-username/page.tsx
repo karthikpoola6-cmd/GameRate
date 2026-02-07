@@ -128,7 +128,7 @@ export default function SetupUsernamePage() {
         <div className="max-w-6xl mx-auto px-4 h-16 flex items-center">
           <Link href="/" className="flex items-center gap-1.5">
             <Image src="/GameRate.png" alt="GameRate" width={36} height={36} className="w-9 h-9" />
-            <span className="text-2xl font-bold bg-gradient-to-r from-purple to-gold bg-clip-text text-transparent">
+            <span className="text-2xl font-medium tracking-wider bg-gradient-to-r from-purple to-gold bg-clip-text text-transparent">
               GameRate
             </span>
           </Link>

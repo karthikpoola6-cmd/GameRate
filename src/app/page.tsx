@@ -31,13 +31,14 @@ export default async function LandingPage() {
               height={36}
               className="w-9 h-9"
             />
-            <span className="text-2xl font-bold bg-gradient-to-r from-purple to-gold bg-clip-text text-transparent">
+            <span className="text-2xl font-medium tracking-wider bg-gradient-to-r from-purple to-gold bg-clip-text text-transparent" style={{ fontFamily: 'var(--font-display)' }}>
               GameRate
             </span>
           </Link>
           <Link
             href="/login"
-            className="text-sm text-purple-light border border-purple/30 px-4 py-1.5 rounded-lg"
+            className="text-sm text-purple-light border border-purple/30 px-4 py-1.5 rounded-lg tracking-wider"
+            style={{ fontFamily: 'var(--font-display)', boxShadow: '0 0 12px rgba(139, 92, 246, 0.25)' }}
             style={{ boxShadow: '0 0 12px rgba(139, 92, 246, 0.25)' }}
           >
             Sign in
@@ -48,7 +49,7 @@ export default async function LandingPage() {
       {/* Section 1: Hero */}
       <section className="pt-20 pb-12 px-4">
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-5xl md:text-6xl font-bold mb-6">
+          <h1 className="text-5xl md:text-6xl font-medium mb-6 tracking-wide" style={{ fontFamily: 'var(--font-display)', textShadow: '0 0 20px rgba(139, 92, 246, 0.5), 0 0 40px rgba(139, 92, 246, 0.2)' }}>
             <WordReveal
               baseDelay={100}
               stagger={70}
@@ -114,7 +115,7 @@ export default async function LandingPage() {
                 className="w-10 h-10"
               />
             </div>
-            <h2 className="text-2xl font-bold mb-3">
+            <h2 className="text-2xl font-medium tracking-wide mb-3" style={{ fontFamily: 'var(--font-display)', textShadow: '0 0 15px rgba(139, 92, 246, 0.4)' }}>
               Add GameRate to Your Home Screen
             </h2>
             <p className="text-foreground-muted mb-8">
@@ -180,8 +181,8 @@ export default async function LandingPage() {
             <div className="mt-8">
               <Link
                 href="/signup"
-                className="inline-flex items-center justify-center h-12 px-8 rounded-lg text-purple-light border border-purple/30 font-medium text-lg"
-                style={{ boxShadow: '0 0 12px rgba(139, 92, 246, 0.25)' }}
+                className="inline-flex items-center justify-center h-12 px-8 rounded-lg text-purple-light border border-purple/30 font-medium text-lg tracking-wider"
+                style={{ fontFamily: 'var(--font-display)', boxShadow: '0 0 12px rgba(139, 92, 246, 0.25)' }}
               >
                 Get Started
               </Link>
@@ -194,7 +195,7 @@ export default async function LandingPage() {
       <section className="py-16 px-4">
         <div className="max-w-4xl mx-auto">
           <ScrollReveal distance={30}>
-            <h2 className="text-3xl font-bold text-center mb-8">What You Can Do</h2>
+            <h2 className="text-3xl font-medium tracking-wide text-center mb-8" style={{ fontFamily: 'var(--font-display)', textShadow: '0 0 15px rgba(139, 92, 246, 0.4)' }}>What You Can Do</h2>
           </ScrollReveal>
 
           <div className="grid md:grid-cols-2 gap-6">
@@ -250,7 +251,7 @@ export default async function LandingPage() {
                     </div>
                   </div>
                 </div>
-                <h4 className="text-lg font-semibold mb-2">Showcase Your Top 5</h4>
+                <h4 className="text-lg font-medium tracking-wide mb-2" style={{ fontFamily: 'var(--font-display)' }}>Showcase Your Top 5</h4>
                 <p className="text-foreground-muted text-sm">
                   Pin your all-time favorite games to your profile. Show the world what defines your gaming taste.
                 </p>
@@ -281,7 +282,7 @@ export default async function LandingPage() {
                     <span className="text-xl font-bold text-gold">4.5</span>
                   </div>
                 </div>
-                <h4 className="text-lg font-semibold mb-2">Rate with Half-Stars</h4>
+                <h4 className="text-lg font-medium tracking-wide mb-2" style={{ fontFamily: 'var(--font-display)' }}>Rate with Half-Stars</h4>
                 <p className="text-foreground-muted text-sm">
                   Because sometimes a game is more than a 4 but not quite a 5. Rate games on your own scale with precise half-star increments.
                 </p>
@@ -315,7 +316,7 @@ export default async function LandingPage() {
                     ))}
                   </div>
                 </div>
-                <h4 className="text-lg font-semibold mb-2">Follow Friends</h4>
+                <h4 className="text-lg font-medium tracking-wide mb-2" style={{ fontFamily: 'var(--font-display)' }}>Follow Friends</h4>
                 <p className="text-foreground-muted text-sm">
                   See what your friends are playing, rating, and adding to their lists. Discover games through people you trust.
                 </p>
@@ -350,7 +351,7 @@ export default async function LandingPage() {
                     </div>
                   </div>
                 </div>
-                <h4 className="text-lg font-semibold mb-2">Lists & Reviews</h4>
+                <h4 className="text-lg font-medium tracking-wide mb-2" style={{ fontFamily: 'var(--font-display)' }}>Lists & Reviews</h4>
                 <p className="text-foreground-muted text-sm">
                   Create lists to organize your games and write reviews to share your thoughts with the community.
                 </p>
@@ -364,7 +365,7 @@ export default async function LandingPage() {
       <section className="pt-8 pb-16 px-4">
         <div className="max-w-3xl mx-auto">
           <ScrollReveal distance={30}>
-            <h2 className="text-3xl font-bold text-center mb-8">
+            <h2 className="text-3xl font-medium tracking-wide text-center mb-8" style={{ fontFamily: 'var(--font-display)', textShadow: '0 0 15px rgba(139, 92, 246, 0.4)' }}>
               Why I Built{" "}
               <span className="text-purple">GameRate</span>
             </h2>

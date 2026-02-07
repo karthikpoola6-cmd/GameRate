@@ -114,6 +114,9 @@ body {
   * {
     @apply border-border outline-ring/50;
   }
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+  }
 }
 
 /* Wiggle animation for edit mode */

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Orbitron } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import { UserProvider } from "@/contexts/UserContext";
 import { NeonGrid } from "@/components/NeonGrid";
@@ -13,6 +13,12 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+const orbitron = Orbitron({
+  variable: "--font-display",
+  subsets: ["latin"],
+  weight: ["400", "500"],
 });
 
 export const metadata: Metadata = {
@@ -72,7 +78,7 @@ export default function RootLayout({
         <meta name="theme-color" content="#8b5cf6" />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased pb-20 lg:pb-0`}
+        className={`${geistSans.variable} ${geistMono.variable} ${orbitron.variable} antialiased pb-20 lg:pb-0`}
       >
         <NeonGrid />
         <div className="relative" style={{ zIndex: 1 }}>
