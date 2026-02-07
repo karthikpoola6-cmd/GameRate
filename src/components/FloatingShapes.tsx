@@ -146,11 +146,13 @@ export function FloatingShapes({ exclusionZone }: { exclusionZone?: ExclusionZon
       ctx.clearRect(0, 0, canvas.width, canvas.height)
 
       // Calculate exclusion zone for avatar (responsive)
+      // Avatar is 128px (w-32), inside pt-20 (80px) header padding
+      // Center of avatar = pt-20 + half avatar = 80 + 64 = 144px
       const isMobile = canvas.width < 640
       const zone = exclusionZone || {
-        x: isMobile ? canvas.width / 2 : 100,
-        y: isMobile ? 80 : 85,
-        radius: 85, // Slightly larger than avatar (64px radius + buffer)
+        x: isMobile ? canvas.width / 2 : (canvas.width - Math.min(canvas.width, 896)) / 2 + 16 + 64,
+        y: 144,
+        radius: 68, // Matches gold ring border (64px avatar + ring-2 + 2px buffer)
       }
 
       spritesRef.current.forEach((sprite) => {
@@ -211,7 +213,7 @@ export function FloatingShapes({ exclusionZone }: { exclusionZone?: ExclusionZon
   return (
     <canvas
       ref={canvasRef}
-      className="absolute inset-0 pointer-events-none z-10"
+      className="absolute inset-0 pointer-events-none z-0"
       style={{ opacity: 1 }}
     />
   )

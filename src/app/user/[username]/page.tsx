@@ -139,10 +139,10 @@ export default async function ProfilePage({ params }: PageProps) {
       <Navigation />
 
       {/* Profile Header */}
-      <div className="relative pt-20 pb-8 px-4 bg-[#080510] overflow-hidden">
+      <div className="relative pt-20 pb-8 px-4 overflow-hidden">
         {/* Animated Background */}
         <FloatingShapes />
-        <div className="relative max-w-4xl mx-auto">
+        <div className="relative z-10 max-w-4xl mx-auto">
           <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
             {/* Avatar */}
             <FadeIn delay={0} direction="up">

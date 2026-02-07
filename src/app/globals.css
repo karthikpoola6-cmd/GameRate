@@ -34,11 +34,6 @@
   --border: rgba(139, 92, 246, 0.2);
   --input: rgba(139, 92, 246, 0.2);
   --ring: #8b5cf6;
-  --chart-1: #8b5cf6;
-  --chart-2: #a78bfa;
-  --chart-3: #7c3aed;
-  --chart-4: #f59e0b;
-  --chart-5: #fbbf24;
 }
 
 @theme inline {
@@ -73,11 +68,6 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
-  --color-chart-1: var(--chart-1);
-  --color-chart-2: var(--chart-2);
-  --color-chart-3: var(--chart-3);
-  --color-chart-4: var(--chart-4);
-  --color-chart-5: var(--chart-5);
 
   /* Radius */
   --radius-sm: calc(var(--radius) - 4px);
@@ -134,20 +124,6 @@ body {
 
 .animate-wiggle {
   animation: wiggle 0.3s ease-in-out infinite;
-}
-
-/* Neon glow pulse for CTA buttons */
-@keyframes neon-pulse {
-  0%, 100% {
-    box-shadow: 0 0 20px rgba(139, 92, 246, 0.4), 0 0 50px rgba(139, 92, 246, 0.15);
-  }
-  50% {
-    box-shadow: 0 0 30px rgba(139, 92, 246, 0.6), 0 0 70px rgba(139, 92, 246, 0.25);
-  }
-}
-
-.neon-button {
-  animation: neon-pulse 3s ease-in-out infinite;
 }
 
 /* Smooth breathing animation for rating bars */

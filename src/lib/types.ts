@@ -10,7 +10,7 @@ export interface Profile {
   updated_at: string
 }
 
-export type GameStatus = 'want_to_play' | 'played'
+type GameStatus = 'want_to_play' | 'played'
 
 export interface GameLog {
   id: string
@@ -41,21 +41,3 @@ export interface List {
   updated_at: string
 }
 
-export interface ListItem {
-  id: string
-  list_id: string
-  game_id: number
-  game_slug: string
-  game_name: string
-  game_cover_id: string | null
-  position: number
-  notes: string | null
-  added_at: string
-}
-
-export interface Follow {
-  id: string
-  follower_id: string
-  following_id: string
-  created_at: string
-}
