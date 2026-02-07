@@ -122,7 +122,7 @@ export default function SetupUsernamePage() {
   }
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen flex flex-col">
       {/* Navigation */}
       <nav className="bg-background/80 backdrop-blur-md border-b border-purple/10">
         <div className="max-w-6xl mx-auto px-4 h-16 flex items-center">

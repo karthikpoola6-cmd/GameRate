@@ -49,7 +49,7 @@ export default async function UserReviewsPage({ params }: PageProps) {
   const typedReviews = (reviews || []) as Review[]
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen">
       <Navigation />
 
       <main className="pt-4 lg:pt-24 pb-16 px-4">

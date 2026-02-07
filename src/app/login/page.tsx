@@ -63,14 +63,14 @@ export default function LoginPage() {
   // Show loading while checking existing session
   if (checkingAuth) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="text-foreground-muted">Loading...</div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen flex flex-col">
       {/* Navigation */}
       <nav className="bg-background/80 backdrop-blur-md border-b border-purple/10">
         <div className="max-w-6xl mx-auto px-4 h-16 flex items-center">

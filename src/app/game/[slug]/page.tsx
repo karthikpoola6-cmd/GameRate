@@ -83,7 +83,7 @@ export default async function GamePage({ params }: PageProps) {
   const developers = game.involved_companies?.filter((c) => c.developer) || [];
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen">
       <Navigation />
 
       {/* Backdrop Screenshot - Letterboxd style */}

@@ -69,7 +69,7 @@ export default async function HomePage() {
   const popularGames = await getPopularGames(16);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen">
       <Navigation />
 
       <main className="pt-4 lg:pt-24 pb-16 px-4">

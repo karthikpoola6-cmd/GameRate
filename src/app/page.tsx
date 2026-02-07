@@ -19,7 +19,7 @@ export default async function LandingPage() {
 
   // Not logged in - show marketing page
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen">
       {/* Navigation */}
       <nav className="border-b border-purple/10">
         <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
@@ -37,7 +37,8 @@ export default async function LandingPage() {
           </Link>
           <Link
             href="/login"
-            className="text-sm text-foreground-muted"
+            className="text-sm text-purple-light border border-purple/30 px-4 py-1.5 rounded-lg"
+            style={{ boxShadow: '0 0 12px rgba(139, 92, 246, 0.25)' }}
           >
             Sign in
           </Link>
@@ -101,7 +102,7 @@ export default async function LandingPage() {
       </section>
 
       {/* Section 2: Add GameRate to Home Screen */}
-      <section className="py-12 px-4 bg-background-secondary/50">
+      <section className="py-12 px-4">
         <div className="max-w-2xl mx-auto text-center">
           <ScrollReveal distance={30}>
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-purple/10 border border-purple/20 mb-6">
@@ -179,7 +180,8 @@ export default async function LandingPage() {
             <div className="mt-8">
               <Link
                 href="/signup"
-                className="inline-flex items-center justify-center h-12 px-8 rounded-lg bg-purple text-white font-medium text-lg"
+                className="inline-flex items-center justify-center h-12 px-8 rounded-lg text-purple-light border border-purple/30 font-medium text-lg"
+                style={{ boxShadow: '0 0 12px rgba(139, 92, 246, 0.25)' }}
               >
                 Get Started
               </Link>

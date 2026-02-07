@@ -49,7 +49,7 @@ export default async function GamesPage() {
   ])
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen">
       <Navigation />
 
       <main className="pt-24 pb-16 px-4">

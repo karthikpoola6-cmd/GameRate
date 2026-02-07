@@ -135,7 +135,7 @@ export default async function ProfilePage({ params }: PageProps) {
   const isOwnProfile = currentUser?.id === profile.id
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen">
       <Navigation />
 
       {/* Profile Header */}

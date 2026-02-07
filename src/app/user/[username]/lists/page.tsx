@@ -54,7 +54,7 @@ export default async function UserListsPage({
   const typedLists = (lists || []) as ListWithItems[]
 
   return (
-    <div className="min-h-screen bg-background overflow-x-hidden">
+    <div className="min-h-screen overflow-x-hidden">
       <Navigation />
 
       <main className="pt-4 lg:pt-24 pb-16 px-4">

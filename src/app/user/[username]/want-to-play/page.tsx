@@ -41,7 +41,7 @@ export default async function WantToPlayPage({ params }: PageProps) {
     .order('updated_at', { ascending: false })
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen">
       <Navigation />
 
       <div className="max-w-4xl mx-auto px-4 pt-4 lg:pt-24 pb-12">

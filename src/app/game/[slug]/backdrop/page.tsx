@@ -39,7 +39,7 @@ export default async function BackdropPage({ params }: PageProps) {
   const screenshots = game.screenshots || []
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen">
       <BackdropSelector
         gameLogId={gameLog.id}
         gameSlug={slug}

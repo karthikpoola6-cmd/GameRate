@@ -35,7 +35,7 @@ export default async function UserGamesPage({ params }: PageProps) {
     .order('rated_at', { ascending: false, nullsFirst: false })
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen">
       <Navigation />
 
       <main className="pt-4 lg:pt-24 pb-16 px-4">

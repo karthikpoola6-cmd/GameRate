@@ -5,7 +5,7 @@
 
 :root {
   /* GameRate Purple/Gold Theme */
-  --background: #0f0a19;
+  --background: #030108;
   --background-secondary: #1a1225;
   --background-card: #241832;
   --foreground: #f5f5f5;
@@ -134,6 +134,20 @@ body {
 
 .animate-wiggle {
   animation: wiggle 0.3s ease-in-out infinite;
+}
+
+/* Neon glow pulse for CTA buttons */
+@keyframes neon-pulse {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.4), 0 0 50px rgba(139, 92, 246, 0.15);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(139, 92, 246, 0.6), 0 0 70px rgba(139, 92, 246, 0.25);
+  }
+}
+
+.neon-button {
+  animation: neon-pulse 3s ease-in-out infinite;
 }
 
 /* Smooth breathing animation for rating bars */
