@@ -129,6 +129,22 @@ export async function getPopularGames(limit = 20): Promise<IGDBGame[]> {
   return uniqueGames
 }
 
+// In-memory cache for the popular games pool (refreshes every hour)
+let cachedPool: { games: IGDBGame[]; expiresAt: number } | null = null
+
+export async function getPopularGamesPool(): Promise<IGDBGame[]> {
+  if (cachedPool && Date.now() < cachedPool.expiresAt) {
+    return cachedPool.games
+  }
+
+  const games = await getPopularGames(100)
+  cachedPool = {
+    games,
+    expiresAt: Date.now() + 3600000, // 1 hour
+  }
+  return cachedPool.games
+}
+
 export async function getRecentGames(limit = 20): Promise<IGDBGame[]> {
   const now = Math.floor(Date.now() / 1000)
   const body = `
