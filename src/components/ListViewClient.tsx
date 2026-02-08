@@ -6,6 +6,7 @@ import Image from 'next/image'
 import { createClient } from '@/lib/supabase/client'
 import { getCoverUrl } from '@/lib/igdb'
 import { AddGameToList } from './AddGameToList'
+import { ScrollReveal } from './ScrollReveal'
 
 interface ListItem {
   id: string
@@ -245,8 +246,8 @@ export function ListViewClient({
       ) : (
         <div className="space-y-3">
           {items.map((item, index) => (
+            <ScrollReveal key={item.id} distance={20}>
             <div
-              key={item.id}
               className="group relative flex items-center gap-3 p-3 glass border border-purple/10 rounded-lg"
             >
               {/* Remove button - only visible in edit mode */}
@@ -389,6 +390,7 @@ export function ListViewClient({
                 )}
               </Link>
             </div>
+            </ScrollReveal>
           ))}
         </div>
       )}

@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { getPopularGames, getCoverUrl, type IGDBGame } from "@/lib/igdb";
 import { Navigation } from "@/components/Navigation";
 import { ActivityFeed } from "@/components/ActivityFeed";
+import { FadeIn } from "@/components/FadeIn";
 import { createClient } from "@/lib/supabase/server";
 
 
@@ -76,8 +77,12 @@ export default async function HomePage() {
         <div className="max-w-4xl mx-auto">
           {/* Activity Feed */}
           <section className="mb-12">
-            <h2 className="text-lg font-medium tracking-wide mb-6">Friend Activity</h2>
-            <ActivityFeed userId={user.id} />
+            <FadeIn>
+              <h2 className="text-lg font-medium tracking-wide mb-6">Friend Activity</h2>
+            </FadeIn>
+            <FadeIn delay={150}>
+              <ActivityFeed userId={user.id} />
+            </FadeIn>
           </section>
 
           {/* Popular Games */}

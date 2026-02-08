@@ -26,7 +26,7 @@ export function ScrollReveal({ children, className = '', delay = 0, distance = 4
           element.style.transform = `translateY(${distance}px)`
         }
       },
-      { threshold: 0.15 }
+      { threshold: 0.05 }
     )
 
     observer.observe(element)

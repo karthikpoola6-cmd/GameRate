@@ -2,6 +2,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import { Navigation } from '@/components/Navigation'
+import { ScrollReveal } from '@/components/ScrollReveal'
 import { createClient } from '@/lib/supabase/server'
 import { getCoverUrl } from '@/lib/igdb'
 
@@ -98,9 +99,9 @@ export default async function UserListsPage({
             </div>
           ) : (
             <div className="space-y-6">
-              {typedLists.map((list) => (
+              {typedLists.map((list, index) => (
+                <ScrollReveal key={list.id} delay={index * 80}>
                 <Link
-                  key={list.id}
                   href={`/list/${list.id}`}
                   className="block"
                 >
@@ -140,6 +141,7 @@ export default async function UserListsPage({
                     </p>
                   )}
                 </Link>
+                </ScrollReveal>
               ))}
             </div>
           )}
