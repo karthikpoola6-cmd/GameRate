@@ -93,11 +93,11 @@ export default async function GamePage({ params }: PageProps) {
               src={getScreenshotUrl(displayBackdropId, "1080p")}
               alt=""
               fill
-              className="object-cover opacity-80"
+              className="object-cover opacity-95"
               priority
               unoptimized
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-background via-background/30 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-background via-background/15 to-transparent" />
           </>
         ) : (
           <div className="absolute inset-0 bg-gradient-to-b from-purple/20 to-background" />
