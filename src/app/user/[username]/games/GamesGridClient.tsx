@@ -104,11 +104,7 @@ export function GamesGridClient({ games }: GamesGridClientProps) {
       {/* Games Grid */}
       {filteredGames.length > 0 ? (
         <div
-          className="gap-2 sm:gap-4"
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(4, minmax(0, 1fr))'
-          }}
+          className="grid grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2 sm:gap-4"
         >
           {filteredGames.map((game) => (
             <Link key={game.id} href={`/game/${game.game_slug}`}>

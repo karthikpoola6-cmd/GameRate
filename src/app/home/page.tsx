@@ -74,7 +74,7 @@ export default async function HomePage() {
       <Navigation />
 
       <main className="pt-4 lg:pt-24 pb-16 px-4">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-4xl lg:max-w-6xl mx-auto">
           {/* Activity Feed */}
           <section className="mb-12">
             <FadeIn>
@@ -89,11 +89,7 @@ export default async function HomePage() {
           <section>
             <h2 className="text-lg font-medium tracking-wide mb-6">Popular Games</h2>
             <div
-              className="gap-2 sm:gap-4"
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(4, minmax(0, 1fr))'
-              }}
+              className="grid grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2 sm:gap-4"
             >
               {popularGames.map((game) => (
                 <GameCard key={game.id} game={game} />

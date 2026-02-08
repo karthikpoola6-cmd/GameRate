@@ -121,11 +121,11 @@ export default async function GamePage({ params }: PageProps) {
 
       {/* Main Content - Title left, Poster right */}
       <div className="px-4 -mt-20 relative z-10">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-4xl lg:max-w-6xl mx-auto">
           <div className="flex gap-4">
             {/* Left side - Title and info */}
             <div className="flex-1 min-w-0 pt-4">
-              <h1 className="text-2xl sm:text-3xl font-bold leading-tight">{game.name}</h1>
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight">{game.name}</h1>
 
               <div className="flex items-center gap-2 mt-2 text-sm text-foreground-muted">
                 {releaseYear && <span>{releaseYear}</span>}
@@ -154,7 +154,7 @@ export default async function GamePage({ params }: PageProps) {
 
             {/* Right side - Poster */}
             <div className="flex-shrink-0">
-              <div className="relative w-28 sm:w-32 aspect-[3/4] bg-background-card rounded-lg overflow-hidden shadow-xl ring-1 ring-white/10">
+              <div className="relative w-28 sm:w-32 lg:w-44 aspect-[3/4] bg-background-card rounded-lg overflow-hidden shadow-xl ring-1 ring-white/10">
                 {game.cover?.image_id ? (
                   <Image
                     src={getCoverUrl(game.cover.image_id)}
@@ -247,8 +247,8 @@ export default async function GamePage({ params }: PageProps) {
           {game.screenshots && game.screenshots.length > 1 && (
             <div className="mt-8">
               <h3 className="text-xs uppercase tracking-wider text-foreground-muted mb-3">Screenshots</h3>
-              <div className="grid grid-cols-2 gap-2">
-                {game.screenshots.slice(1, 5).map((screenshot) => (
+              <div className="grid grid-cols-2 lg:grid-cols-3 gap-2">
+                {game.screenshots.slice(1, 7).map((screenshot) => (
                   <div
                     key={screenshot.id}
                     className="relative aspect-video bg-background-card rounded-lg overflow-hidden"
@@ -269,7 +269,7 @@ export default async function GamePage({ params }: PageProps) {
           {/* Game Details */}
           <div className="mt-8 pb-8">
             <h3 className="text-xs uppercase tracking-wider text-foreground-muted mb-3">Details</h3>
-            <div className="grid grid-cols-2 gap-4 text-sm">
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
               {developers.length > 0 && (
                 <div>
                   <span className="text-foreground-muted">Developer</span>

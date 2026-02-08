@@ -96,7 +96,7 @@ export default async function ListPage({
       <Navigation />
 
       <main className="pt-4 lg:pt-24 pb-16 px-4">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-4xl lg:max-w-6xl mx-auto">
           {/* Back link */}
           <Link
             href={`/user/${typedList.profiles.username}/lists`}

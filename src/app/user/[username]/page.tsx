@@ -117,7 +117,7 @@ export default async function ProfilePage({ params }: PageProps) {
       <div className="relative pt-20 pb-8 px-4 overflow-hidden">
         {/* Animated Background */}
         <FloatingShapes />
-        <div className="relative z-10 max-w-4xl mx-auto">
+        <div className="relative z-10 max-w-4xl lg:max-w-6xl mx-auto">
           <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
             {/* Avatar */}
             <FadeIn delay={0} direction="up">
@@ -187,7 +187,7 @@ export default async function ProfilePage({ params }: PageProps) {
       </div>
 
       {/* Content */}
-      <div className="max-w-4xl mx-auto px-4 pt-4 pb-8 space-y-8">
+      <div className="max-w-4xl lg:max-w-6xl mx-auto px-4 pt-4 pb-8 space-y-8">
         {/* Top 5 Favorites */}
         {(isOwnProfile || (favoriteGames && favoriteGames.length > 0)) && (
           <FadeIn delay={250}>
@@ -221,11 +221,7 @@ export default async function ProfilePage({ params }: PageProps) {
 
           {recentGames && recentGames.length > 0 ? (
               <div
-                className="gap-2 sm:gap-4"
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(4, minmax(0, 1fr))'
-                }}
+                className="grid grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2 sm:gap-4"
               >
                 {recentGames.map((game, index) => (
                   <ScrollReveal key={game.id} delay={index * 50}>

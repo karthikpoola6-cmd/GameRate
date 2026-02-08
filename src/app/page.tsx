@@ -48,7 +48,7 @@ export default async function LandingPage() {
       {/* Section 1: Hero */}
       <section className="pt-20 pb-12 px-4">
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-4xl md:text-5xl font-medium mb-6 tracking-wide" style={{ textShadow: '0 0 20px rgba(139, 92, 246, 0.5), 0 0 40px rgba(139, 92, 246, 0.2)' }}>
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-medium mb-6 tracking-wide" style={{ textShadow: '0 0 20px rgba(139, 92, 246, 0.5), 0 0 40px rgba(139, 92, 246, 0.2)' }}>
             <WordReveal
               baseDelay={100}
               stagger={70}
@@ -119,12 +119,12 @@ export default async function LandingPage() {
             <h2 className="text-2xl font-medium tracking-wide mb-2" style={{ textShadow: '0 0 15px rgba(139, 92, 246, 0.4)' }}>
               See It In Action
             </h2>
-            <p className="text-foreground-muted text-sm">Swipe to explore</p>
+            <p className="text-foreground-muted text-sm lg:hidden">Swipe to explore</p>
           </div>
         </ScrollReveal>
 
         <div
-          className="flex gap-5 overflow-x-auto snap-x snap-mandatory pb-6 scrollbar-hide"
+          className="flex gap-5 overflow-x-auto snap-x snap-mandatory pb-6 scrollbar-hide lg:justify-center lg:overflow-x-visible"
           style={{ paddingLeft: 'calc(50% - 120px)', paddingRight: 'calc(50% - 120px)' }}
         >
           {[
@@ -154,12 +154,12 @@ export default async function LandingPage() {
 
       {/* Section 3: Features */}
       <section className="py-12 px-4">
-        <div className="max-w-md mx-auto">
+        <div className="max-w-md md:max-w-2xl mx-auto">
           <ScrollReveal distance={30}>
             <h2 className="text-2xl font-medium tracking-wide text-center mb-6" style={{ textShadow: '0 0 15px rgba(139, 92, 246, 0.4)' }}>What You Can Do</h2>
           </ScrollReveal>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {[
               {
                 icon: <svg className="w-5 h-5 text-gold" fill="currentColor" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" /></svg>,

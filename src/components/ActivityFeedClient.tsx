@@ -89,7 +89,7 @@ export function ActivityFeedClient({ items }: { items: ActivityItem[] }) {
       {canScrollLeft && (
         <button
           onClick={() => scroll('left')}
-          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 glass border border-purple/30 rounded-full flex items-center justify-center text-foreground active:scale-95"
+          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 glass border border-purple/30 rounded-full flex items-center justify-center text-foreground active:scale-95 lg:hidden"
           aria-label="Scroll left"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -102,7 +102,7 @@ export function ActivityFeedClient({ items }: { items: ActivityItem[] }) {
       {canScrollRight && (
         <button
           onClick={() => scroll('right')}
-          className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 glass border border-purple/30 rounded-full flex items-center justify-center text-foreground active:scale-95"
+          className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 glass border border-purple/30 rounded-full flex items-center justify-center text-foreground active:scale-95 lg:hidden"
           aria-label="Scroll right"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -114,7 +114,7 @@ export function ActivityFeedClient({ items }: { items: ActivityItem[] }) {
       {/* Scrollable container */}
       <div
         ref={scrollRef}
-        className="flex gap-4 overflow-x-auto scrollbar-hide px-1 py-1"
+        className="flex gap-4 overflow-x-auto scrollbar-hide px-1 py-1 lg:flex-wrap lg:overflow-x-visible"
         style={{ WebkitOverflowScrolling: 'touch' }}
       >
         {items.map((item) => (

@@ -234,7 +234,7 @@ export function ListViewClient({
           )}
         </div>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-3 lg:grid lg:grid-cols-2 lg:gap-3 lg:space-y-0">
           {items.map((item, index) => (
             <ScrollReveal key={item.id} distance={20}>
             <div
