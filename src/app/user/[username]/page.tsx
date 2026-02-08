@@ -13,8 +13,6 @@ import { getCoverUrl } from '@/lib/igdb'
 import { FollowButtonClient } from './FollowButton'
 import type { GameLog } from '@/lib/types'
 
-// Always fetch fresh data for user profiles
-export const dynamic = 'force-dynamic'
 
 interface PageProps {
   params: Promise<{ username: string }>
@@ -38,85 +36,62 @@ export default async function ProfilePage({ params }: PageProps) {
     notFound()
   }
 
-  // Get stats, games, lists, and reviews
+  // Fetch all data in 4 parallel queries (down from 9)
   const isOwnProfileCheck = currentUser?.id === profile.id
 
   const [
-    { count: gamesCount },
+    { data: allGameLogs },
     { count: followersCount },
     { count: followingCount },
-    { data: recentGames },
-    { data: favoriteGames },
     { count: listsCount },
-    { count: reviewsCount },
-    { count: wantToPlayCount },
-    { data: allRatings },
   ] = await Promise.all([
-    supabase.from('game_logs').select('*', { count: 'exact', head: true }).eq('user_id', profile.id).not('rating', 'is', null),
+    // Single query for all game_logs — derive counts and subsets client-side
+    supabase
+      .from('game_logs')
+      .select('id, rating, review, status, favorite, game_name, game_slug, game_cover_id, game_id, rated_at, updated_at')
+      .eq('user_id', profile.id),
     supabase.from('follows').select('*', { count: 'exact', head: true }).eq('following_id', profile.id),
     supabase.from('follows').select('*', { count: 'exact', head: true }).eq('follower_id', profile.id),
-    supabase
-      .from('game_logs')
-      .select('*')
-      .eq('user_id', profile.id)
-      .not('rating', 'is', null)
-      .order('rated_at', { ascending: false, nullsFirst: false })
-      .limit(8),
-    supabase
-      .from('game_logs')
-      .select('*')
-      .eq('user_id', profile.id)
-      .eq('favorite', true)
-      .order('updated_at', { ascending: false })
-      .limit(5),
-    // Get lists count (public only if not own profile)
     (async () => {
       let query = supabase
         .from('lists')
         .select('*', { count: 'exact', head: true })
         .eq('user_id', profile.id)
-
       if (!isOwnProfileCheck) {
         query = query.eq('is_public', true)
       }
-
       return query
     })(),
-    // Get reviews count
-    supabase
-      .from('game_logs')
-      .select('*', { count: 'exact', head: true })
-      .eq('user_id', profile.id)
-      .not('review', 'is', null),
-    // Get want to play count
-    supabase
-      .from('game_logs')
-      .select('*', { count: 'exact', head: true })
-      .eq('user_id', profile.id)
-      .eq('status', 'want_to_play'),
-    // Get all ratings for distribution
-    supabase
-      .from('game_logs')
-      .select('rating')
-      .eq('user_id', profile.id)
-      .not('rating', 'is', null),
   ])
+
+  const logs = allGameLogs || []
+
+  // Derive all stats from the single game_logs fetch
+  const ratedLogs = logs.filter(g => g.rating != null)
+  const gamesCount = ratedLogs.length
+  const reviewsCount = logs.filter(g => g.review != null).length
+  const wantToPlayCount = logs.filter(g => g.status === 'want_to_play').length
+
+  const recentGames = ratedLogs
+    .sort((a, b) => new Date(b.rated_at || b.updated_at).getTime() - new Date(a.rated_at || a.updated_at).getTime())
+    .slice(0, 8)
+
+  const favoriteGames = logs
+    .filter(g => g.favorite)
+    .sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())
+    .slice(0, 5)
 
   // Calculate rating distribution
   const ratingDistribution: Record<number, number> = {
     0.5: 0, 1: 0, 1.5: 0, 2: 0, 2.5: 0, 3: 0, 3.5: 0, 4: 0, 4.5: 0, 5: 0
   }
 
-  if (allRatings && allRatings.length > 0) {
-    allRatings.forEach(g => {
-      const rating = Number(g.rating)
-      // Round to nearest 0.5 to handle any floating point issues
-      const rounded = Math.round(rating * 2) / 2
-      if (rounded >= 0.5 && rounded <= 5) {
-        ratingDistribution[rounded] = (ratingDistribution[rounded] || 0) + 1
-      }
-    })
-  }
+  ratedLogs.forEach(g => {
+    const rounded = Math.round(Number(g.rating) * 2) / 2
+    if (rounded >= 0.5 && rounded <= 5) {
+      ratingDistribution[rounded] = (ratingDistribution[rounded] || 0) + 1
+    }
+  })
 
   const maxCount = Math.max(...Object.values(ratingDistribution), 1)
 
@@ -217,7 +192,7 @@ export default async function ProfilePage({ params }: PageProps) {
         {(isOwnProfile || (favoriteGames && favoriteGames.length > 0)) && (
           <FadeIn delay={250}>
             <FavoriteGames
-              favorites={(favoriteGames as GameLog[]) || []}
+              favorites={(favoriteGames as unknown as GameLog[]) || []}
               isOwnProfile={isOwnProfile}
             />
           </FadeIn>
@@ -252,7 +227,7 @@ export default async function ProfilePage({ params }: PageProps) {
                   gridTemplateColumns: 'repeat(4, minmax(0, 1fr))'
                 }}
               >
-                {recentGames.map((game: GameLog, index: number) => (
+                {recentGames.map((game, index) => (
                   <ScrollReveal key={game.id} delay={index * 50}>
                     <Link href={`/game/${game.game_slug}`}>
                       <div className="relative aspect-[3/4] bg-background-card rounded-md sm:rounded-lg overflow-hidden">
@@ -262,6 +237,7 @@ export default async function ProfilePage({ params }: PageProps) {
                             alt={game.game_name}
                             fill
                             className="object-cover"
+                            loading="lazy"
                             unoptimized
                           />
                         ) : (

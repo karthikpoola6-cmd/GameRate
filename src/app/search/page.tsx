@@ -121,7 +121,6 @@ const GENRES = [
   { id: 9, name: 'Puzzle', slug: 'puzzle' },
 ]
 
-export const dynamic = 'force-dynamic'
 
 export default async function SearchPage({
   searchParams,
@@ -208,6 +207,7 @@ export default async function SearchPage({
                             fill
                             className="object-cover"
                             sizes="(max-width: 640px) 25vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 16vw"
+                            loading="lazy"
                             unoptimized
                           />
                         ) : (
@@ -259,6 +259,7 @@ export default async function SearchPage({
                             fill
                             className="object-cover"
                             sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 16vw"
+                            loading="lazy"
                             unoptimized
                           />
                         ) : (

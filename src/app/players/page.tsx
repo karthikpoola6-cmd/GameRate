@@ -4,7 +4,6 @@ import { Navigation } from '@/components/Navigation'
 import { PlayerSearch } from '@/components/PlayerSearch'
 import { createClient } from '@/lib/supabase/server'
 
-export const dynamic = 'force-dynamic'
 
 interface PlayerResult {
   id: string

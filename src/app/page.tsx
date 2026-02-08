@@ -5,7 +5,6 @@ import Image from "next/image";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { WordReveal } from "@/components/WordReveal";
 
-export const dynamic = 'force-dynamic'
 
 export default async function LandingPage() {
   // Check auth server-side

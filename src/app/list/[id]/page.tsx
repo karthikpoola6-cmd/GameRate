@@ -4,7 +4,6 @@ import { Navigation } from '@/components/Navigation'
 import { ListViewClient } from '@/components/ListViewClient'
 import { createClient } from '@/lib/supabase/server'
 
-export const dynamic = 'force-dynamic'
 
 interface ListItem {
   id: string

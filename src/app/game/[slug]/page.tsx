@@ -9,7 +9,6 @@ import { BackButton } from "@/components/BackButton";
 import { PlayedByClient } from "./PlayedByClient";
 import { createClient } from "@/lib/supabase/server";
 
-export const dynamic = 'force-dynamic'
 
 interface PageProps {
   params: Promise<{ slug: string }>;

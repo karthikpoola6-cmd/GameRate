@@ -4,7 +4,6 @@ import { Navigation } from '@/components/Navigation'
 import { UserListItem } from '@/components/UserListItem'
 import { createClient } from '@/lib/supabase/server'
 
-export const dynamic = 'force-dynamic'
 
 interface FollowUser {
   id: string

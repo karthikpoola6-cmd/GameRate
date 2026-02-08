@@ -3,7 +3,7 @@ import Image from 'next/image'
 import { Navigation } from '@/components/Navigation'
 import { getPopularGames, getRecentGames, getCoverUrl, type IGDBGame } from '@/lib/igdb'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 300 // Cache for 5 minutes
 
 function GameCard({ game }: { game: IGDBGame }) {
   const year = game.first_release_date
@@ -21,6 +21,7 @@ function GameCard({ game }: { game: IGDBGame }) {
             fill
             className="object-cover"
             sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 16vw"
+            loading="lazy"
             unoptimized
           />
         ) : (

@@ -119,6 +119,7 @@ export function GamesGridClient({ games }: GamesGridClientProps) {
                     alt={game.game_name}
                     fill
                     className="object-cover"
+                    loading="lazy"
                     unoptimized
                   />
                 ) : (

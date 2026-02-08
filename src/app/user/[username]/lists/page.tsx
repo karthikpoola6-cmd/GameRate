@@ -5,7 +5,6 @@ import { Navigation } from '@/components/Navigation'
 import { createClient } from '@/lib/supabase/server'
 import { getCoverUrl } from '@/lib/igdb'
 
-export const dynamic = 'force-dynamic'
 
 interface ListWithItems {
   id: string

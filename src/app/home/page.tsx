@@ -6,7 +6,6 @@ import { Navigation } from "@/components/Navigation";
 import { ActivityFeed } from "@/components/ActivityFeed";
 import { createClient } from "@/lib/supabase/server";
 
-export const dynamic = 'force-dynamic'
 
 function GameCard({ game }: { game: IGDBGame }) {
   const year = game.first_release_date
@@ -24,6 +23,7 @@ function GameCard({ game }: { game: IGDBGame }) {
             fill
             className="object-cover"
             sizes="(max-width: 640px) 25vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 16vw"
+            loading="lazy"
             unoptimized
           />
         ) : (

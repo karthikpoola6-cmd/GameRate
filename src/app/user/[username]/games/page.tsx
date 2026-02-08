@@ -5,7 +5,6 @@ import { Navigation } from '@/components/Navigation'
 import { GamesGridClient } from './GamesGridClient'
 import type { GameLog } from '@/lib/types'
 
-export const dynamic = 'force-dynamic'
 
 interface PageProps {
   params: Promise<{ username: string }>

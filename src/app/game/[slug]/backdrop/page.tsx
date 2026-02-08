@@ -3,7 +3,6 @@ import { getGameBySlug } from "@/lib/igdb"
 import { createClient } from "@/lib/supabase/server"
 import { BackdropSelector } from "./BackdropSelector"
 
-export const dynamic = 'force-dynamic'
 
 interface PageProps {
   params: Promise<{ slug: string }>

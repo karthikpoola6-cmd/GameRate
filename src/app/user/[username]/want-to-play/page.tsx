@@ -6,7 +6,6 @@ import { Navigation } from '@/components/Navigation'
 import { getCoverUrl } from '@/lib/igdb'
 import type { GameLog } from '@/lib/types'
 
-export const dynamic = 'force-dynamic'
 
 interface PageProps {
   params: Promise<{ username: string }>
@@ -79,6 +78,7 @@ export default async function WantToPlayPage({ params }: PageProps) {
                       alt={game.game_name}
                       fill
                       className="object-cover"
+                      loading="lazy"
                       unoptimized
                     />
                   ) : (

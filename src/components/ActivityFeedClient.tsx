@@ -129,6 +129,7 @@ export function ActivityFeedClient({ items }: { items: ActivityItem[] }) {
                     width={96}
                     height={128}
                     className="w-full h-full object-cover"
+                    loading="lazy"
                     unoptimized
                   />
                 ) : (
@@ -151,6 +152,7 @@ export function ActivityFeedClient({ items }: { items: ActivityItem[] }) {
                       width={28}
                       height={28}
                       className="w-full h-full object-cover"
+                      loading="lazy"
                       unoptimized
                     />
                   ) : (

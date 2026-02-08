@@ -4,7 +4,6 @@ import { createClient } from '@/lib/supabase/server'
 import { Navigation } from '@/components/Navigation'
 import { ReviewsListClient } from './ReviewsListClient'
 
-export const dynamic = 'force-dynamic'
 
 interface PageProps {
   params: Promise<{ username: string }>
