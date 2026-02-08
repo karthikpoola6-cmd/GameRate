@@ -112,250 +112,88 @@ export default async function LandingPage() {
         </div>
       </section>
 
-      {/* Section 2: Add GameRate to Home Screen */}
-      <section className="py-12 px-4">
-        <div className="max-w-2xl mx-auto text-center">
-          <ScrollReveal distance={30}>
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-purple/10 border border-purple/20 mb-6">
-              <Image
-                src="/GameRate.png"
-                alt="GameRate"
-                width={40}
-                height={40}
-                className="w-10 h-10"
-              />
-            </div>
-            <h2 className="text-xl font-medium tracking-wide mb-3" style={{ textShadow: '0 0 15px rgba(139, 92, 246, 0.4)' }}>
-              Add GameRate to Your Home Screen
+      {/* Section 2: App Showcase */}
+      <section className="py-16">
+        <ScrollReveal distance={30}>
+          <div className="text-center px-4 mb-8">
+            <h2 className="text-2xl font-medium tracking-wide mb-2" style={{ textShadow: '0 0 15px rgba(139, 92, 246, 0.4)' }}>
+              See It In Action
             </h2>
-            <p className="text-foreground-muted mb-8">
-              Add GameRate to your phone for the full app experience — no app store needed.
-            </p>
-          </ScrollReveal>
-
-          <div className="grid sm:grid-cols-2 gap-4 text-left">
-            {/* iOS Instructions */}
-            <ScrollReveal delay={100} distance={40}>
-              <div className="glass rounded-xl p-5 border border-purple/10 h-full">
-                <div className="flex items-center gap-2 mb-3">
-                  <svg className="w-5 h-5 text-foreground-muted" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
-                  </svg>
-                  <span className="font-semibold">iPhone & iPad</span>
-                </div>
-                <ol className="space-y-2 text-sm text-foreground-muted">
-                  <li className="flex items-start gap-2">
-                    <span className="text-purple font-medium">1.</span>
-                    <span>Tap the <span className="text-foreground">Share</span> button in Safari</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-purple font-medium">2.</span>
-                    <span>Scroll down and tap <span className="text-foreground">Add to Home Screen</span></span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-purple font-medium">3.</span>
-                    <span>Tap <span className="text-foreground">Add</span> to confirm</span>
-                  </li>
-                </ol>
-              </div>
-            </ScrollReveal>
-
-            {/* Android Instructions */}
-            <ScrollReveal delay={250} distance={40}>
-              <div className="glass rounded-xl p-5 border border-purple/10 h-full">
-                <div className="flex items-center gap-2 mb-3">
-                  <svg className="w-5 h-5 text-foreground-muted" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M17.6 9.48l1.84-3.18c.16-.31.04-.69-.26-.85-.29-.15-.65-.06-.83.22l-1.88 3.24c-1.39-.59-2.94-.92-4.47-.92s-3.08.33-4.47.92L5.65 5.67c-.19-.29-.54-.38-.84-.22-.31.16-.43.54-.27.85L6.4 9.48C3.3 11.25 1.28 14.44 1 18h22c-.28-3.56-2.3-6.75-5.4-8.52zM7 15.25c-.69 0-1.25-.56-1.25-1.25S6.31 12.75 7 12.75s1.25.56 1.25 1.25-.56 1.25-1.25 1.25zm10 0c-.69 0-1.25-.56-1.25-1.25s.56-1.25 1.25-1.25 1.25.56 1.25 1.25-.56 1.25-1.25 1.25z"/>
-                  </svg>
-                  <span className="font-semibold">Android</span>
-                </div>
-                <ol className="space-y-2 text-sm text-foreground-muted">
-                  <li className="flex items-start gap-2">
-                    <span className="text-purple font-medium">1.</span>
-                    <span>Tap the <span className="text-foreground">menu</span> (three dots) in Chrome</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-purple font-medium">2.</span>
-                    <span>Tap <span className="text-foreground">Add to Home screen</span></span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-purple font-medium">3.</span>
-                    <span>Tap <span className="text-foreground">Add</span> to confirm</span>
-                  </li>
-                </ol>
-              </div>
-            </ScrollReveal>
+            <p className="text-foreground-muted text-sm">Swipe to explore</p>
           </div>
+        </ScrollReveal>
 
+        <div
+          className="flex gap-5 overflow-x-auto snap-x snap-mandatory pb-6 scrollbar-hide"
+          style={{ paddingLeft: 'calc(50% - 120px)', paddingRight: 'calc(50% - 120px)' }}
+        >
+          {[
+            { src: '/screenshots/screenshot-2.png', label: 'Your Profile' },
+            { src: '/screenshots/screenshot-5.jpg', label: 'Game Details' },
+            { src: '/screenshots/screenshot-1.jpg', label: 'Home Feed' },
+            { src: '/screenshots/screenshot-7.jpg', label: 'Ranked Lists' },
+          ].map((shot) => (
+            <div key={shot.label} className="flex-shrink-0 snap-center flex flex-col items-center">
+              <div
+                className="w-[240px] rounded-[40px] overflow-hidden border-[4px] border-white/10"
+                style={{ boxShadow: '0 20px 50px rgba(0,0,0,0.5), 0 0 40px rgba(139, 92, 246, 0.15)' }}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={shot.src} alt={shot.label} className="w-full block" draggable={false} />
+              </div>
+              <p
+                className="text-xs text-foreground-muted mt-3 tracking-wider"
+                style={{ fontFamily: 'var(--font-display)' }}
+              >
+                {shot.label}
+              </p>
+            </div>
+          ))}
         </div>
       </section>
 
-      {/* Section 3: What You Can Do Header */}
-      <section className="py-16 px-4">
-        <div className="max-w-4xl mx-auto">
+      {/* Section 3: Features */}
+      <section className="py-12 px-4">
+        <div className="max-w-md mx-auto">
           <ScrollReveal distance={30}>
-            <h2 className="text-2xl font-medium tracking-wide text-center mb-8" style={{ textShadow: '0 0 15px rgba(139, 92, 246, 0.4)' }}>What You Can Do</h2>
+            <h2 className="text-2xl font-medium tracking-wide text-center mb-6" style={{ textShadow: '0 0 15px rgba(139, 92, 246, 0.4)' }}>What You Can Do</h2>
           </ScrollReveal>
 
-          <div className="grid md:grid-cols-2 gap-6">
-            {/* Section 4: Top 5 Favorites */}
-            <ScrollReveal delay={0} distance={50}>
-              <div className="glass rounded-xl p-6 border border-purple/10 h-full">
-                <div className="bg-gradient-to-br from-gold/10 to-gold-dark/20 rounded-lg mb-4 py-5 px-3">
-                  <div className="flex flex-col items-center gap-3">
-                    {/* Top row - 3 games */}
-                    <div className="flex gap-3 justify-center">
-                      {[
-                        { name: 'Elden Ring', cover: 'co4jni', rank: 1 },
-                        { name: 'God of War', cover: 'co1tmu', rank: 2 },
-                        { name: 'RDR2', cover: 'co1q1f', rank: 3 },
-                      ].map((game) => (
-                        <div key={game.name} className="flex flex-col items-center">
-                          <div className="w-[68px] aspect-[3/4] rounded-lg overflow-hidden ring-2 ring-gold/50">
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img
-                              src={`https://images.igdb.com/igdb/image/upload/t_cover_small/${game.cover}.jpg`}
-                              alt={game.name}
-                              className="w-full h-full object-cover"
-                            />
-                          </div>
-                          <p className="mt-1.5 text-[11px] text-center truncate w-[68px]">
-                            <span className="text-gold font-semibold">{game.rank}.</span>{' '}
-                            <span className="text-foreground-muted">{game.name}</span>
-                          </p>
-                        </div>
-                      ))}
-                    </div>
-                    {/* Bottom row - 2 games */}
-                    <div className="flex gap-3 justify-center">
-                      {[
-                        { name: 'Minecraft', cover: 'co49x5', rank: 4 },
-                        { name: 'Fortnite', cover: 'co2ekt', rank: 5 },
-                      ].map((game) => (
-                        <div key={game.name} className="flex flex-col items-center">
-                          <div className="w-[68px] aspect-[3/4] rounded-lg overflow-hidden ring-2 ring-gold/50">
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img
-                              src={`https://images.igdb.com/igdb/image/upload/t_cover_small/${game.cover}.jpg`}
-                              alt={game.name}
-                              className="w-full h-full object-cover"
-                            />
-                          </div>
-                          <p className="mt-1.5 text-[11px] text-center truncate w-[68px]">
-                            <span className="text-gold font-semibold">{game.rank}.</span>{' '}
-                            <span className="text-foreground-muted">{game.name}</span>
-                          </p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+          <div className="grid grid-cols-2 gap-3">
+            {[
+              {
+                icon: <svg className="w-5 h-5 text-gold" fill="currentColor" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" /></svg>,
+                title: 'Half-Star Ratings',
+                desc: 'Rate every game with precision',
+                delay: 0,
+              },
+              {
+                icon: <svg className="w-5 h-5 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>,
+                title: 'Top 5 Favorites',
+                desc: 'Pin your best games to your profile',
+                delay: 80,
+              },
+              {
+                icon: <svg className="w-5 h-5 text-purple-light" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg>,
+                title: 'Follow Friends',
+                desc: 'See what your friends are playing',
+                delay: 160,
+              },
+              {
+                icon: <svg className="w-5 h-5 text-purple-light" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>,
+                title: 'Lists & Reviews',
+                desc: 'Organize and share your thoughts',
+                delay: 240,
+              },
+            ].map((feature) => (
+              <ScrollReveal key={feature.title} delay={feature.delay} distance={30}>
+                <div className="glass rounded-xl p-4 border border-purple/10 h-full">
+                  <div className="mb-2">{feature.icon}</div>
+                  <h4 className="text-sm font-medium tracking-wide mb-1">{feature.title}</h4>
+                  <p className="text-foreground-muted text-xs leading-relaxed">{feature.desc}</p>
                 </div>
-                <h4 className="text-lg font-medium tracking-wide mb-2">Showcase Your Top 5</h4>
-                <p className="text-foreground-muted text-sm">
-                  Pin your all-time favorite games to your profile. Show the world what defines your gaming taste.
-                </p>
-              </div>
-            </ScrollReveal>
-
-            {/* Section 5: Rating Feature */}
-            <ScrollReveal delay={150} distance={50}>
-              <div className="glass rounded-xl p-6 border border-purple/10 h-full">
-                <div className="bg-gradient-to-br from-purple/10 to-purple-dark/20 rounded-lg mb-4 py-6 flex items-center justify-center">
-                  <div className="text-center">
-                    <div className="flex justify-center gap-1 mb-2">
-                      {[1, 2, 3, 4].map((i) => (
-                        <svg key={i} className="w-7 h-7 text-gold" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-                        </svg>
-                      ))}
-                      <svg className="w-7 h-7 text-gold" fill="currentColor" viewBox="0 0 24 24">
-                        <defs>
-                          <linearGradient id="half">
-                            <stop offset="50%" stopColor="currentColor" />
-                            <stop offset="50%" stopColor="#374151" />
-                          </linearGradient>
-                        </defs>
-                        <path fill="url(#half)" d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-                      </svg>
-                    </div>
-                    <span className="text-xl font-bold text-gold">4.5</span>
-                  </div>
-                </div>
-                <h4 className="text-lg font-medium tracking-wide mb-2">Rate with Half-Stars</h4>
-                <p className="text-foreground-muted text-sm">
-                  Because sometimes a game is more than a 4 but not quite a 5. Rate games on your own scale with precise half-star increments.
-                </p>
-              </div>
-            </ScrollReveal>
-
-            {/* Section 6: Follow Friends */}
-            <ScrollReveal delay={300} distance={50}>
-              <div className="glass rounded-xl p-6 border border-purple/10 h-full">
-                <div className="aspect-[4/3] bg-gradient-to-br from-purple/10 to-purple-dark/20 rounded-lg mb-4 flex items-center justify-center">
-                  <div className="space-y-2.5 w-full px-3">
-                    {[
-                      { name: 'Alex', color: 'bg-purple', borderColor: 'border-purple/30' },
-                      { name: 'Jordan', color: 'bg-gold', borderColor: 'border-gold/30' },
-                      { name: 'Sam', color: 'bg-purple-light', borderColor: 'border-purple-light/30' },
-                    ].map((user) => (
-                      <div key={user.name} className={`flex items-center gap-3 bg-background/60 rounded-xl p-3 border ${user.borderColor}`}>
-                        <div className={`w-9 h-9 ${user.color}/20 rounded-full flex items-center justify-center border ${user.borderColor}`}>
-                          <span className="text-sm font-medium">{user.name[0]}</span>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-foreground">{user.name}</p>
-                          <p className="text-xs text-foreground-muted">@{user.name.toLowerCase()}</p>
-                        </div>
-                        <button className="w-7 h-7 rounded-full bg-purple flex items-center justify-center flex-shrink-0">
-                          <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
-                          </svg>
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                <h4 className="text-lg font-medium tracking-wide mb-2">Follow Friends</h4>
-                <p className="text-foreground-muted text-sm">
-                  See what your friends are playing, rating, and adding to their lists. Discover games through people you trust.
-                </p>
-              </div>
-            </ScrollReveal>
-
-            {/* Section 7: Lists & Reviews */}
-            <ScrollReveal delay={300} distance={50}>
-              <div className="glass rounded-xl p-6 border border-purple/10 h-full">
-                <div className="aspect-[4/3] bg-gradient-to-br from-gold/10 to-gold-dark/20 rounded-lg mb-4 flex items-center justify-center">
-                  <div className="space-y-2 w-full px-3">
-                    <div className="bg-background/60 rounded-lg p-2.5 border border-gold/20">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="text-purple text-sm">📋</span>
-                        <span className="text-sm font-medium text-foreground">Best RPGs of All Time</span>
-                      </div>
-                      <p className="text-xs text-foreground-muted pl-6">12 games</p>
-                    </div>
-                    <div className="bg-background/60 rounded-lg p-2.5 border border-purple/20">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="text-gold text-sm">✍️</span>
-                        <span className="text-sm font-medium text-foreground">Review: Elden Ring</span>
-                      </div>
-                      <p className="text-xs text-foreground-muted pl-6 line-clamp-1">&quot;A masterpiece that redefines the genre...&quot;</p>
-                    </div>
-                    <div className="bg-background/60 rounded-lg p-2.5 border border-gold/20">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="text-purple-light text-sm">💎</span>
-                        <span className="text-sm font-medium text-foreground">Hidden Gems</span>
-                      </div>
-                      <p className="text-xs text-foreground-muted pl-6">8 games</p>
-                    </div>
-                  </div>
-                </div>
-                <h4 className="text-lg font-medium tracking-wide mb-2">Lists & Reviews</h4>
-                <p className="text-foreground-muted text-sm">
-                  Create lists to organize your games and write reviews to share your thoughts with the community.
-                </p>
-              </div>
-            </ScrollReveal>
+              </ScrollReveal>
+            ))}
           </div>
         </div>
       </section>
@@ -383,6 +221,96 @@ export default async function LandingPage() {
             </div>
           </ScrollReveal>
         </div>
+      </section>
+
+      {/* Section 9: Add to Home Screen */}
+      <section className="py-12 px-4">
+        <div className="max-w-2xl mx-auto text-center">
+          <ScrollReveal distance={30}>
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-purple/10 border border-purple/20 mb-6">
+              <Image
+                src="/GameRate.png"
+                alt="GameRate"
+                width={40}
+                height={40}
+                className="w-10 h-10"
+              />
+            </div>
+            <h2 className="text-xl font-medium tracking-wide mb-3" style={{ textShadow: '0 0 15px rgba(139, 92, 246, 0.4)' }}>
+              Add GameRate to Your Home Screen
+            </h2>
+            <p className="text-foreground-muted mb-8">
+              Add GameRate to your phone for the full app experience — no app store needed.
+            </p>
+          </ScrollReveal>
+
+          <div className="grid sm:grid-cols-2 gap-4 text-left">
+            <ScrollReveal delay={100} distance={40}>
+              <div className="glass rounded-xl p-5 border border-purple/10 h-full">
+                <div className="flex items-center gap-2 mb-3">
+                  <svg className="w-5 h-5 text-foreground-muted" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+                  </svg>
+                  <span className="font-semibold">iPhone & iPad</span>
+                </div>
+                <ol className="space-y-2 text-sm text-foreground-muted">
+                  <li className="flex items-start gap-2">
+                    <span className="text-purple font-medium">1.</span>
+                    <span>Tap the <span className="text-foreground">Share</span> button in Safari</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-purple font-medium">2.</span>
+                    <span>Scroll down and tap <span className="text-foreground">Add to Home Screen</span></span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-purple font-medium">3.</span>
+                    <span>Tap <span className="text-foreground">Add</span> to confirm</span>
+                  </li>
+                </ol>
+              </div>
+            </ScrollReveal>
+
+            <ScrollReveal delay={250} distance={40}>
+              <div className="glass rounded-xl p-5 border border-purple/10 h-full">
+                <div className="flex items-center gap-2 mb-3">
+                  <svg className="w-5 h-5 text-foreground-muted" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M17.6 9.48l1.84-3.18c.16-.31.04-.69-.26-.85-.29-.15-.65-.06-.83.22l-1.88 3.24c-1.39-.59-2.94-.92-4.47-.92s-3.08.33-4.47.92L5.65 5.67c-.19-.29-.54-.38-.84-.22-.31.16-.43.54-.27.85L6.4 9.48C3.3 11.25 1.28 14.44 1 18h22c-.28-3.56-2.3-6.75-5.4-8.52zM7 15.25c-.69 0-1.25-.56-1.25-1.25S6.31 12.75 7 12.75s1.25.56 1.25 1.25-.56 1.25-1.25 1.25zm10 0c-.69 0-1.25-.56-1.25-1.25s.56-1.25 1.25-1.25 1.25.56 1.25 1.25-.56 1.25-1.25 1.25z"/>
+                  </svg>
+                  <span className="font-semibold">Android</span>
+                </div>
+                <ol className="space-y-2 text-sm text-foreground-muted">
+                  <li className="flex items-start gap-2">
+                    <span className="text-purple font-medium">1.</span>
+                    <span>Tap the <span className="text-foreground">menu</span> (three dots) in Chrome</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-purple font-medium">2.</span>
+                    <span>Tap <span className="text-foreground">Add to Home screen</span></span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-purple font-medium">3.</span>
+                    <span>Tap <span className="text-foreground">Add</span> to confirm</span>
+                  </li>
+                </ol>
+              </div>
+            </ScrollReveal>
+          </div>
+        </div>
+      </section>
+
+      {/* Final CTA */}
+      <section className="pt-4 pb-20 px-4">
+        <ScrollReveal distance={20}>
+          <div className="text-center">
+            <Link
+              href="/signup"
+              className="inline-flex items-center justify-center h-12 px-8 rounded-lg text-purple-light border border-purple/30 font-medium text-lg tracking-wider"
+              style={{ fontFamily: 'var(--font-display)', boxShadow: '0 0 12px rgba(139, 92, 246, 0.25)' }}
+            >
+              Start Tracking Your Games
+            </Link>
+          </div>
+        </ScrollReveal>
       </section>
 
     </div>
