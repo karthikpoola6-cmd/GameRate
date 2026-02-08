@@ -145,7 +145,7 @@ export function FavoriteGames({ favorites: initialFavorites, isOwnProfile }: Fav
   return (
     <section>
       <div className="flex items-center gap-3 mb-6">
-        <h2 className="text-xl font-bold">Favorite Games</h2>
+        <h2 className="text-lg font-medium tracking-wide">Favorite Games</h2>
         {saving && <span className="text-sm text-foreground-muted">Saving...</span>}
         {isOwnProfile && !saving && (
           <button
