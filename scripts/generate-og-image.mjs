@@ -1,87 +1,182 @@
-import sharp from 'sharp'
+import { createCanvas, loadImage, registerFont } from 'canvas'
 import { writeFileSync } from 'fs'
-import { join, dirname } from 'path'
+import { resolve, dirname } from 'path'
 import { fileURLToPath } from 'url'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
-const publicDir = join(__dirname, '..', 'public')
 
-async function generateOGImage() {
-  const width = 1200
-  const height = 630
-  const logoSize = 280
+// Register Orbitron font
+registerFont('/tmp/Orbitron.ttf', { family: 'Orbitron', weight: '500' })
 
-  // Create dark gradient background with centered text
-  const background = Buffer.from(`
-    <svg width="${width}" height="${height}">
-      <defs>
-        <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" style="stop-color:#0f0a19"/>
-          <stop offset="50%" style="stop-color:#1a1025"/>
-          <stop offset="100%" style="stop-color:#241832"/>
-        </linearGradient>
-        <linearGradient id="textGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" style="stop-color:#8b5cf6"/>
-          <stop offset="100%" style="stop-color:#f59e0b"/>
-        </linearGradient>
-      </defs>
-      <rect width="100%" height="100%" fill="url(#bg)"/>
+const W = 1200
+const H = 630
 
-      <!-- GameRate text - centered -->
-      <text x="${width/2}" y="480" font-family="system-ui, -apple-system, sans-serif" font-size="90" font-weight="bold" fill="url(#textGrad)" text-anchor="middle">GameRate</text>
-    </svg>
-  `)
+const canvas = createCanvas(W, H)
+const ctx = canvas.getContext('2d')
 
-  // Create the background image
-  const backgroundImage = await sharp(background).png().toBuffer()
+// --- Colors (matching NeonGrid) ---
+const PURPLE = [139, 92, 246]
+const PURPLE_LIGHT = [167, 139, 250]
+const PURPLE_DARK = [124, 58, 237]
+const GOLD = [245, 158, 11]
+const GOLD_LIGHT = [251, 191, 36]
 
-  // Load the crystal logo
-  const logoPath = join(publicDir, 'GameRate.png')
+const rgba = (c, a) => `rgba(${c[0]},${c[1]},${c[2]},${a})`
 
-  // Load and get raw pixel data to remove black background
-  const logoImage = sharp(logoPath)
-  const { data, info } = await logoImage
-    .raw()
-    .ensureAlpha()
-    .toBuffer({ resolveWithObject: true })
+// --- Background ---
+ctx.fillStyle = '#030108'
+ctx.fillRect(0, 0, W, H)
 
-  // Make near-black pixels transparent (threshold of 20 for each RGB channel)
-  const threshold = 25
-  for (let i = 0; i < data.length; i += 4) {
-    const r = data[i]
-    const g = data[i + 1]
-    const b = data[i + 2]
-    if (r < threshold && g < threshold && b < threshold) {
-      data[i + 3] = 0 // Set alpha to 0 (transparent)
-    }
+// --- Draw hexagon outline ---
+function drawHexagon(x, y, size, rotation, color, opacity) {
+  ctx.save()
+  ctx.translate(x, y)
+  ctx.rotate(rotation)
+
+  // Outer glow
+  ctx.shadowColor = rgba(color, 0.8)
+  ctx.shadowBlur = 20
+  ctx.strokeStyle = rgba(color, opacity)
+  ctx.lineWidth = 1.5
+  ctx.beginPath()
+  for (let i = 0; i < 6; i++) {
+    const a = (Math.PI / 3) * i - Math.PI / 6
+    const px = size * Math.cos(a)
+    const py = size * Math.sin(a)
+    if (i === 0) ctx.moveTo(px, py)
+    else ctx.lineTo(px, py)
+  }
+  ctx.closePath()
+  ctx.stroke()
+
+  // Inner glow
+  ctx.shadowBlur = 10
+  ctx.strokeStyle = rgba(color, opacity * 0.4)
+  ctx.lineWidth = 1
+  ctx.beginPath()
+  for (let i = 0; i < 6; i++) {
+    const a = (Math.PI / 3) * i - Math.PI / 6
+    const px = size * Math.cos(a)
+    const py = size * Math.sin(a)
+    if (i === 0) ctx.moveTo(px, py)
+    else ctx.lineTo(px, py)
+  }
+  ctx.closePath()
+  ctx.stroke()
+
+  // Vertex dots
+  ctx.shadowBlur = 12
+  ctx.fillStyle = rgba(color, Math.min(1, opacity * 2))
+  for (let i = 0; i < 6; i++) {
+    const a = (Math.PI / 3) * i - Math.PI / 6
+    ctx.beginPath()
+    ctx.arc(size * Math.cos(a), size * Math.sin(a), 1.5, 0, Math.PI * 2)
+    ctx.fill()
   }
 
-  // Create new image from modified data
-  const logoWithTransparency = await sharp(data, {
-    raw: { width: info.width, height: info.height, channels: 4 }
-  })
-    .resize(logoSize, logoSize, { fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 } })
-    .png()
-    .toBuffer()
-
-  const logo = logoWithTransparency
-
-  // Composite the logo onto the background - centered above text
-  const finalImage = await sharp(backgroundImage)
-    .composite([
-      {
-        input: logo,
-        left: Math.round((width - logoSize) / 2),  // Center horizontally
-        top: 100,  // Position above the text
-      }
-    ])
-    .png()
-    .toBuffer()
-
-  // Save the final image
-  const outputPath = join(publicDir, 'og-image.png')
-  writeFileSync(outputPath, finalImage)
-  console.log(`OG image generated: ${outputPath}`)
+  ctx.restore()
 }
 
-generateOGImage().catch(console.error)
+// --- Draw beam ---
+function drawBeam(x1, y1, x2, y2, color, opacity, width) {
+  ctx.save()
+  ctx.shadowColor = rgba(color, 0.6)
+  ctx.shadowBlur = 20
+
+  // Glow line
+  ctx.strokeStyle = rgba(color, opacity)
+  ctx.lineWidth = width
+  ctx.beginPath()
+  ctx.moveTo(x1, y1)
+  ctx.lineTo(x2, y2)
+  ctx.stroke()
+
+  // Core bright line
+  ctx.shadowBlur = 5
+  ctx.strokeStyle = rgba(color, Math.min(1, opacity * 1.8))
+  ctx.lineWidth = width * 0.3
+  ctx.beginPath()
+  ctx.moveTo(x1, y1)
+  ctx.lineTo(x2, y2)
+  ctx.stroke()
+
+  ctx.restore()
+}
+
+// --- Beams (matching NeonGrid crossing pattern) ---
+const beams = [
+  { x: -0.1, y: 0.35, angle: Math.atan2(0.4, 1.2), color: GOLD, width: 1.8, opacity: 0.12 },
+  { x: 1.1, y: 0.25, angle: Math.atan2(0.5, -1.2), color: PURPLE, width: 1.8, opacity: 0.15 },
+  { x: 0.15, y: -0.05, angle: Math.atan2(1.1, 0.7), color: PURPLE_LIGHT, width: 1.2, opacity: 0.08 },
+  { x: 0.85, y: -0.05, angle: Math.atan2(1.1, -0.6), color: GOLD_LIGHT, width: 1.2, opacity: 0.08 },
+  { x: 0.4, y: 1.1, angle: Math.atan2(-1.2, 0.3), color: PURPLE_DARK, width: 1, opacity: 0.06 },
+]
+
+const len = Math.hypot(W, H) * 1.5
+for (const b of beams) {
+  const x1 = b.x * W
+  const y1 = b.y * H
+  const x2 = x1 + Math.cos(b.angle) * len
+  const y2 = y1 + Math.sin(b.angle) * len
+  drawBeam(x1, y1, x2, y2, b.color, b.opacity, b.width)
+}
+
+// --- Hexagons scattered around (avoid center where crystal goes) ---
+const hexagons = [
+  { x: 80, y: 90, size: 70, rot: 0.3, color: PURPLE, op: 0.2 },
+  { x: 250, y: 480, size: 55, rot: 1.1, color: PURPLE_LIGHT, op: 0.15 },
+  { x: 1050, y: 100, size: 85, rot: 0.7, color: GOLD, op: 0.18 },
+  { x: 1100, y: 500, size: 50, rot: 2.1, color: PURPLE_DARK, op: 0.2 },
+  { x: 150, y: 300, size: 40, rot: 0.5, color: PURPLE, op: 0.12 },
+  { x: 950, y: 350, size: 60, rot: 1.8, color: PURPLE_LIGHT, op: 0.14 },
+  { x: 400, y: 550, size: 45, rot: 2.5, color: GOLD, op: 0.1 },
+  { x: 800, y: 50, size: 65, rot: 0.9, color: PURPLE, op: 0.16 },
+  { x: 50, y: 550, size: 35, rot: 1.4, color: PURPLE_DARK, op: 0.13 },
+  { x: 1150, y: 300, size: 45, rot: 0.2, color: GOLD, op: 0.11 },
+  { x: 350, y: 80, size: 50, rot: 1.7, color: PURPLE_LIGHT, op: 0.14 },
+  { x: 850, y: 530, size: 55, rot: 2.8, color: PURPLE, op: 0.15 },
+]
+
+for (const h of hexagons) {
+  drawHexagon(h.x, h.y, h.size, h.rot, h.color, h.op)
+}
+
+// --- Crystal logo ---
+const crystalPath = resolve(__dirname, '../public/GameRate.png')
+const crystal = await loadImage(crystalPath)
+const crystalSize = 200
+const crystalX = (W - crystalSize) / 2
+const crystalY = 100
+ctx.drawImage(crystal, crystalX, crystalY, crystalSize, crystalSize)
+
+// --- "GameRate" text with purple-to-gold gradient ---
+ctx.font = '500 52px Orbitron'
+ctx.textAlign = 'center'
+ctx.textBaseline = 'top'
+
+const textY = crystalY + crystalSize + 30
+const textGrad = ctx.createLinearGradient(W / 2 - 150, textY, W / 2 + 150, textY)
+textGrad.addColorStop(0, rgba(PURPLE, 1))
+textGrad.addColorStop(1, rgba(GOLD, 1))
+
+// Text glow
+ctx.shadowColor = rgba(PURPLE, 0.6)
+ctx.shadowBlur = 20
+ctx.fillStyle = textGrad
+ctx.fillText('GameRate', W / 2, textY)
+
+// Second pass for brighter core
+ctx.shadowBlur = 5
+ctx.fillText('GameRate', W / 2, textY)
+
+// --- Subtitle ---
+ctx.font = '400 18px Orbitron'
+ctx.shadowColor = rgba(PURPLE, 0.3)
+ctx.shadowBlur = 10
+ctx.fillStyle = rgba([200, 200, 210], 0.6)
+ctx.fillText('Track, Rate & Discover Games', W / 2, textY + 65)
+
+// --- Save ---
+const outPath = resolve(__dirname, '../public/og-image.png')
+writeFileSync(outPath, canvas.toBuffer('image/png'))
+console.log(`OG image saved to ${outPath}`)
