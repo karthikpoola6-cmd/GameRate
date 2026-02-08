@@ -1,31 +1,30 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import { createClient } from '@/lib/supabase/client'
 
 export default function LoginPage() {
-  const searchParams = useSearchParams()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [rememberMe, setRememberMe] = useState(false)
-  const [error, setError] = useState<string | null>(searchParams.get('error'))
+  const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [checkingAuth, setCheckingAuth] = useState(true)
   const supabase = createClient()
 
-  // Check if already logged in and load saved email
+  // Check if already logged in, load saved email, and show URL errors
   useEffect(() => {
+    const urlError = new URLSearchParams(window.location.search).get('error')
+    if (urlError) setError(urlError)
+
     async function checkExistingSession() {
       const { data: { user } } = await supabase.auth.getUser()
       if (user) {
-        // Already logged in, redirect to home
         window.location.href = '/home'
       } else {
-        // Load saved email if exists
         const savedEmail = localStorage.getItem('gamerate_saved_email')
         if (savedEmail) {
           setEmail(savedEmail)
