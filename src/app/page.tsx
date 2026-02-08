@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { WordReveal } from "@/components/WordReveal";
+import { FadeIn } from "@/components/FadeIn";
 
 
 export default async function LandingPage() {
@@ -97,6 +98,17 @@ export default async function LandingPage() {
               ]}
             />
           </p>
+          <FadeIn delay={900} distance={20}>
+            <div className="mt-8">
+              <Link
+                href="/signup"
+                className="inline-flex items-center justify-center h-12 px-8 rounded-lg text-purple-light border border-purple/30 font-medium text-lg tracking-wider"
+                style={{ fontFamily: 'var(--font-display)', boxShadow: '0 0 12px rgba(139, 92, 246, 0.25)' }}
+              >
+                Get Started
+              </Link>
+            </div>
+          </FadeIn>
         </div>
       </section>
 
@@ -175,17 +187,6 @@ export default async function LandingPage() {
             </ScrollReveal>
           </div>
 
-          <ScrollReveal delay={400} distance={30}>
-            <div className="mt-8">
-              <Link
-                href="/signup"
-                className="inline-flex items-center justify-center h-12 px-8 rounded-lg text-purple-light border border-purple/30 font-medium text-lg tracking-wider"
-                style={{ fontFamily: 'var(--font-display)', boxShadow: '0 0 12px rgba(139, 92, 246, 0.25)' }}
-              >
-                Get Started
-              </Link>
-            </div>
-          </ScrollReveal>
         </div>
       </section>
 

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { createClient } from '@/lib/supabase/client'
@@ -22,45 +22,35 @@ interface ListItem {
 interface ListViewClientProps {
   listId: string
   items: ListItem[]
-  listOwnerId: string  // The user ID of the list owner
   initialIsRanked: boolean
   initialName: string
   initialDescription: string | null
   ownerUsername: string
-  gameCount: number
   isPublic: boolean
+  isOwnerFromServer: boolean
 }
 
 export function ListViewClient({
   listId,
   items: initialItems,
-  listOwnerId,
   initialIsRanked,
   initialName,
   initialDescription,
   ownerUsername,
-  gameCount,
-  isPublic
+  isPublic,
+  isOwnerFromServer
 }: ListViewClientProps) {
   const [items, setItems] = useState(initialItems)
   const [saving, setSaving] = useState(false)
   const [isRanked, setIsRanked] = useState(initialIsRanked)
   const [isEditing, setIsEditing] = useState(false)
   const [hasChanges, setHasChanges] = useState(false)
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null)
   const [listName, setListName] = useState(initialName)
   const [listDescription, setListDescription] = useState(initialDescription || '')
   const supabase = createClient()
 
-  // Verify current user on mount
-  useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      setCurrentUserId(user?.id || null)
-    })
-  }, [supabase])
-
-  // Only allow editing if current user is the list owner
-  const isOwner = currentUserId === listOwnerId
+  // Trust the server-side ownership check
+  const isOwner = isOwnerFromServer
 
   async function handleToggleRanked() {
     const newValue = !isRanked

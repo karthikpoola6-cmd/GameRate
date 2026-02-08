@@ -109,13 +109,12 @@ export default async function ListPage({
           <ListViewClient
             listId={typedList.id}
             items={itemsWithRatings}
-            listOwnerId={typedList.user_id}
             initialIsRanked={typedList.is_ranked}
             initialName={typedList.name}
             initialDescription={typedList.description}
             ownerUsername={typedList.profiles.username}
-            gameCount={sortedItems.length}
             isPublic={typedList.is_public}
+            isOwnerFromServer={isOwner}
           />
         </div>
       </main>
