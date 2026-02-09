@@ -66,54 +66,6 @@ src/
     └── supabase/     # Supabase client (server & browser)
 ```
 
-## Getting Started
-
-### Prerequisites
-
-- Node.js 18+
-- A [Supabase](https://supabase.com) project
-- [IGDB API](https://api-docs.igdb.com) credentials (Twitch Client ID & Secret)
-
-### Setup
-
-1. Clone the repo
-   ```bash
-   git clone https://github.com/karthikpoola6-cmd/GameRate.git
-   cd gamerate
-   ```
-
-2. Install dependencies
-   ```bash
-   npm install
-   ```
-
-3. Create a `.env.local` file with your credentials
-   ```
-   NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-   TWITCH_CLIENT_ID=your_twitch_client_id
-   TWITCH_CLIENT_SECRET=your_twitch_client_secret
-   ```
-
-4. Run the development server
-   ```bash
-   npm run dev
-   ```
-
-5. Open [http://localhost:3000](http://localhost:3000)
-
-## Database
-
-The app uses Supabase PostgreSQL with the following tables:
-
-- **profiles** — Username, display name, avatar, bio
-- **game_logs** — Ratings, status (played/playing/want to play/dropped), reviews
-- **lists** — User-created game lists (ranked/unranked, public/private)
-- **list_items** — Games within lists with ordering
-- **follows** — User follow relationships
-
-All tables use Row-Level Security so users can only modify their own data.
-
 ---
 
 Built by [Kartastrophe](https://gamerate.vercel.app/user/kartastrophe)
