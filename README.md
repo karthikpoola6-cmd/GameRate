@@ -1,36 +1,119 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+<div align="center">
+
+<img src="public/og-image.png" alt="GameRate" width="600" />
+
+### Track, Rate & Discover Games
+
+A mobile-first social platform for gamers to rate games, build collections, create lists, and follow friends.
+
+**[Live App](https://gamerate.vercel.app)**
+
+</div>
+
+---
+
+<div align="center">
+<img src="public/screenshots/screenshot-1.jpg" alt="Home Feed" width="200" />
+<img src="public/screenshots/screenshot-2.png" alt="Profile" width="200" />
+<img src="public/screenshots/screenshot-5.jpg" alt="Game Detail" width="200" />
+<img src="public/screenshots/screenshot-7.jpg" alt="Ranked List" width="200" />
+</div>
+
+## Features
+
+- **Rate Games** — Half-star ratings (0.5 - 5.0) because sometimes a game is more than a 4 but not quite a 5
+- **Top 5 Favorites** — Pin your all-time favorites to your profile
+- **Custom Lists** — Create ranked or unranked collections like "Best RPGs" or "Hidden Gems"
+- **Reviews** — Write and share your thoughts on any game
+- **Game Tracking** — Mark games as Played, Playing, Want to Play, or Dropped
+- **Social** — Follow friends and see their ratings in your activity feed
+- **Browse & Search** — Explore 200,000+ games powered by IGDB, browse by genre
+- **Rating Distribution** — See how your ratings break down across your library
+- **PWA** — Install on your phone's home screen, launches fullscreen like a native app
+- **Responsive** — Mobile-first design with desktop support
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Framework | Next.js 16 (App Router) |
+| UI | React 19, Tailwind CSS |
+| Language | TypeScript |
+| Database | Supabase (PostgreSQL + Row-Level Security) |
+| Auth | Supabase Auth |
+| Storage | Supabase Storage (avatars) |
+| Game Data | IGDB API via Twitch OAuth |
+| Hosting | Vercel |
+| PWA | Service Worker + Web Manifest |
+
+## Architecture
+
+```
+src/
+├── app/              # App Router pages & API routes
+│   ├── api/          # IGDB proxy, auth, game logs, lists, follows
+│   ├── home/         # Authenticated home feed
+│   ├── game/         # Game detail pages
+│   ├── search/       # Search & genre browsing
+│   ├── user/         # Public user profiles
+│   ├── lists/        # User lists
+│   ├── players/      # Discover users
+│   └── settings/     # Account settings
+├── components/       # Shared UI components
+├── contexts/         # Auth context provider
+└── lib/
+    ├── igdb/         # IGDB API client & token management
+    └── supabase/     # Supabase client (server & browser)
+```
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- Node.js 18+
+- A [Supabase](https://supabase.com) project
+- [IGDB API](https://api-docs.igdb.com) credentials (Twitch Client ID & Secret)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Setup
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Clone the repo
+   ```bash
+   git clone https://github.com/karthikpoola6-cmd/GameRate.git
+   cd gamerate
+   ```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+2. Install dependencies
+   ```bash
+   npm install
+   ```
 
-## Learn More
+3. Create a `.env.local` file with your credentials
+   ```
+   NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+   TWITCH_CLIENT_ID=your_twitch_client_id
+   TWITCH_CLIENT_SECRET=your_twitch_client_secret
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+4. Run the development server
+   ```bash
+   npm run dev
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+5. Open [http://localhost:3000](http://localhost:3000)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Database
 
-## Deploy on Vercel
+The app uses Supabase PostgreSQL with the following tables:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- **profiles** — Username, display name, avatar, bio
+- **game_logs** — Ratings, status (played/playing/want to play/dropped), reviews
+- **lists** — User-created game lists (ranked/unranked, public/private)
+- **list_items** — Games within lists with ordering
+- **follows** — User follow relationships
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+All tables use Row-Level Security so users can only modify their own data.
+
+---
+
+Built by [Kartastrophe](https://gamerate.vercel.app/user/kartastrophe)
