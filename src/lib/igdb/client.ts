@@ -1,3 +1,4 @@
+import { unstable_cache } from 'next/cache'
 import type { IGDBGame, IGDBSearchResult } from './types'
 
 const TWITCH_AUTH_URL = 'https://id.twitch.tv/oauth2/token'
@@ -71,6 +72,7 @@ async function igdbFetch<T>(endpoint: string, body: string): Promise<T> {
   return response.json()
 }
 
+// Search is NOT cached (unique queries, short-lived)
 export async function searchGames(query: string, limit = 10): Promise<IGDBSearchResult[]> {
   const body = `
     search "${query}";
@@ -80,7 +82,9 @@ export async function searchGames(query: string, limit = 10): Promise<IGDBSearch
   return igdbFetch<IGDBSearchResult[]>('games', body)
 }
 
-export async function getGameBySlug(slug: string): Promise<IGDBGame | null> {
+// --- Cached IGDB functions ---
+
+async function _getGameBySlug(slug: string): Promise<IGDBGame | null> {
   const body = `
     fields name, slug, summary, storyline, rating, rating_count,
            aggregated_rating, aggregated_rating_count, first_release_date,
@@ -95,7 +99,13 @@ export async function getGameBySlug(slug: string): Promise<IGDBGame | null> {
   return results[0] || null
 }
 
-export async function getPopularGames(limit = 20): Promise<IGDBGame[]> {
+export const getGameBySlug = unstable_cache(
+  _getGameBySlug,
+  ['igdb-game-by-slug'],
+  { revalidate: 3600 }
+)
+
+async function _getPopularGames(limit = 20): Promise<IGDBGame[]> {
   // Fetch more games than needed to account for duplicates we'll filter out
   const body = `
     fields name, slug, cover.image_id, first_release_date, rating, rating_count,
@@ -129,23 +139,18 @@ export async function getPopularGames(limit = 20): Promise<IGDBGame[]> {
   return uniqueGames
 }
 
-// In-memory cache for the popular games pool (refreshes every hour)
-let cachedPool: { games: IGDBGame[]; expiresAt: number } | null = null
+export const getPopularGames = unstable_cache(
+  _getPopularGames,
+  ['igdb-popular-games'],
+  { revalidate: 3600 }
+)
 
+// Simplified: data cache replaces in-memory cache
 export async function getPopularGamesPool(): Promise<IGDBGame[]> {
-  if (cachedPool && Date.now() < cachedPool.expiresAt) {
-    return cachedPool.games
-  }
-
-  const games = await getPopularGames(100)
-  cachedPool = {
-    games,
-    expiresAt: Date.now() + 3600000, // 1 hour
-  }
-  return cachedPool.games
+  return getPopularGames(100)
 }
 
-export async function getRecentGames(limit = 20): Promise<IGDBGame[]> {
+async function _getRecentGames(limit = 20): Promise<IGDBGame[]> {
   const now = Math.floor(Date.now() / 1000)
   const body = `
     fields name, slug, cover.image_id, first_release_date, rating,
@@ -156,3 +161,25 @@ export async function getRecentGames(limit = 20): Promise<IGDBGame[]> {
   `
   return igdbFetch<IGDBGame[]>('games', body)
 }
+
+export const getRecentGames = unstable_cache(
+  _getRecentGames,
+  ['igdb-recent-games'],
+  { revalidate: 300 }
+)
+
+async function _getGamesByGenre(genreId: number, limit = 12): Promise<IGDBGame[]> {
+  const body = `
+    fields name, slug, cover.image_id, first_release_date, rating, genres.name;
+    where genres = [${genreId}] & rating_count > 50 & cover != null;
+    sort rating desc;
+    limit ${limit};
+  `
+  return igdbFetch<IGDBGame[]>('games', body)
+}
+
+export const getGamesByGenre = unstable_cache(
+  _getGamesByGenre,
+  ['igdb-games-by-genre'],
+  { revalidate: 3600 }
+)

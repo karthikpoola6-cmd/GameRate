@@ -11,7 +11,9 @@ export async function GET(request: NextRequest) {
 
   try {
     const results = await searchGames(query.trim(), 8)
-    return NextResponse.json({ results })
+    return NextResponse.json({ results }, {
+      headers: { 'Cache-Control': 'private, max-age=60' },
+    })
   } catch (error) {
     console.error('Search error:', error)
     return NextResponse.json({ error: 'Search failed' }, { status: 500 })

@@ -127,7 +127,6 @@ export function GameLogButtons({ gameId, gameSlug, gameName, gameCoverId }: Game
       }
     }
     setSaving(false)
-    router.refresh()
   }
 
   async function handleRating(rating: number) {
@@ -171,7 +170,6 @@ export function GameLogButtons({ gameId, gameSlug, gameName, gameCoverId }: Game
         }
       }
       setSaving(false)
-      router.refresh()
       return
     }
 
@@ -276,7 +274,6 @@ export function GameLogButtons({ gameId, gameSlug, gameName, gameCoverId }: Game
       }
     }
     setSaving(false)
-    router.refresh()
   }
 
   async function handleSaveReview() {
@@ -332,7 +329,6 @@ export function GameLogButtons({ gameId, gameSlug, gameName, gameCoverId }: Game
       }
     }
     setSaving(false)
-    router.refresh()
   }
 
   async function handleRemoveLog() {
@@ -349,7 +345,6 @@ export function GameLogButtons({ gameId, gameSlug, gameName, gameCoverId }: Game
     setShowReviewForm(false)
     setSaving(false)
     toast.success('Removed from library')
-    router.refresh()
   }
 
   if (loading) {

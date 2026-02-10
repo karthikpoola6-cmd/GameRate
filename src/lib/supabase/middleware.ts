@@ -2,6 +2,14 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function updateSession(request: NextRequest) {
+  // Skip auth refresh for anonymous visitors (no Supabase session cookie)
+  const hasAuthCookie = request.cookies.getAll().some(
+    c => c.name.startsWith('sb-') && c.name.includes('auth-token')
+  )
+  if (!hasAuthCookie) {
+    return NextResponse.next({ request })
+  }
+
   let supabaseResponse = NextResponse.next({
     request,
   })

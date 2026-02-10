@@ -2,110 +2,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { Navigation } from '@/components/Navigation'
 import { SearchBar } from '@/components/SearchBar'
-import { getCoverUrl } from '@/lib/igdb'
-
-const TWITCH_AUTH_URL = 'https://id.twitch.tv/oauth2/token'
-const IGDB_API_URL = 'https://api.igdb.com/v4'
-
-let cachedToken: { token: string; expiresAt: number } | null = null
-
-async function getAccessToken(): Promise<string> {
-  if (cachedToken && Date.now() < cachedToken.expiresAt - 300000) {
-    return cachedToken.token
-  }
-
-  const clientId = process.env.TWITCH_CLIENT_ID
-  const clientSecret = process.env.TWITCH_CLIENT_SECRET
-
-  if (!clientId || !clientSecret) {
-    throw new Error('Missing TWITCH_CLIENT_ID or TWITCH_CLIENT_SECRET')
-  }
-
-  const response = await fetch(TWITCH_AUTH_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({
-      client_id: clientId,
-      client_secret: clientSecret,
-      grant_type: 'client_credentials',
-    }),
-  })
-
-  if (!response.ok) {
-    throw new Error(`Failed to get Twitch access token: ${response.statusText}`)
-  }
-
-  const data = await response.json()
-  cachedToken = {
-    token: data.access_token,
-    expiresAt: Date.now() + data.expires_in * 1000,
-  }
-
-  return cachedToken.token
-}
-
-interface SearchResult {
-  id: number
-  name: string
-  slug: string
-  cover?: { image_id: string }
-  first_release_date?: number
-  rating?: number
-  genres?: { name: string }[]
-}
-
-async function searchGames(query: string): Promise<SearchResult[]> {
-  if (!query || query.length < 2) return []
-
-  const accessToken = await getAccessToken()
-  const clientId = process.env.TWITCH_CLIENT_ID!
-
-  const response = await fetch(`${IGDB_API_URL}/games`, {
-    method: 'POST',
-    headers: {
-      'Client-ID': clientId,
-      'Authorization': `Bearer ${accessToken}`,
-      'Content-Type': 'text/plain',
-    },
-    body: `
-      search "${query}";
-      fields name, slug, cover.image_id, first_release_date, rating, genres.name;
-      limit 24;
-    `,
-  })
-
-  if (!response.ok) {
-    throw new Error(`IGDB API error: ${response.statusText}`)
-  }
-
-  return response.json()
-}
-
-async function getGamesByGenre(genreId: number): Promise<SearchResult[]> {
-  const accessToken = await getAccessToken()
-  const clientId = process.env.TWITCH_CLIENT_ID!
-
-  const response = await fetch(`${IGDB_API_URL}/games`, {
-    method: 'POST',
-    headers: {
-      'Client-ID': clientId,
-      'Authorization': `Bearer ${accessToken}`,
-      'Content-Type': 'text/plain',
-    },
-    body: `
-      fields name, slug, cover.image_id, first_release_date, rating, genres.name;
-      where genres = [${genreId}] & rating_count > 50 & cover != null;
-      sort rating desc;
-      limit 12;
-    `,
-  })
-
-  if (!response.ok) {
-    throw new Error(`IGDB API error: ${response.statusText}`)
-  }
-
-  return response.json()
-}
+import { searchGames, getGamesByGenre, getCoverUrl } from '@/lib/igdb'
 
 // IGDB Genre IDs
 const GENRES = [
@@ -130,7 +27,7 @@ export default async function SearchPage({
   const { q: query, genre: genreSlug } = await searchParams
 
   const selectedGenre = genreSlug ? GENRES.find(g => g.slug === genreSlug) : null
-  const results = query ? await searchGames(query) : []
+  const results = query ? await searchGames(query, 24) : []
   const genreGames = selectedGenre ? await getGamesByGenre(selectedGenre.id) : []
 
   const getYear = (timestamp?: number) => {
