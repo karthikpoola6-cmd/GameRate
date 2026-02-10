@@ -46,9 +46,9 @@ export default async function ListPage({
   const { data: list } = await supabase
     .from('lists')
     .select(`
-      *,
+      id, name, description, is_public, is_ranked, user_id, created_at, updated_at,
       profiles:user_id (username, display_name, avatar_url),
-      list_items (*)
+      list_items (id, game_id, game_slug, game_name, game_cover_id, position, notes, added_at)
     `)
     .eq('id', id)
     .single()

@@ -17,7 +17,7 @@ export default async function UserGamesPage({ params }: PageProps) {
   // Get profile
   const { data: profile } = await supabase
     .from('profiles')
-    .select('*')
+    .select('id, username, display_name')
     .ilike('username', username)
     .single()
 
@@ -28,7 +28,7 @@ export default async function UserGamesPage({ params }: PageProps) {
   // Get all rated games (ordered by when rating was set)
   const { data: ratedGames } = await supabase
     .from('game_logs')
-    .select('*')
+    .select('id, game_slug, game_name, game_cover_id, rating, rated_at, updated_at')
     .eq('user_id', profile.id)
     .not('rating', 'is', null)
     .order('rated_at', { ascending: false, nullsFirst: false })

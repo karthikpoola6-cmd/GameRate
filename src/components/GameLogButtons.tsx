@@ -16,7 +16,7 @@ interface GameLogButtonsProps {
 }
 
 export function GameLogButtons({ gameId, gameSlug, gameName, gameCoverId }: GameLogButtonsProps) {
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [userId, setUserId] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [gameLog, setGameLog] = useState<GameLog | null>(null)
   const [showReviewForm, setShowReviewForm] = useState(false)
@@ -26,37 +26,37 @@ export function GameLogButtons({ gameId, gameSlug, gameName, gameCoverId }: Game
   const router = useRouter()
   const supabase = createClient()
 
-  // Load user's existing log for this game
+  // Load user's existing log + favorites count in parallel
   useEffect(() => {
     async function loadGameLog() {
       const { data: { user } } = await supabase.auth.getUser()
 
       if (!user) {
-        setIsLoggedIn(false)
         setLoading(false)
         return
       }
 
-      setIsLoggedIn(true)
+      setUserId(user.id)
 
-      const { data } = await supabase
-        .from('game_logs')
-        .select('*')
-        .eq('user_id', user.id)
-        .eq('game_id', gameId)
-        .single()
+      // Fetch game log and favorites count in parallel (2 calls instead of 3)
+      const [{ data }, { count }] = await Promise.all([
+        supabase
+          .from('game_logs')
+          .select('id, user_id, game_id, game_slug, game_name, game_cover_id, status, rating, review, favorite, favorite_position, custom_backdrop_id, created_at, updated_at, rated_at')
+          .eq('user_id', user.id)
+          .eq('game_id', gameId)
+          .single(),
+        supabase
+          .from('game_logs')
+          .select('id', { count: 'exact', head: true })
+          .eq('user_id', user.id)
+          .eq('favorite', true),
+      ])
 
       if (data) {
         setGameLog(data as GameLog)
         setReview(data.review || '')
       }
-
-      // Get count of user's favorites
-      const { count } = await supabase
-        .from('game_logs')
-        .select('*', { count: 'exact', head: true })
-        .eq('user_id', user.id)
-        .eq('favorite', true)
 
       setFavoriteCount(count || 0)
       setLoading(false)
@@ -66,18 +66,12 @@ export function GameLogButtons({ gameId, gameSlug, gameName, gameCoverId }: Game
   }, [supabase, gameId])
 
   async function handleWantToPlay() {
-    if (!isLoggedIn) {
+    if (!userId) {
       router.push('/login')
       return
     }
 
     setSaving(true)
-    const { data: { user } } = await supabase.auth.getUser()
-
-    if (!user) {
-      setSaving(false)
-      return
-    }
 
     if (gameLog?.status === 'want_to_play') {
       // Remove from want to play
@@ -108,7 +102,7 @@ export function GameLogButtons({ gameId, gameSlug, gameName, gameCoverId }: Game
       const { data, error } = await supabase
         .from('game_logs')
         .insert({
-          user_id: user.id,
+          user_id: userId,
           game_id: gameId,
           game_slug: gameSlug,
           game_name: gameName,
@@ -130,18 +124,12 @@ export function GameLogButtons({ gameId, gameSlug, gameName, gameCoverId }: Game
   }
 
   async function handleRating(rating: number) {
-    if (!isLoggedIn) {
+    if (!userId) {
       router.push('/login')
       return
     }
 
     setSaving(true)
-    const { data: { user } } = await supabase.auth.getUser()
-
-    if (!user) {
-      setSaving(false)
-      return
-    }
 
     // Handle clearing rating (rating = 0)
     if (rating === 0) {
@@ -193,7 +181,7 @@ export function GameLogButtons({ gameId, gameSlug, gameName, gameCoverId }: Game
       const { data, error } = await supabase
         .from('game_logs')
         .insert({
-          user_id: user.id,
+          user_id: userId,
           game_id: gameId,
           game_slug: gameSlug,
           game_name: gameName,
@@ -214,7 +202,7 @@ export function GameLogButtons({ gameId, gameSlug, gameName, gameCoverId }: Game
   }
 
   async function handleFavorite() {
-    if (!isLoggedIn) {
+    if (!userId) {
       router.push('/login')
       return
     }
@@ -227,12 +215,6 @@ export function GameLogButtons({ gameId, gameSlug, gameName, gameCoverId }: Game
     }
 
     setSaving(true)
-    const { data: { user } } = await supabase.auth.getUser()
-
-    if (!user) {
-      setSaving(false)
-      return
-    }
 
     if (gameLog) {
       // Toggle favorite on existing log
@@ -254,7 +236,7 @@ export function GameLogButtons({ gameId, gameSlug, gameName, gameCoverId }: Game
       const { data, error } = await supabase
         .from('game_logs')
         .insert({
-          user_id: user.id,
+          user_id: userId,
           game_id: gameId,
           game_slug: gameSlug,
           game_name: gameName,
@@ -277,18 +259,12 @@ export function GameLogButtons({ gameId, gameSlug, gameName, gameCoverId }: Game
   }
 
   async function handleSaveReview() {
-    if (!isLoggedIn) {
+    if (!userId) {
       router.push('/login')
       return
     }
 
     setSaving(true)
-    const { data: { user } } = await supabase.auth.getUser()
-
-    if (!user) {
-      setSaving(false)
-      return
-    }
 
     if (gameLog) {
       // Update existing log with review
@@ -309,7 +285,7 @@ export function GameLogButtons({ gameId, gameSlug, gameName, gameCoverId }: Game
       const { data, error } = await supabase
         .from('game_logs')
         .insert({
-          user_id: user.id,
+          user_id: userId,
           game_id: gameId,
           game_slug: gameSlug,
           game_name: gameName,

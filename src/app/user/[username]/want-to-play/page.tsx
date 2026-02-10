@@ -4,7 +4,6 @@ import Image from 'next/image'
 import { createClient } from '@/lib/supabase/server'
 import { Navigation } from '@/components/Navigation'
 import { getCoverUrl } from '@/lib/igdb'
-import type { GameLog } from '@/lib/types'
 
 
 interface PageProps {
@@ -21,7 +20,7 @@ export default async function WantToPlayPage({ params }: PageProps) {
   // Get profile
   const { data: profile } = await supabase
     .from('profiles')
-    .select('*')
+    .select('id, username, display_name')
     .ilike('username', username)
     .single()
 
@@ -34,7 +33,7 @@ export default async function WantToPlayPage({ params }: PageProps) {
   // Get want to play games
   const { data: games } = await supabase
     .from('game_logs')
-    .select('*')
+    .select('id, game_slug, game_name, game_cover_id, updated_at')
     .eq('user_id', profile.id)
     .eq('status', 'want_to_play')
     .order('updated_at', { ascending: false })
@@ -69,7 +68,7 @@ export default async function WantToPlayPage({ params }: PageProps) {
               gridTemplateColumns: 'repeat(4, minmax(0, 1fr))'
             }}
           >
-            {games.map((game: GameLog) => (
+            {games.map((game) => (
               <Link key={game.id} href={`/game/${game.game_slug}`}>
                 <div className="relative aspect-[3/4] bg-background-card rounded-md sm:rounded-lg overflow-hidden">
                   {game.game_cover_id ? (

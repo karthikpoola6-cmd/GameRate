@@ -28,7 +28,7 @@ export default async function ProfilePage({ params }: PageProps) {
   // Get profile (case-insensitive lookup)
   const { data: profile } = await supabase
     .from('profiles')
-    .select('*')
+    .select('id, username, display_name, bio, avatar_url')
     .ilike('username', username)
     .single()
 
@@ -50,12 +50,12 @@ export default async function ProfilePage({ params }: PageProps) {
       .from('game_logs')
       .select('id, rating, review, status, favorite, game_name, game_slug, game_cover_id, game_id, rated_at, updated_at')
       .eq('user_id', profile.id),
-    supabase.from('follows').select('*', { count: 'exact', head: true }).eq('following_id', profile.id),
-    supabase.from('follows').select('*', { count: 'exact', head: true }).eq('follower_id', profile.id),
+    supabase.from('follows').select('id', { count: 'exact', head: true }).eq('following_id', profile.id),
+    supabase.from('follows').select('id', { count: 'exact', head: true }).eq('follower_id', profile.id),
     (async () => {
       let query = supabase
         .from('lists')
-        .select('*', { count: 'exact', head: true })
+        .select('id', { count: 'exact', head: true })
         .eq('user_id', profile.id)
       if (!isOwnProfileCheck) {
         query = query.eq('is_public', true)
