@@ -48,7 +48,7 @@ export default async function ProfilePage({ params }: PageProps) {
     // Single query for all game_logs — derive counts and subsets client-side
     supabase
       .from('game_logs')
-      .select('id, rating, review, status, favorite, game_name, game_slug, game_cover_id, game_id, rated_at, updated_at')
+      .select('id, rating, review, status, favorite, favorite_position, game_name, game_slug, game_cover_id, game_id, rated_at, updated_at')
       .eq('user_id', profile.id),
     supabase.from('follows').select('id', { count: 'exact', head: true }).eq('following_id', profile.id),
     supabase.from('follows').select('id', { count: 'exact', head: true }).eq('follower_id', profile.id),
@@ -78,7 +78,12 @@ export default async function ProfilePage({ params }: PageProps) {
 
   const favoriteGames = logs
     .filter(g => g.favorite)
-    .sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())
+    .sort((a, b) => {
+      if (a.favorite_position && b.favorite_position) return a.favorite_position - b.favorite_position
+      if (a.favorite_position) return -1
+      if (b.favorite_position) return 1
+      return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+    })
     .slice(0, 5)
 
   // Calculate rating distribution

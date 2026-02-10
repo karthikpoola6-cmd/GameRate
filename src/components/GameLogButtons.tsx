@@ -218,9 +218,13 @@ export function GameLogButtons({ gameId, gameSlug, gameName, gameCoverId }: Game
 
     if (gameLog) {
       // Toggle favorite on existing log
+      const newFavorite = !gameLog.favorite
       const { data, error } = await supabase
         .from('game_logs')
-        .update({ favorite: !gameLog.favorite })
+        .update({
+          favorite: newFavorite,
+          favorite_position: newFavorite ? favoriteCount + 1 : null,
+        })
         .eq('id', gameLog.id)
         .select()
         .single()
@@ -245,6 +249,7 @@ export function GameLogButtons({ gameId, gameSlug, gameName, gameCoverId }: Game
           rating: null,
           review: null,
           favorite: true,
+          favorite_position: favoriteCount + 1,
         })
         .select()
         .single()

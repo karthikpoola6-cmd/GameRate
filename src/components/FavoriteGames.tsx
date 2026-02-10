@@ -15,9 +15,8 @@ interface FavoriteGamesProps {
 export function FavoriteGames({ favorites: initialFavorites, isOwnProfile }: FavoriteGamesProps) {
   const [favorites, setFavorites] = useState(initialFavorites)
   const [isEditing, setIsEditing] = useState(false)
-  const [draggedIndex, setDraggedIndex] = useState<number | null>(null)
-  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null)
   const [saving, setSaving] = useState(false)
+  const [hasChanges, setHasChanges] = useState(false)
   const supabase = createClient()
 
   // Sort favorites by position (nulls last), then by updated_at
@@ -33,27 +32,33 @@ export function FavoriteGames({ favorites: initialFavorites, isOwnProfile }: Fav
   // Create array of 5 slots
   const slots = Array(5).fill(null).map((_, i) => sortedFavorites[i] || null)
 
-  async function handleRemoveFavorite(gameId: string) {
+  function handleRemoveFavorite(gameId: string) {
     if (!isOwnProfile) return
-    // Optimistically update UI
-    setFavorites(favorites.filter(f => f.id !== gameId))
-
-    // Update database
-    await supabase
-      .from('game_logs')
-      .update({ favorite: false, favorite_position: null })
-      .eq('id', gameId)
+    setFavorites(prev => prev.filter(f => f.id !== gameId))
+    setHasChanges(true)
   }
 
-  async function handleDragEnd(fromIndex: number, toIndex: number) {
-    if (!isOwnProfile || !isEditing) return
+  function handleMoveUp(index: number) {
+    if (index <= 0) return
+    const filledSlots = slots.filter(Boolean) as GameLog[]
+    if (index >= filledSlots.length) return
+    handleReorder(index, index - 1)
+  }
+
+  function handleMoveDown(index: number) {
+    const filledSlots = slots.filter(Boolean) as GameLog[]
+    if (index >= filledSlots.length - 1) return
+    handleReorder(index, index + 1)
+  }
+
+  function handleReorder(fromIndex: number, toIndex: number) {
     if (fromIndex === toIndex) return
 
     const newSlots = [...slots]
     const [movedItem] = newSlots.splice(fromIndex, 1)
     newSlots.splice(toIndex, 0, movedItem)
 
-    // Update local state immediately for responsiveness
+    // Update local state immediately
     const updatedFavorites = favorites.map(fav => {
       const newPosition = newSlots.findIndex(s => s?.id === fav.id)
       if (newPosition !== -1) {
@@ -62,48 +67,36 @@ export function FavoriteGames({ favorites: initialFavorites, isOwnProfile }: Fav
       return fav
     })
     setFavorites(updatedFavorites)
+    setHasChanges(true)
+  }
 
-    // Save to database
+  async function saveChanges() {
     setSaving(true)
-    const updates = newSlots
-      .map((slot, index) => slot ? { id: slot.id, position: index + 1 } : null)
-      .filter(Boolean)
 
-    for (const update of updates) {
-      if (update) {
-        await supabase
-          .from('game_logs')
-          .update({ favorite_position: update.position })
-          .eq('id', update.id)
-      }
-    }
+    // Collect all updates: reordered positions + removed favorites
+    const currentIds = new Set(favorites.map(f => f.id))
+    const removedFavorites = initialFavorites.filter(f => !currentIds.has(f.id))
+
+    // Batch update positions for remaining favorites
+    const filledSlots = slots.filter(Boolean) as GameLog[]
+    const positionUpdates = filledSlots.map((slot, i) =>
+      supabase
+        .from('game_logs')
+        .update({ favorite_position: i + 1 })
+        .eq('id', slot.id)
+    )
+
+    // Batch unfavorite removed games
+    const removeUpdates = removedFavorites.map(removed =>
+      supabase
+        .from('game_logs')
+        .update({ favorite: false, favorite_position: null })
+        .eq('id', removed.id)
+    )
+
+    await Promise.all([...positionUpdates, ...removeUpdates])
+    setHasChanges(false)
     setSaving(false)
-  }
-
-  function handleDragStart(e: React.DragEvent, index: number) {
-    if (!isOwnProfile || !isEditing) return
-    setDraggedIndex(index)
-    e.dataTransfer.effectAllowed = 'move'
-  }
-
-  function handleDragOver(e: React.DragEvent, index: number) {
-    if (!isOwnProfile || !isEditing) return
-    e.preventDefault()
-    setDragOverIndex(index)
-  }
-
-  function handleDragLeave() {
-    setDragOverIndex(null)
-  }
-
-  function handleDrop(e: React.DragEvent, toIndex: number) {
-    if (!isOwnProfile || !isEditing) return
-    e.preventDefault()
-    if (draggedIndex !== null && draggedIndex !== toIndex) {
-      handleDragEnd(draggedIndex, toIndex)
-    }
-    setDraggedIndex(null)
-    setDragOverIndex(null)
   }
 
   // Render half-star rating
@@ -142,19 +135,30 @@ export function FavoriteGames({ favorites: initialFavorites, isOwnProfile }: Fav
     )
   }
 
+  const filledCount = slots.filter(Boolean).length
+
   return (
     <section>
       <div className="flex items-center gap-3 mb-6">
         <h2 className="text-lg font-medium tracking-wide">Favorite Games</h2>
         {saving && <span className="text-sm text-foreground-muted">Saving...</span>}
+        {!saving && hasChanges && isEditing && (
+          <span className="text-sm text-purple">Unsaved</span>
+        )}
         {isOwnProfile && !saving && (
           <button
-            onClick={() => setIsEditing(!isEditing)}
-            className={`text-sm px-3 py-1 rounded-full ${
+            onPointerDown={async () => {
+              if (isEditing && hasChanges) {
+                await saveChanges()
+              }
+              setIsEditing(!isEditing)
+            }}
+            className={`text-sm px-3 py-1 rounded-full select-none ${
               isEditing
                 ? 'bg-purple text-white'
                 : 'text-foreground-muted-card'
             }`}
+            style={{ touchAction: 'manipulation' }}
           >
             {isEditing ? 'Done' : 'Edit'}
           </button>
@@ -164,25 +168,48 @@ export function FavoriteGames({ favorites: initialFavorites, isOwnProfile }: Fav
         {slots.map((game, index) => (
           <div
             key={game?.id || `empty-${index}`}
-            className={`${isEditing && game ? 'cursor-grab active:cursor-grabbing' : ''} ${
-              dragOverIndex === index ? 'scale-105' : ''
-            }`}
-            draggable={isEditing && !!game}
-            onDragStart={(e) => game && handleDragStart(e, index)}
-            onDragOver={(e) => handleDragOver(e, index)}
-            onDragLeave={handleDragLeave}
-            onDrop={(e) => handleDrop(e, index)}
           >
             {game ? (
               <div className="relative">
+                {/* Arrow buttons in edit mode */}
+                {isEditing && (
+                  <div className="flex justify-center gap-1 mb-1">
+                    <button
+                      onPointerDown={() => handleMoveUp(index)}
+                      disabled={index === 0}
+                      className={`w-8 h-8 flex items-center justify-center rounded-lg select-none ${
+                        index === 0
+                          ? 'bg-background-card/50 text-foreground-muted/20'
+                          : 'bg-purple/20 text-purple active:bg-purple active:text-white active:scale-95'
+                      }`}
+                      style={{ touchAction: 'manipulation' }}
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
+                      </svg>
+                    </button>
+                    <button
+                      onPointerDown={() => handleMoveDown(index)}
+                      disabled={index >= filledCount - 1}
+                      className={`w-8 h-8 flex items-center justify-center rounded-lg select-none ${
+                        index >= filledCount - 1
+                          ? 'bg-background-card/50 text-foreground-muted/20'
+                          : 'bg-purple/20 text-purple active:bg-purple active:text-white active:scale-95'
+                      }`}
+                      style={{ touchAction: 'manipulation' }}
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </button>
+                  </div>
+                )}
                 <Link
                   href={`/game/${game.game_slug}`}
-                  onClick={(e) => (draggedIndex !== null || isEditing) && e.preventDefault()}
+                  onClick={(e) => isEditing && e.preventDefault()}
                   className={isEditing ? 'pointer-events-none' : ''}
                 >
                   <div className={`relative w-28 sm:w-36 aspect-[3/4] bg-background-card rounded-lg overflow-hidden ring-2 ring-gold/50 ${
-                    draggedIndex === index ? 'opacity-50' : ''
-                  } ${dragOverIndex === index ? 'ring-purple ring-4' : ''} ${
                     isEditing ? 'animate-wiggle' : ''
                   }`}>
                     {game.game_cover_id ? (
@@ -204,15 +231,16 @@ export function FavoriteGames({ favorites: initialFavorites, isOwnProfile }: Fav
                 {/* Remove button - only visible in edit mode */}
                 {isEditing && (
                   <button
-                    onClick={(e) => {
+                    onPointerDown={(e) => {
                       e.preventDefault()
                       e.stopPropagation()
                       handleRemoveFavorite(game.id)
                     }}
-                    className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center shadow-lg z-10"
+                    className="absolute top-6 -right-2 w-7 h-7 bg-red-500 text-white rounded-full flex items-center justify-center shadow-lg z-10 select-none active:scale-90 active:bg-red-600"
+                    style={{ touchAction: 'manipulation' }}
                     title="Remove from favorites"
                   >
-                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
                     </svg>
                   </button>
@@ -227,7 +255,7 @@ export function FavoriteGames({ favorites: initialFavorites, isOwnProfile }: Fav
             ) : isOwnProfile ? (
               <Link href="/search" className="w-28 sm:w-36">
                 <div className={`aspect-[3/4] bg-background-card/50 rounded-lg border-2 border-dashed border-purple/20 flex flex-col items-center justify-center gap-2 ${
-                  dragOverIndex === index ? 'border-purple border-solid' : ''
+                  isEditing ? 'mt-9' : ''
                 }`}>
                   <div className="w-10 h-10 rounded-full bg-purple/20 flex items-center justify-center">
                     <svg className="w-6 h-6 text-purple/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -243,9 +271,7 @@ export function FavoriteGames({ favorites: initialFavorites, isOwnProfile }: Fav
               </Link>
             ) : (
               <div className="w-28 sm:w-36">
-                <div className={`aspect-[3/4] bg-background-card/50 rounded-lg border-2 border-dashed border-purple/20 flex items-center justify-center ${
-                  dragOverIndex === index ? 'border-purple border-solid' : ''
-                }`}>
+                <div className="aspect-[3/4] bg-background-card/50 rounded-lg border-2 border-dashed border-purple/20 flex items-center justify-center">
                   <span className="text-foreground-muted/30 text-2xl">{index + 1}</span>
                 </div>
               </div>
