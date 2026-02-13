@@ -272,7 +272,7 @@ export default async function ProfilePage({ params }: PageProps) {
                   </p>
                   {isOwnProfile && (
                     <Link
-                      href="/"
+                      href="/home"
                       className="inline-block mt-4 text-purple"
                     >
                       Browse games to get started →

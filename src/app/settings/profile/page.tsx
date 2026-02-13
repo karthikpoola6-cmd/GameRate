@@ -6,6 +6,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import Cropper, { Area } from 'react-easy-crop'
 import { createClient } from '@/lib/supabase/client'
+import { useUser } from '@/contexts/UserContext'
 import type { Profile } from '@/lib/types'
 
 // Helper to create a cropped and compressed image
@@ -73,6 +74,7 @@ export default function EditProfilePage() {
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null)
   const router = useRouter()
   const supabase = createClient()
+  const { refreshProfile } = useUser()
 
   const onCropComplete = useCallback((_: Area, croppedAreaPixels: Area) => {
     setCroppedAreaPixels(croppedAreaPixels)
@@ -219,10 +221,11 @@ export default function EditProfilePage() {
       return
     }
 
-    // Update local state
+    // Update local state and sync nav
     setAvatarUrl(newAvatarUrl)
     setAvatarFile(null)
     setAvatarPreview(null)
+    await refreshProfile()
 
     setSuccess(true)
     setLoading(false)
