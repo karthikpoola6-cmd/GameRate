@@ -14,6 +14,7 @@ interface UserContextType {
   profile: UserProfile
   isLoading: boolean
   hasMounted: boolean
+  refreshProfile: () => Promise<void>
 }
 
 const UserContext = createContext<UserContextType>({
@@ -21,6 +22,7 @@ const UserContext = createContext<UserContextType>({
   profile: { username: null, avatarUrl: null },
   isLoading: true,
   hasMounted: false,
+  refreshProfile: async () => {},
 })
 
 // Cache keys for localStorage
@@ -114,8 +116,26 @@ export function UserProvider({ children }: { children: ReactNode }) {
     return () => subscription.unsubscribe()
   }, [supabase])
 
+  async function refreshProfile() {
+    const { data: { user: currentUser } } = await supabase.auth.getUser()
+    if (currentUser) {
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('username, avatar_url')
+        .eq('id', currentUser.id)
+        .single()
+
+      const newProfile = {
+        username: profileData?.username || null,
+        avatarUrl: profileData?.avatar_url || null,
+      }
+      setProfile(newProfile)
+      setCachedProfile(newProfile)
+    }
+  }
+
   return (
-    <UserContext.Provider value={{ user, profile, isLoading, hasMounted }}>
+    <UserContext.Provider value={{ user, profile, isLoading, hasMounted, refreshProfile }}>
       {children}
     </UserContext.Provider>
   )

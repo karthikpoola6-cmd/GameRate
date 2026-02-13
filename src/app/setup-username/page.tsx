@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import { createClient } from '@/lib/supabase/client'
+import { useUser } from '@/contexts/UserContext'
 
 export default function SetupUsernamePage() {
   const [username, setUsername] = useState('')
@@ -15,6 +16,7 @@ export default function SetupUsernamePage() {
   const [currentUsername, setCurrentUsername] = useState<string | null>(null)
   const router = useRouter()
   const supabase = createClient()
+  const { refreshProfile } = useUser()
 
   // Load current username on mount
   useEffect(() => {
@@ -114,10 +116,9 @@ export default function SetupUsernamePage() {
       return
     }
 
-    // Refresh to clear any cached data, then redirect to app home
+    // Update the UserContext so nav links use the new username
+    await refreshProfile()
     router.refresh()
-    // Brief delay to ensure database write propagates
-    await new Promise(resolve => setTimeout(resolve, 500))
     router.push('/home')
   }
 
