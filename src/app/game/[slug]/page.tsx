@@ -8,6 +8,7 @@ import { AddToListButton } from "@/components/AddToListButton";
 import { BackButton } from "@/components/BackButton";
 import { PlayedByClient } from "./PlayedByClient";
 import { createClient } from "@/lib/supabase/server";
+import type { GameLog } from "@/lib/types";
 
 
 interface PageProps {
@@ -25,20 +26,37 @@ export default async function GamePage({ params }: PageProps) {
   const supabase = await createClient();
   const { data: { user: currentUser } } = await supabase.auth.getUser();
 
-  // Get friends who played this game
+  // Fetch all user-specific data in parallel
   let playedByFriends: { id: string; username: string; display_name: string | null; avatar_url: string | null; rating: number | null; review: string | null }[] = [];
+  let userGameLog: GameLog | null = null
+  let userFavoriteCount = 0
 
   if (currentUser) {
-    // Get who the current user follows
-    const { data: followingData } = await supabase
-      .from('follows')
-      .select('following_id')
-      .eq('follower_id', currentUser.id);
+    // Parallelize: follows, game log, and favorites count are all independent
+    const [{ data: followingData }, { data: gameLog }, { count }] = await Promise.all([
+      supabase
+        .from('follows')
+        .select('following_id')
+        .eq('follower_id', currentUser.id),
+      supabase
+        .from('game_logs')
+        .select('id, user_id, game_id, game_slug, game_name, game_cover_id, status, rating, review, favorite, favorite_position, custom_backdrop_id, created_at, updated_at, rated_at')
+        .eq('user_id', currentUser.id)
+        .eq('game_id', game.id)
+        .single(),
+      supabase
+        .from('game_logs')
+        .select('id', { count: 'exact', head: true })
+        .eq('user_id', currentUser.id)
+        .eq('favorite', true),
+    ])
 
+    userGameLog = gameLog as GameLog | null
+    userFavoriteCount = count || 0
+
+    // Fetch friend logs (depends on followingData)
     const followingIds = followingData?.map(f => f.following_id) || [];
-
     if (followingIds.length > 0) {
-      // Get friends who have actually played this game (exclude want_to_play)
       const { data: friendLogs } = await supabase
         .from('game_logs')
         .select('user_id, rating, review, status, profiles:user_id(id, username, display_name, avatar_url)')
@@ -58,18 +76,6 @@ export default async function GamePage({ params }: PageProps) {
         }));
       }
     }
-  }
-
-  // Get current user's game log for custom backdrop
-  let userGameLog: { id: string; custom_backdrop_id: string | null } | null = null
-  if (currentUser) {
-    const { data: gameLog } = await supabase
-      .from('game_logs')
-      .select('id, custom_backdrop_id')
-      .eq('user_id', currentUser.id)
-      .eq('game_id', game.id)
-      .single()
-    userGameLog = gameLog
   }
 
   // Determine which backdrop to display
@@ -212,6 +218,9 @@ export default async function GamePage({ params }: PageProps) {
             gameSlug={slug}
             gameName={game.name}
             gameCoverId={game.cover?.image_id || null}
+            initialGameLog={userGameLog}
+            initialFavoriteCount={userFavoriteCount}
+            userId={currentUser?.id || null}
           />
 
           {/* Add to List */}

@@ -1,88 +1,55 @@
-import Link from "next/link";
-import Image from "next/image";
+import { Navigation } from "@/components/Navigation";
 
 export default function GameLoading() {
   return (
-    <div className="min-h-screen bg-background animate-pulse">
-      {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-purple/10">
-        <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-1.5">
-            <Image src="/GameRate.png" alt="GameRate" width={36} height={36} className="w-9 h-9" />
-            <span className="text-xl font-medium tracking-wider bg-gradient-to-r from-purple to-gold bg-clip-text text-transparent" style={{ fontFamily: 'var(--font-display)' }}>
-              GameRate
-            </span>
-          </Link>
-        </div>
-      </nav>
+    <div className="min-h-screen">
+      <Navigation />
 
-      {/* Hero Section Skeleton */}
-      <div className="relative pt-16">
-        <div className="absolute inset-0 h-[400px] bg-background-secondary" />
+      {/* Backdrop skeleton */}
+      <div className="relative w-full h-[45vh] min-h-[300px] bg-purple/5 animate-pulse" />
 
-        <div className="relative max-w-6xl mx-auto px-4 pt-12 pb-8">
-          <div className="flex flex-col md:flex-row gap-8">
-            {/* Cover Skeleton */}
+      {/* Content skeleton */}
+      <div className="px-4 -mt-20 relative z-10">
+        <div className="max-w-4xl lg:max-w-6xl mx-auto">
+          <div className="flex gap-4">
+            {/* Title area */}
+            <div className="flex-1 min-w-0 pt-4 space-y-3">
+              <div className="h-7 w-3/4 bg-background-card rounded animate-pulse" />
+              <div className="h-4 w-1/3 bg-background-card rounded animate-pulse" />
+              <div className="flex gap-1.5 mt-3">
+                <div className="h-5 w-16 bg-background-card rounded animate-pulse" />
+                <div className="h-5 w-14 bg-background-card rounded animate-pulse" />
+              </div>
+            </div>
+
+            {/* Poster skeleton */}
             <div className="flex-shrink-0">
-              <div className="w-64 aspect-[3/4] bg-background-card rounded-lg" />
-            </div>
-
-            {/* Details Skeleton */}
-            <div className="flex-1 space-y-4">
-              <div className="h-12 bg-background-card rounded-lg w-3/4" />
-              <div className="flex gap-2">
-                <div className="h-8 w-20 bg-background-card rounded-full" />
-                <div className="h-8 w-24 bg-background-card rounded-full" />
-                <div className="h-8 w-16 bg-background-card rounded-full" />
-              </div>
-              <div className="h-8 w-48 bg-background-card rounded-lg" />
-              <div className="flex gap-3 pt-4">
-                <div className="h-12 w-24 bg-background-card rounded-lg" />
-                <div className="h-12 w-28 bg-background-card rounded-lg" />
-                <div className="h-12 w-32 bg-background-card rounded-lg" />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Main Content Skeleton */}
-      <div className="max-w-6xl mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left Column */}
-          <div className="lg:col-span-2 space-y-8">
-            <div>
-              <div className="h-6 w-24 bg-background-card rounded mb-4" />
-              <div className="space-y-2">
-                <div className="h-4 bg-background-card rounded w-full" />
-                <div className="h-4 bg-background-card rounded w-full" />
-                <div className="h-4 bg-background-card rounded w-3/4" />
-              </div>
-            </div>
-
-            <div>
-              <div className="h-6 w-32 bg-background-card rounded mb-4" />
-              <div className="grid grid-cols-2 gap-4">
-                {[1, 2, 3, 4].map((i) => (
-                  <div key={i} className="aspect-video bg-background-card rounded-lg" />
-                ))}
-              </div>
+              <div className="w-28 sm:w-32 lg:w-44 aspect-[3/4] bg-background-card rounded-lg animate-pulse" />
             </div>
           </div>
 
-          {/* Right Column */}
-          <div className="space-y-6">
-            <div className="bg-background-card rounded-xl p-6 border border-purple/10">
-              <div className="h-6 w-24 bg-background-secondary rounded mb-4" />
-              <div className="space-y-4">
-                {[1, 2, 3, 4].map((i) => (
-                  <div key={i}>
-                    <div className="h-3 w-20 bg-background-secondary rounded mb-2" />
-                    <div className="h-5 w-32 bg-background-secondary rounded" />
-                  </div>
-                ))}
-              </div>
+          {/* Buttons skeleton */}
+          <div className="flex flex-wrap gap-2 mt-6">
+            <div className="h-9 w-32 bg-background-card rounded-lg animate-pulse" />
+            <div className="h-9 w-24 bg-background-card rounded-lg animate-pulse" />
+            <div className="h-9 w-20 bg-background-card rounded-lg animate-pulse" />
+          </div>
+
+          {/* Stars skeleton */}
+          <div className="flex items-center gap-3 mt-4">
+            <div className="h-4 w-20 bg-background-card rounded animate-pulse" />
+            <div className="flex gap-1">
+              {[1, 2, 3, 4, 5].map((i) => (
+                <div key={i} className="h-8 w-8 bg-background-card rounded animate-pulse" />
+              ))}
             </div>
+          </div>
+
+          {/* Summary skeleton */}
+          <div className="mt-6 space-y-2">
+            <div className="h-4 bg-background-card rounded w-full animate-pulse" />
+            <div className="h-4 bg-background-card rounded w-full animate-pulse" />
+            <div className="h-4 bg-background-card rounded w-3/4 animate-pulse" />
           </div>
         </div>
       </div>

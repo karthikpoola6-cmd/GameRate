@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
@@ -13,57 +13,20 @@ interface GameLogButtonsProps {
   gameSlug: string
   gameName: string
   gameCoverId: string | null
+  initialGameLog?: GameLog | null
+  initialFavoriteCount?: number
+  userId?: string | null
 }
 
-export function GameLogButtons({ gameId, gameSlug, gameName, gameCoverId }: GameLogButtonsProps) {
-  const [userId, setUserId] = useState<string | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [gameLog, setGameLog] = useState<GameLog | null>(null)
+export function GameLogButtons({ gameId, gameSlug, gameName, gameCoverId, initialGameLog = null, initialFavoriteCount = 0, userId: initialUserId = null }: GameLogButtonsProps) {
+  const [userId] = useState<string | null>(initialUserId)
+  const [gameLog, setGameLog] = useState<GameLog | null>(initialGameLog)
   const [showReviewForm, setShowReviewForm] = useState(false)
-  const [review, setReview] = useState('')
+  const [review, setReview] = useState(initialGameLog?.review || '')
   const [saving, setSaving] = useState(false)
-  const [favoriteCount, setFavoriteCount] = useState(0)
+  const [favoriteCount, setFavoriteCount] = useState(initialFavoriteCount)
   const router = useRouter()
   const supabase = createClient()
-
-  // Load user's existing log + favorites count in parallel
-  useEffect(() => {
-    async function loadGameLog() {
-      const { data: { user } } = await supabase.auth.getUser()
-
-      if (!user) {
-        setLoading(false)
-        return
-      }
-
-      setUserId(user.id)
-
-      // Fetch game log and favorites count in parallel (2 calls instead of 3)
-      const [{ data }, { count }] = await Promise.all([
-        supabase
-          .from('game_logs')
-          .select('id, user_id, game_id, game_slug, game_name, game_cover_id, status, rating, review, favorite, favorite_position, custom_backdrop_id, created_at, updated_at, rated_at')
-          .eq('user_id', user.id)
-          .eq('game_id', gameId)
-          .single(),
-        supabase
-          .from('game_logs')
-          .select('id', { count: 'exact', head: true })
-          .eq('user_id', user.id)
-          .eq('favorite', true),
-      ])
-
-      if (data) {
-        setGameLog(data as GameLog)
-        setReview(data.review || '')
-      }
-
-      setFavoriteCount(count || 0)
-      setLoading(false)
-    }
-
-    loadGameLog()
-  }, [supabase, gameId])
 
   async function handleWantToPlay() {
     if (!userId) {
@@ -326,16 +289,6 @@ export function GameLogButtons({ gameId, gameSlug, gameName, gameCoverId }: Game
     setShowReviewForm(false)
     setSaving(false)
     toast.success('Removed from library')
-  }
-
-  if (loading) {
-    return (
-      <div className="flex flex-wrap gap-3 mt-6">
-        <div className="h-10 w-36 bg-background-card rounded-lg animate-pulse" />
-        <div className="h-10 w-28 bg-background-card rounded-lg animate-pulse" />
-        <div className="h-10 w-24 bg-background-card rounded-lg animate-pulse" />
-      </div>
-    )
   }
 
   const isWantToPlay = gameLog?.status === 'want_to_play'
