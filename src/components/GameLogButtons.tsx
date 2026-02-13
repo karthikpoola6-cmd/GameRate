@@ -438,6 +438,9 @@ export function GameLogButtons({ gameId, gameSlug, gameName, gameCoverId, initia
             {gameLog?.rating}
           </span>
         )}
+        {!gameLog?.rating && (
+          <span className="text-xs text-foreground-muted/40">Tap twice for half</span>
+        )}
       </div>
 
       {/* Status Display */}
