@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
@@ -28,6 +28,11 @@ export function GameLogButtons({ gameId, gameSlug, gameName, gameCoverId, initia
   const router = useRouter()
   const supabase = createClient()
 
+  // Warm up Supabase auth session on mount (handles PWA cold start with expired tokens)
+  useEffect(() => {
+    supabase.auth.getUser()
+  }, [supabase])
+
   async function handleWantToPlay() {
     if (!userId) {
       router.push('/login')
@@ -35,55 +40,56 @@ export function GameLogButtons({ gameId, gameSlug, gameName, gameCoverId, initia
     }
 
     setSaving(true)
+    try {
+      if (gameLog?.status === 'want_to_play') {
+        // Remove from want to play
+        await supabase
+          .from('game_logs')
+          .delete()
+          .eq('id', gameLog.id)
+        setGameLog(null)
+        toast.success('Removed from Want to Play')
+      } else if (gameLog) {
+        // Update existing to want to play (clears rating)
+        const { data, error } = await supabase
+          .from('game_logs')
+          .update({
+            status: 'want_to_play',
+            rating: null,
+          })
+          .eq('id', gameLog.id)
+          .select()
+          .single()
 
-    if (gameLog?.status === 'want_to_play') {
-      // Remove from want to play
-      await supabase
-        .from('game_logs')
-        .delete()
-        .eq('id', gameLog.id)
-      setGameLog(null)
-      toast.success('Removed from Want to Play')
-    } else if (gameLog) {
-      // Update existing to want to play (clears rating)
-      const { data, error } = await supabase
-        .from('game_logs')
-        .update({
-          status: 'want_to_play',
-          rating: null,
-        })
-        .eq('id', gameLog.id)
-        .select()
-        .single()
+        if (!error && data) {
+          setGameLog(data as GameLog)
+          toast.success('Added to Want to Play')
+        }
+      } else {
+        // Add new want to play
+        const { data, error } = await supabase
+          .from('game_logs')
+          .insert({
+            user_id: userId,
+            game_id: gameId,
+            game_slug: gameSlug,
+            game_name: gameName,
+            game_cover_id: gameCoverId,
+            status: 'want_to_play',
+            rating: null,
+            review: null,
+            favorite: false,
+          })
+          .select()
+          .single()
 
-      if (!error && data) {
-        setGameLog(data as GameLog)
-        toast.success('Added to Want to Play')
+        if (!error && data) {
+          setGameLog(data as GameLog)
+          toast.success('Added to Want to Play')
+        }
       }
-    } else {
-      // Add new want to play
-      const { data, error } = await supabase
-        .from('game_logs')
-        .insert({
-          user_id: userId,
-          game_id: gameId,
-          game_slug: gameSlug,
-          game_name: gameName,
-          game_cover_id: gameCoverId,
-          status: 'want_to_play',
-          rating: null,
-          review: null,
-          favorite: false,
-        })
-        .select()
-        .single()
-
-      if (!error && data) {
-        setGameLog(data as GameLog)
-        toast.success('Added to Want to Play')
-      }
-    }
-    setSaving(false)
+    } catch { /* auth session may not be ready */ }
+    finally { setSaving(false) }
   }
 
   async function handleRating(rating: number) {
@@ -93,75 +99,75 @@ export function GameLogButtons({ gameId, gameSlug, gameName, gameCoverId, initia
     }
 
     setSaving(true)
+    try {
+      // Handle clearing rating (rating = 0)
+      if (rating === 0) {
+        if (gameLog) {
+          // If game is a favorite, keep the log but clear the rating
+          if (gameLog.favorite) {
+            const { data, error } = await supabase
+              .from('game_logs')
+              .update({ rating: null })
+              .eq('id', gameLog.id)
+              .select()
+              .single()
 
-    // Handle clearing rating (rating = 0)
-    if (rating === 0) {
-      if (gameLog) {
-        // If game is a favorite, keep the log but clear the rating
-        if (gameLog.favorite) {
-          const { data, error } = await supabase
-            .from('game_logs')
-            .update({ rating: null })
-            .eq('id', gameLog.id)
-            .select()
-            .single()
-
-          if (!error && data) {
-            setGameLog(data as GameLog)
+            if (!error && data) {
+              setGameLog(data as GameLog)
+              toast.success('Rating cleared')
+            }
+          } else {
+            // Not a favorite - delete the log entirely
+            await supabase
+              .from('game_logs')
+              .delete()
+              .eq('id', gameLog.id)
+            setGameLog(null)
             toast.success('Rating cleared')
           }
-        } else {
-          // Not a favorite - delete the log entirely
-          await supabase
-            .from('game_logs')
-            .delete()
-            .eq('id', gameLog.id)
-          setGameLog(null)
-          toast.success('Rating cleared')
+        }
+        return
+      }
+
+      if (gameLog) {
+        // Update existing log
+        const { data, error } = await supabase
+          .from('game_logs')
+          .update({
+            status: 'played',
+            rating: rating,
+          })
+          .eq('id', gameLog.id)
+          .select()
+          .single()
+
+        if (!error && data) {
+          setGameLog(data as GameLog)
+        }
+      } else {
+        // Only create new log if actually rating (not clearing)
+        const { data, error } = await supabase
+          .from('game_logs')
+          .insert({
+            user_id: userId,
+            game_id: gameId,
+            game_slug: gameSlug,
+            game_name: gameName,
+            game_cover_id: gameCoverId,
+            status: 'played',
+            rating: rating,
+            review: null,
+            favorite: false,
+          })
+          .select()
+          .single()
+
+        if (!error && data) {
+          setGameLog(data as GameLog)
         }
       }
-      setSaving(false)
-      return
-    }
-
-    if (gameLog) {
-      // Update existing log
-      const { data, error } = await supabase
-        .from('game_logs')
-        .update({
-          status: 'played',
-          rating: rating,
-        })
-        .eq('id', gameLog.id)
-        .select()
-        .single()
-
-      if (!error && data) {
-        setGameLog(data as GameLog)
-      }
-    } else {
-      // Only create new log if actually rating (not clearing)
-      const { data, error } = await supabase
-        .from('game_logs')
-        .insert({
-          user_id: userId,
-          game_id: gameId,
-          game_slug: gameSlug,
-          game_name: gameName,
-          game_cover_id: gameCoverId,
-          status: 'played',
-          rating: rating,
-          review: null,
-          favorite: false,
-        })
-        .select()
-        .single()
-
-      if (!error && data) {
-        setGameLog(data as GameLog)
-      }
-    }
-    setSaving(false)
+    } catch { /* auth session may not be ready */ }
+    finally { setSaving(false) }
   }
 
   async function handleFavorite() {
@@ -178,52 +184,53 @@ export function GameLogButtons({ gameId, gameSlug, gameName, gameCoverId, initia
     }
 
     setSaving(true)
+    try {
+      if (gameLog) {
+        // Toggle favorite on existing log
+        const newFavorite = !gameLog.favorite
+        const { data, error } = await supabase
+          .from('game_logs')
+          .update({
+            favorite: newFavorite,
+            favorite_position: newFavorite ? favoriteCount + 1 : null,
+          })
+          .eq('id', gameLog.id)
+          .select()
+          .single()
 
-    if (gameLog) {
-      // Toggle favorite on existing log
-      const newFavorite = !gameLog.favorite
-      const { data, error } = await supabase
-        .from('game_logs')
-        .update({
-          favorite: newFavorite,
-          favorite_position: newFavorite ? favoriteCount + 1 : null,
-        })
-        .eq('id', gameLog.id)
-        .select()
-        .single()
+        if (!error && data) {
+          setGameLog(data as GameLog)
+          // Update count
+          setFavoriteCount(prev => data.favorite ? prev + 1 : prev - 1)
+          toast.success(data.favorite ? 'Added to favorites' : 'Removed from favorites')
+        }
+      } else {
+        // Create new log marked as favorite (implies played)
+        const { data, error } = await supabase
+          .from('game_logs')
+          .insert({
+            user_id: userId,
+            game_id: gameId,
+            game_slug: gameSlug,
+            game_name: gameName,
+            game_cover_id: gameCoverId,
+            status: 'played',
+            rating: null,
+            review: null,
+            favorite: true,
+            favorite_position: favoriteCount + 1,
+          })
+          .select()
+          .single()
 
-      if (!error && data) {
-        setGameLog(data as GameLog)
-        // Update count
-        setFavoriteCount(prev => data.favorite ? prev + 1 : prev - 1)
-        toast.success(data.favorite ? 'Added to favorites' : 'Removed from favorites')
+        if (!error && data) {
+          setGameLog(data as GameLog)
+          setFavoriteCount(prev => prev + 1)
+          toast.success('Added to favorites')
+        }
       }
-    } else {
-      // Create new log marked as favorite (implies played)
-      const { data, error } = await supabase
-        .from('game_logs')
-        .insert({
-          user_id: userId,
-          game_id: gameId,
-          game_slug: gameSlug,
-          game_name: gameName,
-          game_cover_id: gameCoverId,
-          status: 'played',
-          rating: null,
-          review: null,
-          favorite: true,
-          favorite_position: favoriteCount + 1,
-        })
-        .select()
-        .single()
-
-      if (!error && data) {
-        setGameLog(data as GameLog)
-        setFavoriteCount(prev => prev + 1)
-        toast.success('Added to favorites')
-      }
-    }
-    setSaving(false)
+    } catch { /* auth session may not be ready */ }
+    finally { setSaving(false) }
   }
 
   async function handleSaveReview() {
@@ -233,62 +240,65 @@ export function GameLogButtons({ gameId, gameSlug, gameName, gameCoverId, initia
     }
 
     setSaving(true)
+    try {
+      if (gameLog) {
+        // Update existing log with review
+        const { data, error } = await supabase
+          .from('game_logs')
+          .update({ review: review || null })
+          .eq('id', gameLog.id)
+          .select()
+          .single()
 
-    if (gameLog) {
-      // Update existing log with review
-      const { data, error } = await supabase
-        .from('game_logs')
-        .update({ review: review || null })
-        .eq('id', gameLog.id)
-        .select()
-        .single()
+        if (!error && data) {
+          setGameLog(data as GameLog)
+          setShowReviewForm(false)
+          toast.success('Review saved')
+        }
+      } else {
+        // Create new log with review (implies played)
+        const { data, error } = await supabase
+          .from('game_logs')
+          .insert({
+            user_id: userId,
+            game_id: gameId,
+            game_slug: gameSlug,
+            game_name: gameName,
+            game_cover_id: gameCoverId,
+            status: 'played',
+            rating: null,
+            review: review || null,
+            favorite: false,
+          })
+          .select()
+          .single()
 
-      if (!error && data) {
-        setGameLog(data as GameLog)
-        setShowReviewForm(false)
-        toast.success('Review saved')
+        if (!error && data) {
+          setGameLog(data as GameLog)
+          setShowReviewForm(false)
+          toast.success('Review saved')
+        }
       }
-    } else {
-      // Create new log with review (implies played)
-      const { data, error } = await supabase
-        .from('game_logs')
-        .insert({
-          user_id: userId,
-          game_id: gameId,
-          game_slug: gameSlug,
-          game_name: gameName,
-          game_cover_id: gameCoverId,
-          status: 'played',
-          rating: null,
-          review: review || null,
-          favorite: false,
-        })
-        .select()
-        .single()
-
-      if (!error && data) {
-        setGameLog(data as GameLog)
-        setShowReviewForm(false)
-        toast.success('Review saved')
-      }
-    }
-    setSaving(false)
+    } catch { /* auth session may not be ready */ }
+    finally { setSaving(false) }
   }
 
   async function handleRemoveLog() {
     if (!gameLog) return
 
     setSaving(true)
-    await supabase
-      .from('game_logs')
-      .delete()
-      .eq('id', gameLog.id)
+    try {
+      await supabase
+        .from('game_logs')
+        .delete()
+        .eq('id', gameLog.id)
 
-    setGameLog(null)
-    setReview('')
-    setShowReviewForm(false)
-    setSaving(false)
-    toast.success('Removed from library')
+      setGameLog(null)
+      setReview('')
+      setShowReviewForm(false)
+      toast.success('Removed from library')
+    } catch { /* auth session may not be ready */ }
+    finally { setSaving(false) }
   }
 
   const isWantToPlay = gameLog?.status === 'want_to_play'
